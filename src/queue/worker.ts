@@ -10,6 +10,7 @@ import { post } from '../slack/post.js';
 import * as sessionStore from '../session-store.js';
 
 const QA_POST_BIN = fileURLToPath(new URL('../../bin/qa-post.mjs', import.meta.url));
+const QA_DB_BIN = fileURLToPath(new URL('../../bin/qa-db.mjs', import.meta.url));
 
 export interface Job {
   prUrl?: string;
@@ -94,6 +95,7 @@ async function processJob(job: Job): Promise<void> {
   const jobEnv = {
     ...process.env,
     QA_POST_BIN,
+    QA_DB_BIN,
     QA_ARTIFACTS_DIR: artifactsDir,
     QA_GOTCHAS_FILE: config.gotchasPath,
     QA_SLACK_CHANNEL: job.channel,
@@ -163,6 +165,7 @@ async function resumeJob(job: Job & { resumeSessionId: string }): Promise<void> 
       env: {
         ...process.env,
         QA_POST_BIN,
+        QA_DB_BIN,
         QA_ARTIFACTS_DIR: artifactsDir,
         QA_GOTCHAS_FILE: config.gotchasPath,
         QA_SLACK_CHANNEL: job.channel,

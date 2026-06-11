@@ -116,6 +116,21 @@ Decide whether to reuse an existing ephemeral or create a new one:
    node "$QA_POST_BIN" msg "ephemeral \`<name>\` is up ✅ — starting test execution now"
    ```
 
+## Querying the DB (qa-db)
+
+Use `node "$QA_DB_BIN" <ephemeral-name> "<SQL>"` to run a read-only query against the ephemeral's
+database. This is a single Bash call — **never drive CloudBeaver's web UI manually for DB reads**.
+
+```bash
+node "$QA_DB_BIN" qa-en16277 "SELECT id, status, ah_status, product_id, ship_cycle FROM account_book_commitment WHERE account_id = 7111006 LIMIT 10"
+```
+
+The result prints as a markdown table. Pipe it to a file and use `qa-post file` to post it as proof,
+or paste a short result directly into a `qa-post msg` code block.
+
+The tool hits `https://<name>.cloudbeaver.bookofthemoment.com/api/gql` directly — no browser needed.
+The DB is `xavier` (default catalog). Read-only queries only.
+
 ## Exercising crons, scripts & state (no shortcuts)
 
 Drive real behavior on the ephemeral via the **Ephemeral Actions** workflow — never fake it with
