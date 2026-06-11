@@ -23,7 +23,7 @@ export const config = {
   slackBotToken: req('SLACK_BOT_TOKEN'),
   slackAppToken: req('SLACK_APP_TOKEN'),
   model: process.env.QA_MODEL ?? 'claude-sonnet-4-6',
-  maxTurns: Number(process.env.CLAUDE_MAX_TURNS ?? '80'),
+  maxTurns: Number(process.env.CLAUDE_MAX_TURNS ?? '1500'),
   defaultEphemeralUrl: process.env.DEFAULT_EPHEMERAL_URL ?? '',
   jiraBaseUrl: (process.env.JIRA_BASE_URL ?? '').replace(/\/$/, ''),
   jiraEmail: process.env.JIRA_EMAIL ?? '',
