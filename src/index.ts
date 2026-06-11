@@ -1,6 +1,7 @@
 import { App } from '@slack/bolt';
 import { config } from './config.js';
 import { enqueue } from './queue/worker.js';
+import * as sessionStore from './session-store.js';
 
 const app = new App({
   token: config.slackBotToken,
@@ -28,6 +29,26 @@ app.event('app_mention', async ({ event, client }) => {
 
   const thread = event.thread_ts ?? event.ts;
   const requester = event.user;
+
+  // Follow-up in a known thread (no PR link needed)
+  const existingSession = event.thread_ts ? sessionStore.get(event.thread_ts) : undefined;
+  if (existingSession && !prUrl && !ticket && !url) {
+    await client.chat.postMessage({
+      channel: event.channel,
+      thread_ts: thread,
+      text: ':arrows_counterclockwise: resuming QA session…',
+    });
+    enqueue({
+      instructions,
+      channel: event.channel,
+      thread,
+      requester,
+      client,
+      isResume: true,
+      resumeSessionId: existingSession.sessionId,
+    });
+    return;
+  }
 
   if (!prUrl && !ticket && !url) {
     await client.chat.postMessage({

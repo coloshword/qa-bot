@@ -7,6 +7,7 @@ import { config } from '../config.js';
 import { runClaude } from '../claude/runner.js';
 import { renderPrompt } from '../claude/prompt.js';
 import { post } from '../slack/post.js';
+import * as sessionStore from '../session-store.js';
 
 const QA_POST_BIN = fileURLToPath(new URL('../../bin/qa-post.mjs', import.meta.url));
 
@@ -19,6 +20,8 @@ export interface Job {
   thread: string;
   requester?: string;
   client: WebClient;
+  isResume?: boolean;
+  resumeSessionId?: string;
 }
 
 const queue: Job[] = [];
@@ -35,7 +38,11 @@ async function pump(): Promise<void> {
   if (!job) return;
   running = true;
   try {
-    await processJob(job);
+    if (job.isResume && job.resumeSessionId) {
+      await resumeJob(job as Job & { resumeSessionId: string });
+    } else {
+      await processJob(job);
+    }
   } catch (e) {
     console.error('[worker] job failed', e);
     await post(job.client, job.channel, job.thread, `:x: QA run crashed: ${(e as Error).message}`);
@@ -84,6 +91,17 @@ async function processJob(job: Job): Promise<void> {
     priorGotchas,
   });
 
+  const jobEnv = {
+    ...process.env,
+    QA_POST_BIN,
+    QA_ARTIFACTS_DIR: artifactsDir,
+    QA_GOTCHAS_FILE: config.gotchasPath,
+    QA_SLACK_CHANNEL: job.channel,
+    QA_SLACK_THREAD: job.thread,
+    QA_SLACK_REQUESTER: job.requester ?? '',
+  };
+
+  let capturedSessionId: string | undefined;
   await runClaude(
     {
       prompt,
@@ -93,6 +111,55 @@ async function processJob(job: Job): Promise<void> {
       model: config.model,
       maxTurns: config.maxTurns,
       sessionId: jobId,
+      env: jobEnv,
+    },
+    {
+      onSession: (id) => {
+        capturedSessionId = id;
+      },
+      onText: (t) => console.log('[agent]', t.slice(0, 200)),
+      onToolUse: (name) => console.log('[tool]', name),
+      onResult: (r) => {
+        console.log('[result]', r.isError ? 'ERROR' : 'ok', `turns=${r.numTurns ?? '?'}`, `stop=${r.stopReason ?? '?'}`, r.costUsd ?? '');
+        if (r.isError) {
+          void post(
+            job.client,
+            job.channel,
+            job.thread,
+            `:warning: QA run ended with an error.\n${(r.text ?? '').slice(0, 600)}`,
+          );
+        }
+      },
+    },
+  );
+
+  if (capturedSessionId) {
+    sessionStore.set(job.thread, capturedSessionId, job.channel);
+    console.log('[worker] session stored', job.thread, '->', capturedSessionId);
+  }
+}
+
+async function resumeJob(job: Job & { resumeSessionId: string }): Promise<void> {
+  const runId = randomUUID();
+  const runDir = path.join(config.runsDir, runId);
+  const artifactsDir = path.join(runDir, 'artifacts');
+  fs.mkdirSync(artifactsDir, { recursive: true });
+
+  const mcpConfigPath = path.join(runDir, 'mcp.json');
+  writeMcpConfig(mcpConfigPath, artifactsDir);
+
+  const prompt = job.instructions.trim() || 'Continue with the QA plan as previously discussed.';
+
+  await runClaude(
+    {
+      prompt,
+      cwd: runDir,
+      mcpConfigPath,
+      playbook: '',
+      model: config.model,
+      maxTurns: config.maxTurns,
+      sessionId: job.resumeSessionId,
+      resuming: true,
       env: {
         ...process.env,
         QA_POST_BIN,
@@ -104,16 +171,16 @@ async function processJob(job: Job): Promise<void> {
       },
     },
     {
-      onText: (t) => console.log('[agent]', t.slice(0, 200)),
-      onToolUse: (name) => console.log('[tool]', name),
+      onText: (t) => console.log('[agent/resume]', t.slice(0, 200)),
+      onToolUse: (name) => console.log('[tool/resume]', name),
       onResult: (r) => {
-        console.log('[result]', r.isError ? 'ERROR' : 'ok', r.costUsd ?? '');
+        console.log('[result/resume]', r.isError ? 'ERROR' : 'ok', `turns=${r.numTurns ?? '?'}`, `stop=${r.stopReason ?? '?'}`, r.costUsd ?? '');
         if (r.isError) {
           void post(
             job.client,
             job.channel,
             job.thread,
-            `:warning: QA run ended with an error.\n${(r.text ?? '').slice(0, 600)}`,
+            `:warning: resumed QA session ended with an error.\n${(r.text ?? '').slice(0, 600)}`,
           );
         }
       },

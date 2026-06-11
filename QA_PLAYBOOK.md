@@ -36,6 +36,7 @@ You are given a **GitHub PR URL**. Act as a meticulous QA engineer.
    `node "$QA_POST_BIN" msg --mention "*QA plan for <PR>*\n1. ...\n2. ...\n\nKicking off the run now — @ me if you want changes to the plan."`
    Then proceed immediately (do not wait for a reply).
 5. **Acquire an ephemeral** for the PR's branch (see "Spinning up / choosing an ephemeral").
+   When the ephemeral comes up, immediately post: `node "$QA_POST_BIN" msg "ephemeral \`<name>\` is up ✅ — starting test execution now"`
 6. **Execute every test case in order.** For each case, gather PROOF and post it as its OWN
    message (so N cases → N proof messages):
    - UI behavior → `browser_take_screenshot` (saved to `$QA_ARTIFACTS_DIR`), then
@@ -107,6 +108,11 @@ Decide whether to reuse an existing ephemeral or create a new one:
    ```
    Repeat (new Bash call) until `READY`, up to ~25 min total. If it never comes up, report BLOCKED
    with the run link: `gh run list --workflow=ephemeral_create.yaml --repo bookofthemonthclub/Xavier -L 3`.
+
+7. **Notify the thread as soon as the ephemeral is up** — post this before running any test case:
+   ```
+   node "$QA_POST_BIN" msg "ephemeral \`<name>\` is up ✅ — starting test execution now"
+   ```
 
 ## Exercising crons, scripts & state (no shortcuts)
 
