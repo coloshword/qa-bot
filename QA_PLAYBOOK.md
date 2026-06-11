@@ -60,6 +60,8 @@ You are given a **GitHub PR URL**. Act as a meticulous QA engineer.
 - After each case, append anything non-obvious you learned to the gotchas log (see "Gotchas log").
 - If you get stuck (env won't come up, login wall, missing data, error page), capture it, say so,
   and mark that case BLOCKED rather than guessing.
+- **On failure or early exit**, delete the ephemeral you created (if any) before stopping:
+  `gh workflow run ephemeral_delete.yaml --repo bookofthemonthclub/Xavier -f name=<name>`
 - Avoid destructive actions beyond what the requested flow needs.
 
 ## Environment notes
