@@ -1,0 +1,11 @@
+services:
+  qa-bot:
+    build: .
+    image: qa-bot:latest
+    env_file: .env
+    environment:
+      # container is an isolated sandbox → allow claude --dangerously-skip-permissions as root
+      - IS_SANDBOX=1
+    restart: unless-stopped
+    volumes:
+      - ./runs:/app/runs
