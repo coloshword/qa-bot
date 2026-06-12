@@ -10,3 +10,10 @@
 - ship_cycle = sch.cycle_id + schb.ship_cycle_offset (e.g. homepage cycle 136 + offset 3 = ship cycle 139). Must advance store cycle to >= ship_cycle for the book to appear. Use admin "Edit cycle" → combobox → "Change Current Cycle" button → confirm dialog
 - Admin "Edit cycle" and SNES login are on different domains (admin.bookofthemoment.com vs bookofthemoment.com) — navigating to admin drops the SNES session cookie; re-login after any admin cycle change
 - Password set via admin account page "Password:" field + Save — no DB trick needed on this ephemeral
+
+## PR-18826 / EN-16277 — 2026-06-12
+- admin surfaces (ports 20050/20051) render blank white pages on local allurial stacks — React app not rendering; use SQL for preconditions instead
+- refundPreorder admin API (POST /admin/transaction/:ahId/refund-preorder) requires Rippling/Okta JWT — unavailable locally; test via SQL status flip on account_book_commitment.status and account_history.status
+- derived series items appear in SNES box under 'YOUR ALLURIAL SERIES' section as 'Pre-paid'; they have no Remove button (cannot be removed)
+- SNES login uses #account-submit-login button id; there are multiple submit buttons on the page — use exact id to avoid strict-mode violation
+- SNES box password set via SQL: UPDATE account SET password_hash = SHA2(CONCAT('<pw>', password_salt), 224) WHERE id = <id>
