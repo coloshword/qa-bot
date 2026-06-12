@@ -17,3 +17,11 @@
 - derived series items appear in SNES box under 'YOUR ALLURIAL SERIES' section as 'Pre-paid'; they have no Remove button (cannot be removed)
 - SNES login uses #account-submit-login button id; there are multiple submit buttons on the page — use exact id to avoid strict-mode violation
 - SNES box password set via SQL: UPDATE account SET password_hash = SHA2(CONCAT('<pw>', password_salt), 224) WHERE id = <id>
+
+## PR-18831 / EN-16277 — 2026-06-12
+- Category cache is in-memory with no HTTP flush endpoint accessible without admin auth (Okta/Rippling); to force flush: kill core PID and restart with envScript env vars (source .env.allurial-local.xavier from XAVIER_SOURCE + slot overrides)
+- Core POLL_INTERVAL env var not set on local stacks = no auto-flush via pollDb; manual restart is required to pick up DB changes in category_children
+- All Hardcovers page URL is /all-hardcovers (not /books/all-hardcovers or /books)
+- category API is GET /api/category?list=<slug> (under /api prefix); mobileAuth does not block unauthenticated requests
+- current-features = bomFeatureData[0] from pdp_featured; june-2026 (CMS) = categoryData from allv2(); after PR merge order flip, CMS wins slug collisions
+- series commitment book pdp_id: pdp 81 = The Exquisite Torment of Loving Your Enemy (product_id 81, commitment_book id 2)
