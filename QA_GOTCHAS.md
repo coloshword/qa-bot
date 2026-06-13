@@ -50,3 +50,13 @@
 - hasMessage() in AccountMessageDb has no active filter — stale Friend popup rows (active=0) permanently exclude member from survey assignment (bug)
 - Core may restart with wrong whitelabel after slot reuse — check theme before testing, restart core with botm if needed
 - JWT injection (addCookies) is reliable for account switching when /api/logout fails to clear httpOnly cookie
+gabriela.voll (id=16673) has policyType=Rejoin/Re-Enroll — box page redirects her to /rejoin, YesNo survey can't render for her. Used Ava.meisel (id=7793673) for case 6 instead (reset account_message 24546403 to active=1 before test, survey submitted back to active=0 after).
+SNES login via form does NOT update the Core (port 20082) session cookie in the browser — the Core jwt cookie is set by a client-side fastLogin fetch call to Core, which goes directly through the browser. SNES SSR reads jwt from the Next.js cookie store (forwarded from the browser's jwt cookie for localhost). After login, the browser jwt cookie IS updated (domain=localhost, no port restriction), but takes effect only on next full navigation (SSR).
+
+## PR-18835 / EN-14656 Post Ship Survey — 2026-06-13 (run 3)
+- gabriela.voll@bookofthemonth.com (id=16673) is a Rejoin member — box page redirects to /rejoin, cannot show survey card
+- fastLogin via POST to core API (port 20082) does NOT set session on SNES (port 20030); use SNES login form at /en-US/login instead
+- SNES login form ids: email=email-defaultlogin, password=password-defaultlogin, submit=#account-submit-login
+post-ship survey Friend exclusion uses hasMessage() (AccountMessageDb.ts:219-231) which is a bare existence check with no cycle/date filter; a hasMessageByCycle() method exists at line 234 but is unused for this check — old Friend popup rows (msg_id=60/61) from any past cycle permanently exclude the member from future surveys
+- Friend tier popup exclusion (msg_id=60/61) uses bare hasMessage() with no cycle scope — members who were ever Friends are permanently excluded from post-ship survey; fix: hasMessageByCycle() scoped to currentCycleId
+- survey_response table has no resource_title column; SNES SubmitSurveyOptions also lacks resourceTitle; title recoverable via resource_id→pdp join

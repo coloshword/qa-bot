@@ -82,26 +82,24 @@ the prompt specifies them explicitly.
    less). If `up` failed, read its output and `qa-stack logs core`, retry once, then consider the
    ephemeral fallback (see "Ephemeral fallback") before reporting BLOCKED.
 
-6. **Execute each test case in order** — directly for small runs (≤4 cases), via subagents for
-   bigger ones (see "Big runs: delegate cases to subagents"). After EVERY case, check the inbox
-   (see "Mid-run user messages"). For each case:
-   a. Post a one-liner before starting: `node "$QA_POST_BIN" msg "▶ [N/total] <case name>"`
-   b. Exercise the real mechanism (see "Operating rules" and "Exercising crons, scripts & state").
-   c. Post proof (screenshot, script output, or DB-state table) with a PASS/FAIL caption:
-      ```
-      node "$QA_POST_BIN" img "$QA_ARTIFACTS_DIR/<file>.png" "PASS/FAIL [N]: <what it shows>"
-      # or for non-UI proof:
-      node "$QA_POST_BIN" file <path> "[N] <title>"
-      ```
-   d. **Close out the case with a status line** — REQUIRED after every case, the moment it's
-      decided, with a running tally:
-      ```
-      node "$QA_POST_BIN" msg ":white_check_mark: [N/total] PASS — <one line: expected vs observed> · tally: P pass, F fail, B blocked"
-      ```
-      Use `:x:` for FAIL (include the one-line cause or `file:line` if you found it in code) and
-      `:construction:` for BLOCKED (include what blocked it). This line is the reviewer's live
-      scoreboard — never batch several cases into one status, and never skip it because the
-      proof caption already says PASS/FAIL.
+6. **Execute each test case in order.** After EVERY case, check the inbox (see "Mid-run user
+   messages"). **Who posts to Slack depends on whether you delegate — exactly ONE voice per case,
+   never both (double-posting looks like two agents racing one case):**
+
+   - **Delegated case (big runs, >4 cases):** the SUBAGENT owns ALL per-case Slack posts — the
+     `▶ [N/total]` start line, the proof, and the `✅/❌/🚧` status line. You (orchestrator) post
+     NOTHING per case — you only read the subagent's returned verdict, update your internal tally,
+     and move on. Do NOT post `▶` or the status line for a delegated case.
+   - **Inline case (small runs ≤4, or a pure-SQL/migration case you run yourself):** YOU post the
+     ▶ start, the proof, and the status line:
+     a. `node "$QA_POST_BIN" msg "▶ [N/total] <case name>"`
+     b. Exercise the real mechanism (see "Operating rules" and "Exercising crons, scripts & state").
+     c. Proof: `node "$QA_POST_BIN" img "$QA_ARTIFACTS_DIR/<file>.png" "PASS/FAIL [N]: <what it shows>"`
+        (or `file <path> "[N] <title>"` for non-UI proof).
+     d. Status line, the moment it's decided, with a running tally:
+        `node "$QA_POST_BIN" msg ":white_check_mark: [N/total] PASS — <expected vs observed> · tally: P pass, F fail, B blocked"`
+        (`:x:` FAIL with cause/file:line · `:construction:` BLOCKED with what blocked). Never batch
+        several cases into one status; never skip it because the proof caption already says PASS/FAIL.
 
 7. **Post final summary** @-mentioning the requester — if any conformance hypotheses could not
    be behaviorally verified, list them as open questions (`:mag: unverified — worth a human
