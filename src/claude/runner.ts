@@ -18,9 +18,15 @@ export interface RunOptions {
   sessionId: string;
   resuming?: boolean;
   env: NodeJS.ProcessEnv;
+  timeoutMs?: number;
 }
 
-export function runClaude(opts: RunOptions, cb: RunCallbacks): Promise<{ code: number }> {
+export interface RunHandle {
+  promise: Promise<{ code: number; timedOut: boolean }>;
+  kill: () => void;
+}
+
+export function runClaude(opts: RunOptions, cb: RunCallbacks): RunHandle {
   const args = [
     '--print',
     '--output-format', 'stream-json',
@@ -56,9 +62,23 @@ export function runClaude(opts: RunOptions, cb: RunCallbacks): Promise<{ code: n
 
   child.stderr.on('data', (d) => console.error('[claude stderr]', d.toString().trim()));
 
-  return new Promise((resolve) => {
-    child.on('close', (code) => resolve({ code: code ?? 0 }));
+  let timedOut = false;
+  const timer = opts.timeoutMs
+    ? setTimeout(() => {
+        timedOut = true;
+        console.error(`[claude] wallclock timeout (${opts.timeoutMs}ms) — killing process`);
+        child.kill('SIGTERM');
+      }, opts.timeoutMs)
+    : null;
+
+  const promise = new Promise<{ code: number; timedOut: boolean }>((resolve) => {
+    child.on('close', (code) => {
+      if (timer) clearTimeout(timer);
+      resolve({ code: code ?? 0, timedOut });
+    });
   });
+
+  return { promise, kill: () => child.kill('SIGTERM') };
 }
 
 function handleEvent(ev: any, cb: RunCallbacks): void {

@@ -6,6 +6,8 @@ services:
     environment:
       # container is an isolated sandbox → allow claude --dangerously-skip-permissions as root
       - IS_SANDBOX=1
+      - QA_GOTCHAS_FILE=/app/QA_GOTCHAS.md
     restart: unless-stopped
     volumes:
       - ./runs:/app/runs
+      - ./QA_GOTCHAS.md:/app/QA_GOTCHAS.md

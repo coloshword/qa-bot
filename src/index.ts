@@ -1,6 +1,6 @@
 import { App } from '@slack/bolt';
 import { config } from './config.js';
-import { enqueue } from './queue/worker.js';
+import { enqueue, interrupt } from './queue/worker.js';
 import * as sessionStore from './session-store.js';
 
 const app = new App({
@@ -12,6 +12,7 @@ const app = new App({
 const PR_RE = /https?:\/\/github\.com\/[^/\s|>]+\/[^/\s|>]+\/pull\/\d+/i;
 const TICKET_RE = /[A-Z][A-Z0-9]+-\d+/;
 const URL_RE = /https?:\/\/[^\s|>]+/;
+const EPHEMERAL_RE = /\bephemeral:\s*(qa-[a-z0-9-]{1,22})/i;
 
 app.event('app_mention', async ({ event, client }) => {
   const text = event.text ?? '';
@@ -20,11 +21,15 @@ app.event('app_mention', async ({ event, client }) => {
   let url = text.match(URL_RE)?.[0]?.replace(/[>|]+$/, '');
   if (url && url === prUrl) url = undefined;
 
+  const ephemeralName = text.match(EPHEMERAL_RE)?.[1];
+  if (ephemeralName) url = `https://${ephemeralName}.bookofthemoment.com`;
+
   const instructions = text
     .replace(/<@[^>]+>/g, '')
     .replace(PR_RE, '')
     .replace(TICKET_RE, '')
     .replace(URL_RE, '')
+    .replace(EPHEMERAL_RE, '')
     .trim();
 
   const thread = event.thread_ts ?? event.ts;
@@ -33,20 +38,19 @@ app.event('app_mention', async ({ event, client }) => {
   // Follow-up in a known thread (no PR link needed)
   const existingSession = event.thread_ts ? sessionStore.get(event.thread_ts) : undefined;
   if (existingSession && !prUrl && !ticket && !url) {
-    await client.chat.postMessage({
-      channel: event.channel,
-      thread_ts: thread,
-      text: ':arrows_counterclockwise: resuming QA session…',
-    });
-    enqueue({
-      instructions,
-      channel: event.channel,
-      thread,
-      requester,
-      client,
-      isResume: true,
-      resumeSessionId: existingSession.sessionId,
-    });
+    const interrupted = interrupt(thread, instructions, client, event.channel, requester);
+    if (!interrupted) {
+      enqueue({
+        instructions,
+        channel: event.channel,
+        thread,
+        requester,
+        client,
+        isResume: true,
+        resumeSessionId: existingSession.sessionId,
+        requiredSlot: existingSession.slot,
+      });
+    }
     return;
   }
 
@@ -62,7 +66,7 @@ app.event('app_mention', async ({ event, client }) => {
   await client.chat.postMessage({
     channel: event.channel,
     thread_ts: thread,
-    text: `:eyes: on it — analyzing${prUrl ? ' the PR' : ''} and drawing up a QA plan…`,
+    text: `:eyes: on it${prUrl ? '' : ' — no PR link, working from hints'}`,
   });
 
   enqueue({ prUrl, ticket, url, instructions, channel: event.channel, thread, requester, client });

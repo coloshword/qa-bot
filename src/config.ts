@@ -30,5 +30,7 @@ export const config = {
   jiraApiToken: process.env.JIRA_API_TOKEN ?? '',
   runsDir,
   playbookPath: process.env.PLAYBOOK_PATH ?? path.resolve('QA_PLAYBOOK.md'),
-  gotchasPath: process.env.QA_GOTCHAS_FILE ?? path.join(runsDir, 'GOTCHAS.md'),
+  gotchasPath: process.env.QA_GOTCHAS_FILE ?? path.resolve('QA_GOTCHAS.md'),
+  runTimeoutMs: Number(process.env.QA_RUN_TIMEOUT_MINS ?? '90') * 60 * 1000,
+  stackSlots: Number(process.env.QA_STACK_SLOTS ?? '2'),
 };

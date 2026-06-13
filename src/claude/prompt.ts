@@ -16,21 +16,27 @@ export function renderPrompt(input: PromptInput): string {
     prUrl ? `Pull request to QA: ${prUrl}` : 'No PR link was provided — work from the hints below.',
     ticket ? `Ticket hint: ${ticket}` : '',
     url ? `Target URL hint: ${url}` : '',
-    notes ? `\nExtra notes from the requester:\n${notes}` : '',
+    notes ? `\nCheck to perform:\n${notes}` : '',
     priorGotchas && priorGotchas.trim()
       ? `\nKnown gotchas from past runs (use these, and append new ones to $QA_GOTCHAS_FILE):\n${priorGotchas.trim()}`
       : '',
     '',
     'Non-negotiables:',
+    '- If test cases are stated above, do exactly those. If not, read the ENTIRE diff + ENTIRE PR body + ENTIRE Jira ticket first, then generate test cases scaled to the change: small PR 2–5, big PR/epic 8–20 (cover every shipped behavior — never compress an epic into 5 cases).',
+    '- More than 4 cases → you are the orchestrator. To run a case you MUST invoke the Task tool with subagent_type "qa-case-executor" (one at a time). You may NOT call any mcp__playwright__* browser tool yourself, and narrating "delegating" while doing the work inline is forbidden — it blows your context on a long epic. Only a pure-SQL case may run inline. Check $QA_INBOX between cases.',
+    '- ALWAYS run the spec-conformance-reviewer subagent after posting the plan (spec clause vs code predicate — temporal qualifiers, cardinalities, exclusions). Its findings are HYPOTHESES: each becomes a test case proven behaviorally with QA evidence — never post a bug claim from code-reading alone.',
+    '- Kick off the stack build in the background first, plan while it builds (read the real code at $QA_XAVIER_CHECKOUT), and post the test plan (numbered list) before executing any test case.',
     '- ALL user-facing updates go through qa-post (`node "$QA_POST_BIN" ...`). The reviewer never sees your raw output.',
-    '- Post the test plan FIRST (concise, numbered, each item one line), @-mention the requester, then proceed without waiting for approval.',
-    '- Execute EVERY test case and post exactly ONE proof message per case (UI screenshot, script/log output, or DB-state table). Caption each with its PASS/FAIL.',
-    '- Finish with a short QA summary (counts + any failures), @-mentioning the requester.',
+    '- Post proof for each test case, then immediately close it out with a status line (✅/❌/🚧 [N/total] + one-line result + running tally) before starting the next case.',
+    '- Proof must match the surface under test: user-visible behavior REQUIRES a browser screenshot of the actual element on the actual page — API/SQL output corroborates but never substitutes. API/DB-only proof is fine only when the deliverable is the API/data itself (migration, endpoint contract, cron effect).',
+    '- A FAIL with evidence is a successful QA run. When a case will not pass: one changed-variable retry, then read the code + stack logs, then verdict and MOVE ON (~10 min cap per case). Never grind on a failing case.',
+    '- A FAIL that cites code (file:line) is NOT valid until you RUN the real mechanism that code drives and capture the misbehavior as an effect (script output, or before/after DB state around the run, or the UI). Code-reading + querying state that already exists = BLOCKED ("suspected bug, couldn\'t exercise mechanism"), never FAIL. Querying existing state shows the precondition, not the bug.',
+    '- Finish with a summary verdict listing every case result, @-mentioning the requester.',
     '',
     'End your final (internal, non-Slack) message with:',
     '## QA RESULT',
     'Status: PASS | FAIL | BLOCKED',
-    '- <one concise line per test case>',
+    '- <one line: what you checked and what you observed>',
   ]
     .filter((l) => l !== '')
     .join('\n');
