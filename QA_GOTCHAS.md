@@ -26,7 +26,7 @@
 - current-features = bomFeatureData[0] from pdp_featured; june-2026 (CMS) = categoryData from allv2(); after PR merge order flip, CMS wins slug collisions
 - series commitment book pdp_id: pdp 81 = The Exquisite Torment of Loving Your Enemy (product_id 81, commitment_book id 2)
 
-## PR-18835 / EN-14656 Post Ship Survey — 2026-06-12
+## PR-18835 / EN-14656 Post Ship Survey — 2026-06-13
 - Post Ship Survey feature is Active in app_features (id=135, status=Active)
 - Survey IDs: 50=ScaleSurvey (style=scale), 51=YesNoSurvey (style=yesNo); message IDs: 69=ScaleSurvey, 70=YesNoSurvey
 - Survey questions sorted by id (ascending): scale has IDs 7743-7747 (1-5), yesNo has 7748=Yes, 7749=No
@@ -34,3 +34,19 @@
 - Test accounts (pw=testpass123): charlotte.calderwood@bookofthemonth.com (id=7793690, scale msg), Ava.meisel@bookofthemonth.com (id=7793673, yesno msg), alexandra.kent@bookofthemonth.com (id=7794164, no msg), dana.allen@bookofthemonth.com (id=5286615, seen msg)
 - getPostShipSurveyData is called server-side on box page; fetches accountMessages then surveys via API
 - Scale survey Submit button id=button-scale-survey-submit; Dismiss link id=link-scale-survey-dismiss
+- Box page URL for botm SNES is /en-US/box NOT /en/box — SUPPORTED_LOCALES=['en-US','en-CA']; /en/box gets rewritten to /en-US/en/box which 404s
+- account_message table (singular) uses column message_id (not msg_id); account_messages plural does not exist in xavier DB
+- /api/account_history/loyaltyStats route is botm-theme-only (guarded by if(core.config.whitelabelTheme==='botm')); returns 404 with allurial theme — core restart with botm theme required if previous run used allurial
+- Core can be running with wrong whitelabel theme after a previous QA slot reuse; check core.log for XAVIER_WHITELABEL_THEME before testing box page; restart with `qa-stack start core` if needed
+- Session switching between accounts: /api/logout does NOT clear the jwt cookie; clearing browser cookies via JS misses httpOnly jwt. Fastest method: POST /api/account/fastLogin?action=login with email+password to get a JWT, then inject it via browser_run_code_unsafe addCookies({ name:'jwt', domain:'localhost', httpOnly:true, ... }). Playwright's fill_form on the login page can appear to work but leaves Ava's session if the jwt cookie wasn't cleared first.
+- dana.allen account_message for message_id 69: active=0, seen_cycle_id=138 — survey correctly NOT shown (API returns no msg_id 69 or 70 for this account in active=1 state)
+- PostShipSurveyCard (snes): Dismiss link only appears AFTER submission (ScaleSurvey.tsx hasSubmitted branch). There is no pre-submit dismiss UI. handleDismiss omits markMessageAsSeen but this is harmless since dismiss is only reachable post-submit when message is already marked seen via handleSubmit onSuccess.
+
+## PR-18835 / EN-14656 Post Ship Survey — 2026-06-12 (run 2)
+- Box page URL is /en-US/box (not /en/box — en/box 404s due to locale routing)
+- Scale survey Dismiss link (id=link-scale-survey-dismiss) only appears AFTER submission — no pre-submit dismiss on SNES
+- YesNo survey Dismiss link id=link-yesno-survey-dismiss; Yes/No link ids: link-yesno-survey-option-Yes, link-yesno-survey-option-No
+- DB reset via qa-stack up clears account_message rows — re-INSERT for scale (msg_id=69) and yesno (msg_id=70) after each reset
+- hasMessage() in AccountMessageDb has no active filter — stale Friend popup rows (active=0) permanently exclude member from survey assignment (bug)
+- Core may restart with wrong whitelabel after slot reuse — check theme before testing, restart core with botm if needed
+- JWT injection (addCookies) is reliable for account switching when /api/logout fails to clear httpOnly cookie
