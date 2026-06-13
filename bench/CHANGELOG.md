@@ -13,3 +13,10 @@ iter-6 @ 9e38367: 51.6 min (UP from 41.8), 8 cases, $14.38 — correctness OK (a
 iter-7 @ next: STRUCTURAL — quick focused plan (~6-8 cases, consolidate trivia); run conformance-reviewer subagent CONCURRENTLY with first happy-case wave (overlap the ~25-min read with execution) instead of folding it into serial planning.
 iter-7 @ c8e0579: 45.1 min, 8 cases, $21.20 — correctness OK (assigned=false, "Friend permanently excluded"). Concurrent conformance DID engage (spawned t=785 with cases) BUT Task is a BARRIER: orchestrator waits for the whole batch, and conformance (~23 min, full-repo read) is the long pole → 1379s gap before next wave. Plateau: 41.8/51.6/45.1.
 iter-8 @ next: BOUND conformance reviewer to diff + touched-files only (target ~5 min vs 23), so it stops being the long pole in the concurrent batch. If this does not break the ~45-min plateau, the floor is structural (planning + barrier waits on a 3-stack budget) and I will stop + report.
+iter-8 @ 952d55f: 73.6 min, 7 cases (2 FAILs — bug caught fresh, assigned=false). Bounded conformance removed the 23-min block but NO single big gap now — 73min spread across slow case-subagent execution. Variance 41-74 swamps single-run signal.
+
+=== LOOP STOPPED after iter-8 (LOOP.md rule: 3+ no-improvement iterations) ===
+WINS THAT STUCK: 52->31 min (tolerant migrations unblocked lanes + buildCore-skip); correctness hardened (frozen spoiler-free gotchas + playbook flow-gated probe technique) -> catches the Friend/BFF bug FRESH with behavioral FAIL every run.
+PLATEAU: ~40-75 min after iter-1; dominated by per-case execution (browser/probe/login x cases / 3 lanes) + planning, plus run-to-run nondeterminism (plan size 7-13, slow-case lottery, rate-limit/time-of-day). Single-run-per-change benchmark too noisy to optimize further via playbook tweaks.
+<20min NOT reached. Structural floor for a fresh 6-8 case epic on a 3-stack RAM budget ~= 30-45 min.
+REAL REMAINING LEVERS (infra, not prompts): more lanes (bigger RAM), per-lane auth (beat shared rate limit), qa-login session-mint (cut per-case login), persistent/warmed browser per lane.

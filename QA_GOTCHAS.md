@@ -78,3 +78,11 @@ post-ship survey Friend exclusion uses hasMessage() (AccountMessageDb.ts:219-231
 - Screenshots taken by subagents go to run root dir (QA_BOTT/runs/<run-id>/) NOT to artifacts/; use full path for qa-post img
 - Survey 50 (scale) question options are named "1"-"5" in DB, not "Very unlikely"/"Very likely"; UI adds hardcoded endpoint labels
 - Lane 2 add-lane completes asynchronously; check status with qa-stack status --slot 2 before spawning subagents
+
+## PR-18835 / EN-14656 Post Ship Survey — 2026-06-13 (run 6)
+- ken.yokokawa (id=5577733) is a Rejoin/Grace Period member — box page redirects to /rejoin unless justShipped; need Member policy (504) to ship
+- lit_mag_subscription_adjustment table missing from local DB (migration 2024_10_23_13_38_35.sql not applied) — manually CREATE TABLE to fix ship API 500 error
+- For a Rejoin account to see post-ship survey: (1) change account_summary.policy_id to 504 (Member), (2) INSERT account_history type=Shipment status=Settled for current cycle_id, (3) INSERT account_history_item with resource_type=Product box_type=Selection, (4) UPDATE account_summary SET cycle_response=<ah_id> cycle_response_type=Shipment, (5) fastLogin via curl to get new JWT with pol=Member, (6) inject JWT via addCookies
+- fastLogin via POST to http://localhost:20082/api/account/fastLogin?action=login returns jwt cookie in Set-Cookie header; must grep with tail -1 to get the non-empty one (first jwt cookie line clears it)
+- box/snes API uses accountSummary.cycleResponseId (maps to account_summary.cycle_response column, not cycle_response_id)
+- SNES login page crashes with "Oops!" when jwt cookie has pol=Rejoin because getAccountRejoinPlan API returns 500; inject fresh Member JWT via Playwright addCookies to bypass
