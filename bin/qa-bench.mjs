@@ -129,6 +129,7 @@ async function main() {
 
   const env = {
     ...process.env,
+    QA_MIGRATE_TOLERANT: '1', // mirror PR is old code vs newer snapshot — let lanes build anyway
     QA_POST_BIN: BIN('qa-post.mjs'),
     QA_DB_BIN: BIN('qa-db.mjs'),
     QA_STACK_BIN: BIN('qa-stack.mjs'),

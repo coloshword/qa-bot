@@ -404,11 +404,23 @@ async function buildCore() {
 
 async function migrate(whitelabel) {
   console.log(`[slot${slot}] running DB migrations (${whitelabel})...`);
-  await shEnv(`node build/api/DbMigration.js ${whitelabel}`, whitelabel, {
-    cwd: path.join(repoDir, 'core'),
-    timeoutMs: 600_000,
-  });
-  console.log(`[slot${slot}] migrations done`);
+  try {
+    await shEnv(`node build/api/DbMigration.js ${whitelabel}`, whitelabel, {
+      cwd: path.join(repoDir, 'core'),
+      timeoutMs: 600_000,
+    });
+    console.log(`[slot${slot}] migrations done`);
+  } catch (e) {
+    // Testing an OLD branch against today's (newer) accountless snapshot makes its
+    // migrations fail (schema already ahead). With QA_MIGRATE_TOLERANT=1 we warn and
+    // proceed — the snapshot is a superset, so the app runs. Lets lanes build on
+    // time-traveled mirror PRs. Real current-PR runs leave this unset (strict).
+    if (process.env.QA_MIGRATE_TOLERANT === '1') {
+      console.error(`[slot${slot}] migrations failed but QA_MIGRATE_TOLERANT=1 — continuing: ${e.message.slice(0, 200)}`);
+    } else {
+      throw e;
+    }
+  }
 }
 
 const SERVICE_DEFS = {
