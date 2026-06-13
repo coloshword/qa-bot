@@ -387,19 +387,24 @@ DB/redis with the branch's code. Prove the result by its EFFECT (resulting UI or
 Some behavior lives in a function that only runs deep inside a flow (e.g. `assignPostShipSurvey`
 fires during the ship flow; eligibility checks run mid-request). You do NOT need to reproduce the
 whole flow — call the function directly with a tiny adhoc script, which is the fastest way to a
-behavioral FAIL:
+behavioral FAIL.
+
+**SPEED: do NOT hand-write the Core/DB wiring from scratch — that debugging loop (wrong import
+paths, constructor args, connection setup) has cost 15+ minutes. Instead, COPY a working entrypoint
+and edit its body.** One command finds a real script that already wires up Core:
+```bash
+ls "$QA_XAVIER_CHECKOUT/core/build/scripts/"*.js | head; \
+grep -l "Core\|core\." "$QA_XAVIER_CHECKOUT/core/build/scripts/"*.js | head -1   # pick one as a template
+```
+`cp` that file to `build/scripts/adhoc/qa_probe.js`, then replace only the part that does work with
+your one call — keep its exact imports, Core construction, and teardown. You inherit a known-good
+harness instead of reverse-engineering one. Then:
 
 ```bash
 mkdir -p "$QA_XAVIER_CHECKOUT/core/build/scripts/adhoc"
-cat > "$QA_XAVIER_CHECKOUT/core/build/scripts/adhoc/qa_probe.js" << 'EOF'
-const { Core } = require('../../api/Core');           // adjust to the real export path
-(async () => {
-  const core = new Core();                            // wire up as the script entrypoints do
-  const res = await core.someModule.theGatedFunction({ accountId: <arranged>, /* testOverride: true */ });
-  console.log(JSON.stringify(res));                    // prints assigned/eligible/reason — the EFFECT
-  process.exit(0);
-})().catch(e => { console.error(e); process.exit(1); });
-EOF
+# qa_probe.js = a COPY of an existing build/scripts entrypoint, with its body swapped for:
+#   const res = await core.<module>.<theGatedFunction>({ accountId: <arranged>, /* testOverride: true */ });
+#   console.log(JSON.stringify(res));   // assigned/eligible/reason — the EFFECT (your proof)
 node "$QA_STACK_BIN" run-script node build/scripts/adhoc/qa_probe.js 2>&1 | tee "$QA_ARTIFACTS_DIR/probe.txt"
 ```
 

@@ -1,0 +1,588 @@
+{"t":8,"tool":"Bash","sum":"gh pr view https://github.com/bookofthemonthclub/Xavier/pull/18835 --json headRefName,title,body,state 2>&1"}
+{"t":14,"tool":"Bash","sum":"node \"$QA_STACK_BIN\" up qa-bot-test-17647 --whitelabel botm 2>&1"}
+{"t":20,"tool":"Bash","sum":"gh pr diff https://github.com/bookofthemonthclub/Xavier/pull/18835 2>&1"}
+{"t":23,"tool":"Bash","sum":"curl -s -u \"$JIRA_EMAIL:$JIRA_API_TOKEN\" \"$JIRA_BASE_URL/rest/api/3/issue/EN-14656?fields=summary,description,parent,issuetype\" 2>&1 | python3 -c \"\nimport json, sys\ndata = json.load(sys.stdin)\nprint('"}
+{"t":28,"tool":"Read","sum":"{\"file_path\":\"/Users/aceroliangli/.claude/projects/-Users-aceroliangli-work-QA-BOTT-runs-92ff1da7-f197-49fa-be1c-cc0421547c39/92ff1da7-f197-49fa-be1c-cc0421547c39/tool-results/b4qzq9u46.txt\"}"}
+{"t":31,"tool":"Bash","sum":"curl -s -u \"$JIRA_EMAIL:$JIRA_API_TOKEN\" \"$JIRA_BASE_URL/rest/api/3/search/jql\" --data-urlencode 'jql=parent=EN-14656' -G --data-urlencode 'fields=summary,description,issuetype' 2>&1 | python3 -c \"\nim"}
+{"t":39,"tool":"Read","sum":"{\"file_path\":\"/Users/aceroliangli/.claude/projects/-Users-aceroliangli-work-QA-BOTT-runs-92ff1da7-f197-49fa-be1c-cc0421547c39/92ff1da7-f197-49fa-be1c-cc0421547c39/tool-results/b4qzq9u46.txt\",\"offset\":"}
+{"t":47,"tool":"Bash","sum":"node \"$QA_STACK_BIN\" status 2>&1"}
+{"t":48,"tool":"Bash","sum":"grep -n \"assignPostShipSurvey\\|postShipSurvey\\|post_ship_survey\\|Friend\\|BFF\\|loyalty\" \"$QA_XAVIER_CHECKOUT/core/src/actions/Ship.ts\" 2>/dev/null | head -60 || find \"$QA_XAVIER_CHECKOUT/core/src\" -nam"}
+{"t":49,"tool":"Bash","sum":"grep -rn \"assignPostShipSurvey\\|postShipSurveyConfig\\|post_ship_survey\" \"$QA_XAVIER_CHECKOUT/core/src/\" 2>/dev/null | grep -v \".js:\" | head -40"}
+{"t":53,"tool":"Read","sum":"{\"file_path\":\"/Users/aceroliangli/work/QA_BOTT/stacks/slot1/Xavier/core/src/api/PostShipSurvey/actions/PostShipSurveyActions.ts\"}"}
+{"t":53,"tool":"Read","sum":"{\"file_path\":\"/Users/aceroliangli/work/QA_BOTT/stacks/slot1/Xavier/core/src/api/PostShipSurvey/utils/PostShipSurveyUtils.ts\"}"}
+{"t":65,"tool":"Bash","sum":"grep -n \"hasMessage\\|FRIEND_TIER\\|BFF_TIER\" \"$QA_XAVIER_CHECKOUT/core/src/api/AccountMessage/AccountMessageDb.ts\" 2>/dev/null | head -30 || grep -rn \"hasMessage\" \"$QA_XAVIER_CHECKOUT/core/src/api/Acco"}
+{"t":65,"tool":"Bash","sum":"grep -rn \"FRIEND_TIER_BOX_CONFIRMATION_POPUP_MESSAGE_ID\\|BFF_TIER_BOX_CONFIRMATION_POPUP_MESSAGE_ID\" \"$QA_XAVIER_CHECKOUT/core/src/\" 2>/dev/null | grep -v \".js:\" | head -20"}
+{"t":69,"tool":"Read","sum":"{\"file_path\":\"/Users/aceroliangli/work/QA_BOTT/stacks/slot1/Xavier/core/src/api/AccountMessage/AccountMessageDb.ts\",\"offset\":219,\"limit\":60}"}
+{"t":71,"tool":"Bash","sum":"grep -n \"FRIEND_TIER\\|BFF_TIER\\|hasMessage\\|getActiveMessage\\|account_message\" \"$QA_XAVIER_CHECKOUT/core/src/api/Box/BoxDb.ts\" 2>/dev/null | grep -E \"(750|760|770|780)\" | head -20"}
+{"t":82,"tool":"Read","sum":"{\"file_path\":\"/Users/aceroliangli/work/QA_BOTT/stacks/slot1/Xavier/core/src/api/Box/BoxDb.ts\",\"offset\":755,\"limit\":50}"}
+{"t":82,"tool":"Bash","sum":"node \"$QA_STACK_BIN\" sql \"DESCRIBE account_message\" 2>&1"}
+{"t":93,"tool":"Read","sum":"{\"file_path\":\"/Users/aceroliangli/work/QA_BOTT/stacks/slot1/Xavier/core/src/api/AccountMessage/AccountMessageDb.ts\",\"offset\":271,\"limit\":50}"}
+{"t":94,"tool":"Bash","sum":"grep -n \"active\\|delete\\|remove\\|seen\" \"$QA_XAVIER_CHECKOUT/core/src/api/AccountMessage/AccountMessageDb.ts\" 2>/dev/null | head -30"}
+{"t":116,"tool":"Bash","sum":"grep -n \"^diff --git\" /Users/aceroliangli/.claude/projects/-Users-aceroliangli-work-QA-BOTT-runs-92ff1da7-f197-49fa-be1c-cc0421547c39/92ff1da7-f197-49fa-be1c-cc0421547c39/tool-results/b4qzq9u46.txt | "}
+{"t":126,"tool":"Read","sum":"{\"file_path\":\"/Users/aceroliangli/.claude/projects/-Users-aceroliangli-work-QA-BOTT-runs-92ff1da7-f197-49fa-be1c-cc0421547c39/92ff1da7-f197-49fa-be1c-cc0421547c39/tool-results/b4qzq9u46.txt\",\"offset\":"}
+{"t":127,"tool":"Read","sum":"{\"file_path\":\"/Users/aceroliangli/.claude/projects/-Users-aceroliangli-work-QA-BOTT-runs-92ff1da7-f197-49fa-be1c-cc0421547c39/92ff1da7-f197-49fa-be1c-cc0421547c39/tool-results/b4qzq9u46.txt\",\"offset\":"}
+{"t":135,"tool":"Bash","sum":"node \"$QA_STACK_BIN\" sql \"SELECT id, current_cycle_id FROM store WHERE id=1\" 2>&1 && node \"$QA_STACK_BIN\" sql \"SELECT * FROM post_ship_survey_config ORDER BY cycle_id DESC LIMIT 5\" 2>&1 && node \"$QA_S"}
+{"t":136,"tool":"Bash","sum":"node \"$QA_STACK_BIN\" sql \"SELECT id, message, active_at_login FROM message WHERE message LIKE '%Post Ship%' OR message LIKE '%PostShip%'\" 2>&1 && node \"$QA_STACK_BIN\" sql \"SELECT af.id, af.feature FRO"}
+{"t":145,"tool":"Bash","sum":"node \"$QA_STACK_BIN\" sql \"SELECT id, feature FROM app_feature WHERE feature LIKE '%Survey%' LIMIT 10\" 2>&1 && node \"$QA_STACK_BIN\" sql \"SELECT id, feature FROM app_feature WHERE id = 135 LIMIT 1\" 2>&1"}
+{"t":149,"tool":"Bash","sum":"node \"$QA_STACK_BIN\" sql \"SELECT * FROM app_feature LIMIT 5\" 2>&1 || node \"$QA_STACK_BIN\" sql \"SHOW TABLES LIKE 'app_feature'\" 2>&1"}
+{"t":154,"tool":"Bash","sum":"node \"$QA_STACK_BIN\" sql \"SHOW TABLES\" 2>&1 | grep -i \"app\\|feature\\|flag\""}
+{"t":158,"tool":"Bash","sum":"node \"$QA_STACK_BIN\" sql \"SELECT id, feature FROM app_features WHERE feature LIKE '%Survey%' OR id = 135 LIMIT 10\" 2>&1"}
+{"t":167,"tool":"Bash","sum":"node \"$QA_STACK_BIN\" sql \"SELECT * FROM post_ship_survey_config WHERE cycle_id = 138\" 2>&1 && node \"$QA_STACK_BIN\" sql \"SELECT COUNT(*) as total, MIN(bucket_start) as min_bs, MAX(bucket_end) as max_be"}
+{"t":168,"tool":"Bash","sum":"grep -n \"isAppFeatureEligible\" \"$QA_XAVIER_CHECKOUT/core/src/api/AppFeature/AppFeatureDb.ts\" 2>/dev/null | head -5"}
+{"t":173,"tool":"Read","sum":"{\"file_path\":\"/Users/aceroliangli/work/QA_BOTT/stacks/slot1/Xavier/core/src/api/AppFeature/AppFeatureDb.ts\",\"offset\":277,\"limit\":40}"}
+{"t":174,"tool":"Bash","sum":"node \"$QA_STACK_BIN\" sql \"SELECT id, feature, eligible_country_codes, start_date, end_date, active FROM app_features WHERE id = 135\" 2>&1"}
+{"t":179,"tool":"Bash","sum":"node \"$QA_STACK_BIN\" sql \"DESCRIBE app_features\" 2>&1 && node \"$QA_STACK_BIN\" sql \"SELECT * FROM app_features WHERE id = 135\" 2>&1"}
+{"t":191,"tool":"Bash","sum":"find \"$QA_XAVIER_CHECKOUT/snes\" -name \"postShipSurvey*\" 2>/dev/null"}
+{"t":191,"tool":"Bash","sum":"node \"$QA_STACK_BIN\" sql \"SELECT account_id, cycle_id FROM account_history WHERE cycle_id = 138 AND type = 'Shipped' LIMIT 20\" 2>&1"}
+{"t":195,"tool":"Read","sum":"{\"file_path\":\"/Users/aceroliangli/work/QA_BOTT/stacks/slot1/Xavier/snes/app/utils/postShipSurvey.ts\"}"}
+{"t":196,"tool":"Bash","sum":"node \"$QA_STACK_BIN\" sql \"SELECT account_id, type, cycle_id FROM account_history WHERE type = 'Shipped' LIMIT 20\" 2>&1"}
+{"t":255,"tool":"Bash","sum":"node \"$QA_STACK_BIN\" sql \"SELECT a.id, a.email, p.policy FROM account a JOIN account_plan ap ON a.id = ap.account_id JOIN policy p ON ap.policy_id = p.id WHERE a.email LIKE '%test%' OR a.email LIKE '%"}
+{"t":255,"tool":"Bash","sum":"node \"$QA_STACK_BIN\" pool 2>&1"}
+{"t":260,"tool":"Bash","sum":"node \"$QA_STACK_BIN\" sql \"SELECT a.id, a.email FROM account a INNER JOIN account_plan ap ON a.id = ap.account_id INNER JOIN policy p ON ap.policy_id = p.id WHERE p.policy = 'Active' LIMIT 10\" 2>&1"}
+{"t":264,"tool":"Bash","sum":"node \"$QA_STACK_BIN\" sql \"SELECT a.id, a.email FROM account a LIMIT 10\" 2>&1"}
+{"t":270,"tool":"Bash","sum":"node \"$QA_STACK_BIN\" sql \"SELECT a.id, a.email, ap.policy_id, p.policy FROM account a JOIN account_plan ap ON a.id = ap.account_id JOIN policy p ON ap.policy_id = p.id WHERE p.policy = 'Active' LIMIT "}
+{"t":275,"tool":"Bash","sum":"node \"$QA_STACK_BIN\" sql \"SHOW TABLES LIKE '%account%'\" 2>&1 && node \"$QA_STACK_BIN\" sql \"SELECT id, email FROM account WHERE email = 'acero.liangli@bookofthemonth.com'\" 2>&1"}
+{"t":279,"tool":"Bash","sum":"node \"$QA_STACK_BIN\" sql \"SELECT as2.account_id, as2.policy_id, p.policy FROM account_summary as2 JOIN policy p ON as2.policy_id = p.id WHERE as2.account_id IN (7269342, 7698010, 5705689) LIMIT 10\" 2>"}
+{"t":286,"tool":"Bash","sum":"node \"$QA_STACK_BIN\" sql \"SELECT account_id, policy_id FROM account_summary LIMIT 5\" 2>&1"}
+{"t":290,"tool":"Bash","sum":"node \"$QA_STACK_BIN\" sql \"DESCRIBE account_summary\" 2>&1"}
+{"t":295,"tool":"Bash","sum":"node \"$QA_STACK_BIN\" sql \"SELECT a.id, a.email, asumm.policy_id, p.policy FROM account a JOIN account_summary asumm ON a.id = asumm.id JOIN policy p ON asumm.policy_id = p.id WHERE p.policy = 'Active'"}
+{"t":300,"tool":"Bash","sum":"node \"$QA_STACK_BIN\" sql \"SELECT id, policy FROM policy LIMIT 10\" 2>&1"}
+{"t":304,"tool":"Bash","sum":"node \"$QA_STACK_BIN\" sql \"SHOW TABLES LIKE 'policy'\" 2>&1 && node \"$QA_STACK_BIN\" sql \"SELECT DISTINCT policy_id FROM account_summary LIMIT 5\" 2>&1"}
+{"t":309,"tool":"Bash","sum":"node \"$QA_STACK_BIN\" sql \"SELECT id, name FROM policy WHERE id IN (100, 101, 102, 107, 110)\" 2>&1"}
+{"t":313,"tool":"Bash","sum":"node \"$QA_STACK_BIN\" sql \"SELECT DISTINCT policy_id FROM account_summary LIMIT 20\" 2>&1"}
+{"t":319,"tool":"Bash","sum":"grep -n \"isStandardMember\\|STANDARD\\|standard\" \"$QA_XAVIER_CHECKOUT/core/src/api/Account/util.ts\" 2>/dev/null | head -20 && cat \"$QA_XAVIER_CHECKOUT/core/src/api/Account/util.ts\" 2>/dev/null | head -6"}
+{"t":349,"tool":"Read","sum":"{\"file_path\":\"/Users/aceroliangli/.claude/projects/-Users-aceroliangli-work-QA-BOTT-runs-92ff1da7-f197-49fa-be1c-cc0421547c39/92ff1da7-f197-49fa-be1c-cc0421547c39/tool-results/b4qzq9u46.txt\",\"offset\":"}
+{"t":363,"tool":"Bash","sum":"node \"$QA_STACK_BIN\" add-lane qa-bot-test-17647 --owner \"$QA_RUN_ID\" --whitelabel botm 2>&1 && node \"$QA_STACK_BIN\" add-lane qa-bot-test-17647 --owner \"$QA_RUN_ID\" --whitelabel botm 2>&1"}
+{"t":406,"tool":"Bash","sum":"node \"$QA_STACK_BIN\" status 2>&1 | tail -20"}
+{"t":411,"tool":"Read","sum":"{\"file_path\":\"/Users/aceroliangli/.claude/projects/-Users-aceroliangli-work-QA-BOTT-runs-92ff1da7-f197-49fa-be1c-cc0421547c39/92ff1da7-f197-49fa-be1c-cc0421547c39/tool-results/btbw6j6gi.txt\",\"offset\":"}
+{"t":418,"tool":"Read","sum":"{\"file_path\":\"/Users/aceroliangli/.claude/projects/-Users-aceroliangli-work-QA-BOTT-runs-92ff1da7-f197-49fa-be1c-cc0421547c39/92ff1da7-f197-49fa-be1c-cc0421547c39/tool-results/btbw6j6gi.txt\",\"offset\":"}
+{"t":426,"tool":"Bash","sum":"node \"$QA_STACK_BIN\" status 2>&1"}
+{"t":430,"tool":"Bash","sum":"node \"$QA_STACK_BIN\" status --slot 2 2>&1 && node \"$QA_STACK_BIN\" status --slot 3 2>&1"}
+{"t":483,"tool":"Bash","sum":"node \"$QA_STACK_BIN\" sql \"SELECT a.id, a.email, asumm.policy_id FROM account a JOIN account_summary asumm ON a.id = asumm.id WHERE a.id IN (7269342, 7698010, 5705689, 1699748, 5321450, 5423833, 667951"}
+{"t":488,"tool":"Bash","sum":"node \"$QA_STACK_BIN\" sql \"SELECT id, name FROM policy WHERE id IN (500, 504, 451)\" 2>&1"}
+{"t":499,"tool":"Bash","sum":"node \"$QA_STACK_BIN\" sql \"SELECT DISTINCT p.id, p.name, p.type FROM policy p WHERE p.type = 'Member' AND p.sub_type NOT IN ('CC Fail', 'Pause') LIMIT 10\" 2>&1"}
+{"t":504,"tool":"Bash","sum":"node \"$QA_STACK_BIN\" sql \"SELECT a.id, a.email, asumm.policy_id FROM account a JOIN account_summary asumm ON a.id = asumm.id JOIN policy p ON asumm.policy_id = p.id WHERE p.type = 'Member' AND (p.sub_"}
+{"t":526,"tool":"Bash","sum":"node \"$QA_STACK_BIN\" sql \"SELECT id, email, LEFT(password, 30) as pw_prefix FROM account WHERE id IN (1145670, 1145708) LIMIT 5\" 2>&1"}
+{"t":531,"tool":"Bash","sum":"node \"$QA_STACK_BIN\" sql \"DESCRIBE account\" 2>&1 | grep -i \"pass\""}
+{"t":537,"tool":"Bash","sum":"grep -n \"password_hash\\|password_salt\\|hash\\|salt\" \"$QA_XAVIER_CHECKOUT/core/src/api/Account/AccountDb.ts\" 2>/dev/null | grep -i \"login\\|verify\\|check\\|compare\" | head -10"}
+{"t":542,"tool":"Bash","sum":"grep -rn \"password_hash\\|password_salt\\|verifyPassword\\|checkPassword\" \"$QA_XAVIER_CHECKOUT/core/src/api/Account/\" 2>/dev/null | head -10"}
+{"t":563,"tool":"Bash","sum":"printf '\\n## PR-18835 / EN-14656 Post Ship Survey — %s\\n' \"$(date +%Y-%m-%d)\" >> \"$QA_GOTCHAS_FILE\"\nprintf -- '- Post Ship Survey: feature flag id=135 name=\"Post Ship Survey\", status=Active in app_fea"}
+{"t":578,"tool":"Bash","sum":"node \"$QA_POST_BIN\" msg --mention \"test plan for PR #18835 (EN-14656 Post Ship Survey):\n\n**Scope**: Full epic — core eligibility assignment, SNES survey card, Yes/No + Scale survey UI, conformance che"}
+{"t":606,"tool":"Bash","sum":"# Set known password for SNES test accounts on all 3 lanes\n# Password: QATest123! \n\n# Lane 1 (slot 1) - set for accounts we'll use\nnode \"$QA_STACK_BIN\" sql \"UPDATE account SET password_hash = SHA2(CON"}
+{"t":612,"tool":"Bash","sum":"# Check if accounts have any BOTM selections in recent cycles for %Title% test\nnode \"$QA_STACK_BIN\" sql \"SELECT ahi.account_id, ah.cycle_id, ahi.product_id, p.title FROM account_history_item ahi JOIN "}
+{"t":619,"tool":"Bash","sum":"node \"$QA_STACK_BIN\" sql \"SELECT ah.account_id, ah.cycle_id, ah.type FROM account_history ah WHERE ah.account_id = 1533933 ORDER BY ah.cycle_id DESC LIMIT 10\" 2>&1"}
+{"t":625,"tool":"Bash","sum":"# Find an account with recent Shipped history for %Title% substitution test\nnode \"$QA_STACK_BIN\" sql \"SELECT ah.account_id, ah.cycle_id, a.email, asumm.policy_id FROM account_history ah JOIN account a"}
+{"t":630,"tool":"Bash","sum":"node \"$QA_STACK_BIN\" sql \"SELECT ah.account_id, ah.cycle_id, a.email FROM account_history ah JOIN account a ON ah.account_id = a.id WHERE ah.type = 'Shipped' ORDER BY ah.cycle_id DESC LIMIT 10\" 2>&1"}
+{"t":635,"tool":"Bash","sum":"node \"$QA_STACK_BIN\" sql \"SELECT type, count(*) FROM account_history GROUP BY type LIMIT 10\" 2>&1"}
+{"t":641,"tool":"Bash","sum":"node \"$QA_STACK_BIN\" sql \"SELECT ah.account_id, ah.cycle_id, a.email, asumm.policy_id FROM account_history ah JOIN account a ON ah.account_id = a.id JOIN account_summary asumm ON a.id = asumm.id JOIN "}
+{"t":648,"tool":"Bash","sum":"node \"$QA_STACK_BIN\" sql \"SELECT id, name, type, sub_type FROM policy WHERE id = 116\" 2>&1 && node \"$QA_STACK_BIN\" sql \"SELECT ahi.account_id, ahi.cycle_id, ahi.product_id, p.title, ahi.box_type FROM "}
+{"t":653,"tool":"Bash","sum":"node \"$QA_STACK_BIN\" sql \"SHOW TABLES LIKE '%history_item%'\" 2>&1"}
+{"t":658,"tool":"Bash","sum":"node \"$QA_STACK_BIN\" sql \"SELECT ahi.account_id, ahi.cycle_id, ahi.product_id, ahi.box_type FROM account_history_item ahi WHERE ahi.account_id = 666817 AND ahi.cycle_id = 138 LIMIT 5\" 2>&1"}
+{"t":663,"tool":"Bash","sum":"node \"$QA_STACK_BIN\" sql \"DESCRIBE account_history_item\" 2>&1 | head -20"}
+{"t":668,"tool":"Bash","sum":"node \"$QA_STACK_BIN\" sql \"SELECT ahi.id, ah.account_id, ahi.resource_type, ahi.resource_id, ahi.box_type FROM account_history_item ahi JOIN account_history ah ON ahi.account_history_id = ah.id WHERE a"}
+{"t":675,"tool":"Bash","sum":"node \"$QA_STACK_BIN\" sql \"SELECT id, title FROM product WHERE id = 2720\" 2>&1 && node \"$QA_STACK_BIN\" sql \"UPDATE account SET password_hash = SHA2(CONCAT('QATest123!', password_salt), 224) WHERE id = "}
+{"t":695,"tool":"Bash","sum":"node \"$QA_STACK_BIN\" sql \"SELECT a.id, a.email, asumm.policy_id, p.type FROM account a JOIN account_summary asumm ON a.id = asumm.id JOIN policy p ON asumm.policy_id = p.id WHERE a.id = 4947838\" 2>&1 "}
+{"t":710,"tool":"Bash","sum":"node \"$QA_STACK_BIN\" sql --slot 3 \"UPDATE account SET password_hash = SHA2(CONCAT('QATest123!', password_salt), 224) WHERE id = 4947838\" 2>&1 && ls \"$QA_XAVIER_CHECKOUT/core/build/scripts/\" 2>/dev/nul"}
+{"t":716,"tool":"Bash","sum":"ls \"$QA_XAVIER_CHECKOUT/core/build/scripts/cron/\" | head -10"}
+{"t":716,"tool":"Bash","sum":"head -20 \"$QA_XAVIER_CHECKOUT/core/build/scripts/cron/\"$(ls \"$QA_XAVIER_CHECKOUT/core/build/scripts/cron/\" | head -1) 2>/dev/null"}
+{"t":744,"tool":"Bash","sum":"# Pre-assign survey messages to SNES test accounts\n# Lane 2 (slot 2): account 666817 gets ScaleSurvey message (msg_id=69) for case 6 & 7\nnode \"$QA_STACK_BIN\" sql --slot 2 \"INSERT IGNORE INTO account_m"}
+{"t":751,"tool":"Bash","sum":"ls \"$QA_XAVIER_CHECKOUT/core/build/api/PostShipSurvey/actions/\" 2>/dev/null && ls \"$QA_XAVIER_CHECKOUT/core/build/api/PostShipSurvey/\" 2>/dev/null"}
+{"t":756,"tool":"Bash","sum":"head -5 \"$QA_XAVIER_CHECKOUT/core/build/api/PostShipSurveyActions.js\" 2>/dev/null || head -5 \"$QA_XAVIER_CHECKOUT/core/build/api/PostShipSurvey/actions/PostShipSurveyActions.js\" 2>/dev/null"}
+{"t":776,"tool":"Agent","sum":"{\"description\":\"Case 1: Core probe - assignPostShipSurvey eligible member\",\"subagent_type\":\"qa-case-executor\",\"prompt\":\"You are executing QA case 1/11 for PR #18835 (EN-14656 Post Ship Survey). Post S"}
+{"t":781,"tool":"Bash","sum":"echo \"QA_POST_BIN: $QA_POST_BIN\" && echo \"QA_ARTIFACTS_DIR: $QA_ARTIFACTS_DIR\" && echo \"QA_STACK_BIN: $QA_STACK_BIN\" && echo \"QA_XAVIER_CHECKOUT: $QA_XAVIER_CHECKOUT\" && echo \"QA_GOTCHAS_FILE: $QA_GOT"}
+{"t":784,"tool":"Bash","sum":"node \"$QA_POST_BIN\" msg \"▶ [1/11] [Core] assignPostShipSurvey eligible standard member → survey message assigned\""}
+{"t":788,"tool":"Bash","sum":"ls /Users/aceroliangli/work/QA_BOTT/stacks/slot1/Xavier/core/build/scripts/adhoc/ 2>/dev/null || echo \"Directory does not exist\""}
+{"t":788,"tool":"Agent","sum":"{\"description\":\"Case 6: SNES survey card visible on /box\",\"subagent_type\":\"qa-case-executor\",\"prompt\":\"You are executing QA case 6/11 for PR #18835 (EN-14656 Post Ship Survey). Post Slack updates your"}
+{"t":789,"tool":"Bash","sum":"find /Users/aceroliangli/work/QA_BOTT/stacks/slot1/Xavier/core -name \"PostShipSurveyActions*\" 2>/dev/null"}
+{"t":792,"tool":"ToolSearch","sum":"{\"query\":\"select:mcp__lane2__browser_navigate,mcp__lane2__browser_take_screenshot,mcp__lane2__browser_snapshot,mcp__lane2__browser_fill_form,mcp__lane2__browser_click,mcp__lane2__browser_wait_for\",\"ma"}
+{"t":793,"tool":"Bash","sum":"ls /Users/aceroliangli/work/QA_BOTT/stacks/slot1/Xavier/core/build/scripts/adhoc/qa_postship_probe.js 2>/dev/null && cat /Users/aceroliangli/work/QA_BOTT/stacks/slot1/Xavier/core/build/scripts/adhoc/q"}
+{"t":794,"tool":"Read","sum":"{\"file_path\":\"/Users/aceroliangli/work/QA_BOTT/stacks/slot1/Xavier/core/src/api/PostShipSurvey/actions/PostShipSurveyActions.ts\",\"limit\":80}"}
+{"t":795,"tool":"Bash","sum":"echo $QA_POST_BIN && echo $QA_STACK_BIN && echo $QA_ARTIFACTS_DIR && echo $QA_STACK_SLOT"}
+{"t":796,"tool":"Bash","sum":"node \"$QA_STACK_BIN\" sql --slot 2 \"SELECT id, message_id, active FROM account_message WHERE account_id=666817 AND message_id=69\""}
+{"t":798,"tool":"Bash","sum":"cat /Users/aceroliangli/work/QA_BOTT/stacks/slot1/Xavier/core/build/scripts/adhoc/qa_postship_probe.js"}
+{"t":799,"tool":"Agent","sum":"{\"description\":\"Case 9: SNES scale survey submit\",\"subagent_type\":\"qa-case-executor\",\"prompt\":\"You are executing QA case 9/11 for PR #18835 (EN-14656 Post Ship Survey). Post Slack updates yourself — t"}
+{"t":800,"tool":"Bash","sum":"node \"$QA_POST_BIN\" msg \"▶ [6/11] [SNES] Survey card renders on /box page when account has active survey message\""}
+{"t":803,"tool":"mcp__lane2__browser_navigate","sum":"{\"url\":\"http://localhost:20130/login\"}"}
+{"t":804,"tool":"ToolSearch","sum":"{\"query\":\"select:mcp__lane3__browser_navigate,mcp__lane3__browser_take_screenshot,mcp__lane3__browser_snapshot,mcp__lane3__browser_click,mcp__lane3__browser_fill_form,mcp__lane3__browser_type,mcp__lan"}
+{"t":804,"tool":"Bash","sum":"echo \"QA_POST_BIN=$QA_POST_BIN\" && echo \"QA_STACK_BIN=$QA_STACK_BIN\" && echo \"QA_ARTIFACTS_DIR=$QA_ARTIFACTS_DIR\" && echo \"QA_STACK_SLOT=$QA_STACK_SLOT\""}
+{"t":805,"tool":"Bash","sum":"node \"$QA_STACK_BIN\" sql \"SELECT id, email FROM account WHERE id=1145670\" --slot 1"}
+{"t":805,"tool":"Bash","sum":"node \"$QA_STACK_BIN\" sql \"SELECT id, type, sub_type FROM policy WHERE id=100\" --slot 1"}
+{"t":809,"tool":"Bash","sum":"node \"$QA_POST_BIN\" msg \"▶ [9/11] Scale survey — select option 1-5 and submit → success state + survey response recorded\""}
+{"t":810,"tool":"Bash","sum":"node \"$QA_STACK_BIN\" sql \"SELECT id, policy_id FROM account_summary WHERE id=1145670\" --slot 1 && node \"$QA_STACK_BIN\" sql \"SELECT status FROM app_features WHERE id=135\" --slot 1 && node \"$QA_STACK_BI"}
+{"t":811,"tool":"Bash","sum":"node \"$QA_STACK_BIN\" sql --slot 3 \"SELECT id, message_id, active FROM account_message WHERE account_id=4947838 AND message_id=69\""}
+{"t":814,"tool":"mcp__lane3__browser_navigate","sum":"{\"url\":\"http://localhost:20230/login\"}"}
+{"t":814,"tool":"mcp__lane2__browser_fill_form","sum":"{\"fields\":[{\"target\":\"input[name='email'], input[type='email'], #email\",\"name\":\"email\",\"type\":\"textbox\",\"value\":\"cris.vergara@bookofthemonth.com\"},{\"target\":\"input[name='password'], input[type='passwo"}
+{"t":817,"tool":"Bash","sum":"head -40 /Users/aceroliangli/work/QA_BOTT/stacks/slot1/Xavier/core/build/api/PostShipSurvey/actions/PostShipSurveyActions.js"}
+{"t":818,"tool":"mcp__lane2__browser_snapshot","sum":"{}"}
+{"t":818,"tool":"Bash","sum":"head -30 /Users/aceroliangli/work/QA_BOTT/stacks/slot1/Xavier/core/build/api/index.js 2>/dev/null || head -30 /Users/aceroliangli/work/QA_BOTT/stacks/slot1/Xavier/core/build/api.js 2>/dev/null || ls /"}
+{"t":820,"tool":"mcp__lane3__browser_fill_form","sum":"{\"fields\":[{\"target\":\"input[name='email'], input[type='email'], #email\",\"name\":\"email\",\"type\":\"textbox\",\"value\":\"Andrewcalogero@bookofthemonth.com\"},{\"target\":\"input[name='password'], input[type='pass"}
+{"t":823,"tool":"mcp__lane3__browser_snapshot","sum":"{}"}
+{"t":823,"tool":"mcp__lane2__browser_fill_form","sum":"{\"fields\":[{\"target\":\"ref=e167\",\"name\":\"email\",\"type\":\"textbox\",\"value\":\"cris.vergara@bookofthemonth.com\"},{\"target\":\"ref=e172\",\"name\":\"password\",\"type\":\"textbox\",\"value\":\"QATest123!\"}]}"}
+{"t":825,"tool":"Bash","sum":"head -30 /Users/aceroliangli/work/QA_BOTT/stacks/slot1/Xavier/core/build/scripts/adhoc/test_post_ship_survey.js"}
+{"t":825,"tool":"Bash","sum":"cat /Users/aceroliangli/work/QA_BOTT/stacks/slot1/Xavier/core/build/scripts/adhoc/qa_probe2.js"}
+{"t":826,"tool":"ToolSearch","sum":"{\"query\":\"select:mcp__lane2__browser_type\",\"max_results\":1}"}
+{"t":827,"tool":"mcp__lane3__browser_type","sum":"{\"target\":\"ref=e167\",\"text\":\"Andrewcalogero@bookofthemonth.com\",\"element\":\"Email address field\"}"}
+{"t":829,"tool":"mcp__lane2__browser_type","sum":"{\"target\":\"#email-defaultlogin\",\"element\":\"Email address input\",\"text\":\"cris.vergara@bookofthemonth.com\"}"}
+{"t":830,"tool":"mcp__lane3__browser_click","sum":"{\"target\":\"[aria-label=\\\"Email address\\\"]\",\"element\":\"Email address input\"}"}
+{"t":830,"tool":"Bash","sum":"cat /Users/aceroliangli/work/QA_BOTT/stacks/slot1/Xavier/core/build/scripts/adhoc/test_post_ship_survey.js"}
+{"t":832,"tool":"mcp__lane2__browser_type","sum":"{\"target\":\"input[type='password']\",\"element\":\"Password input\",\"text\":\"QATest123!\"}"}
+{"t":833,"tool":"mcp__lane3__browser_type","sum":"{\"target\":\"#email-defaultlogin\",\"text\":\"Andrewcalogero@bookofthemonth.com\",\"element\":\"Email address field (defaultlogin)\"}"}
+{"t":835,"tool":"Bash","sum":"ls /Users/aceroliangli/work/QA_BOTT/stacks/slot1/Xavier/core/build/scripts/adhoc/qa_case1_probe.js 2>/dev/null && echo \"exists\" || echo \"does not exist\""}
+{"t":835,"tool":"mcp__lane2__browser_click","sum":"{\"target\":\"button[type='submit'], button:has-text('Log in')\",\"element\":\"Log in button\"}"}
+{"t":836,"tool":"mcp__lane3__browser_type","sum":"{\"target\":\"#password-defaultlogin\",\"text\":\"QATest123!\",\"element\":\"Password field\"}"}
+{"t":838,"tool":"mcp__lane2__browser_click","sum":"{\"target\":\"#account-submit-login\",\"element\":\"Log in submit button\"}"}
+{"t":840,"tool":"mcp__lane3__browser_click","sum":"{\"target\":\"button[data-cy=\\\"login-submit\\\"], button:has-text(\\\"Log in\\\")\",\"element\":\"Log in button\"}"}
+{"t":844,"tool":"Write","sum":"{\"file_path\":\"/Users/aceroliangli/work/QA_BOTT/stacks/slot1/Xavier/core/build/scripts/adhoc/qa_case1_probe.js\",\"content\":\"\\\"use strict\\\";\\n// QA Case 1: assignPostShipSurvey eligible standard member →"}
+{"t":845,"tool":"mcp__lane2__browser_wait_for","sum":"{\"time\":3}"}
+{"t":846,"tool":"mcp__lane3__browser_wait_for","sum":"{\"time\":3}"}
+{"t":849,"tool":"Bash","sum":"node \"$QA_STACK_BIN\" run-script node build/scripts/adhoc/qa_case1_probe.js --slot 1 2>&1"}
+{"t":851,"tool":"mcp__lane2__browser_navigate","sum":"{\"url\":\"http://localhost:20130/en/box\"}"}
+{"t":852,"tool":"mcp__lane3__browser_navigate","sum":"{\"url\":\"http://localhost:20230/en/box\"}"}
+{"t":855,"tool":"mcp__lane2__browser_wait_for","sum":"{\"time\":3}"}
+{"t":856,"tool":"Bash","sum":"find /Users/aceroliangli/work/QA_BOTT/stacks/slot1/Xavier/core/build -name \"Core.js\" | head -5"}
+{"t":857,"tool":"mcp__lane3__browser_snapshot","sum":"{}"}
+{"t":857,"tool":"Bash","sum":"find /Users/aceroliangli/work/QA_BOTT/stacks/slot1/Xavier/core/build -name \"utils\" -type d | head -5"}
+{"t":861,"tool":"mcp__lane2__browser_snapshot","sum":"{}"}
+{"t":861,"tool":"Bash","sum":"ls /Users/aceroliangli/work/QA_BOTT/stacks/slot1/Xavier/core/build/scripts/utils/"}
+{"t":862,"tool":"Bash","sum":"head -50 /Users/aceroliangli/work/QA_BOTT/stacks/slot1/Xavier/core/build/scripts/utils/db.js"}
+{"t":863,"tool":"Bash","sum":"find \"$QA_XAVIER_CHECKOUT\" -type f -name \"*.tsx\" | xargs grep -l \"ScaleSurvey\\|scale_survey\\|PostShipSurvey\\|post_ship_survey\\|account_message\" 2>/dev/null | head -20"}
+{"t":865,"tool":"mcp__lane2__browser_navigate","sum":"{\"url\":\"http://localhost:20130/box\"}"}
+{"t":869,"tool":"Bash","sum":"head -80 /Users/aceroliangli/work/QA_BOTT/stacks/slot1/Xavier/core/build/api/Core.js"}
+{"t":869,"tool":"Bash","sum":"node \"$QA_STACK_BIN\" sql --slot 3 \"SELECT id, message_id, active FROM account_message WHERE account_id=4947838 AND message_id=69\""}
+{"t":870,"tool":"Bash","sum":"cat /Users/aceroliangli/work/QA_BOTT/stacks/slot3/qa-stack-config.json 2>/dev/null || ls /Users/aceroliangli/work/QA_BOTT/stacks/slot3/ 2>/dev/null || echo \"Slot 3 dir not found\""}
+{"t":871,"tool":"mcp__lane2__browser_wait_for","sum":"{\"time\":3}"}
+{"t":872,"tool":"Bash","sum":"grep -n \"connection\" /Users/aceroliangli/work/QA_BOTT/stacks/slot1/Xavier/core/build/api/Core.js | head -20"}
+{"t":873,"tool":"Bash","sum":"cat /Users/aceroliangli/work/QA_BOTT/stacks/slot3/state.json 2>/dev/null"}
+{"t":873,"tool":"Bash","sum":"grep -n \"connection\" /Users/aceroliangli/work/QA_BOTT/stacks/slot1/Xavier/core/build/api/Db.js 2>/dev/null | head -20 || find /Users/aceroliangli/work/QA_BOTT/stacks/slot1/Xavier/core/build/api -name "}
+{"t":877,"tool":"mcp__lane2__browser_snapshot","sum":"{}"}
+{"t":877,"tool":"Bash","sum":"ls /Users/aceroliangli/work/QA_BOTT/stacks/slot3/Xavier/snes/app/ 2>/dev/null | head -20"}
+{"t":880,"tool":"Bash","sum":"ls /Users/aceroliangli/work/QA_BOTT/stacks/slot3/Xavier/snes/app/[lang]/ 2>/dev/null"}
+{"t":883,"tool":"mcp__lane2__browser_take_screenshot","sum":"{\"type\":\"png\",\"filename\":\"case6-survey-card-box-page.png\",\"fullPage\":true}"}
+{"t":885,"tool":"Bash","sum":"ls \"/Users/aceroliangli/work/QA_BOTT/stacks/slot3/Xavier/snes/app/[lang]/\" 2>/dev/null"}
+{"t":888,"tool":"Bash","sum":"ls \"$QA_ARTIFACTS_DIR\"/case6*.png 2>/dev/null || find /Users/aceroliangli/work/QA_BOTT/runs/92ff1da7-f197-49fa-be1c-cc0421547c39 -name \"case6*.png\" 2>/dev/null"}
+{"t":889,"tool":"mcp__lane3__browser_navigate","sum":"{\"url\":\"http://localhost:20230/en/box\"}"}
+{"t":889,"tool":"Write","sum":"{\"file_path\":\"/Users/aceroliangli/work/QA_BOTT/stacks/slot1/Xavier/core/build/scripts/adhoc/qa_case1_probe.js\",\"content\":\"\\\"use strict\\\";\\n// QA Case 1: assignPostShipSurvey eligible standard member →"}
+{"t":893,"tool":"mcp__lane3__browser_take_screenshot","sum":"{\"type\":\"png\",\"filename\":\"case9-box-page-initial.png\",\"fullPage\":true}"}
+{"t":893,"tool":"Bash","sum":"node \"$QA_STACK_BIN\" run-script node build/scripts/adhoc/qa_case1_probe.js --slot 1 2>&1"}
+{"t":897,"tool":"Read","sum":"{\"file_path\":\"/Users/aceroliangli/work/QA_BOTT/runs/92ff1da7-f197-49fa-be1c-cc0421547c39/artifacts/lane3/console-2026-06-13T10-47-11-439Z.log\"}"}
+{"t":897,"tool":"Bash","sum":"cp /Users/aceroliangli/work/QA_BOTT/runs/92ff1da7-f197-49fa-be1c-cc0421547c39/case6-survey-card-box-page.png \"$QA_ARTIFACTS_DIR/case6-survey-card-box-page.png\""}
+{"t":899,"tool":"Bash","sum":"cat /Users/aceroliangli/work/QA_BOTT/stacks/slot1/Xavier/core/build/api/PostShipSurvey/actions/PostShipSurveyActions.js"}
+{"t":902,"tool":"Bash","sum":"node \"$QA_POST_BIN\" img \"$QA_ARTIFACTS_DIR/case6-survey-card-box-page.png\" \"PASS [6]: Survey card visible on /box page — shows 'If BOTM had not featured The Catcher in the Rye...' question with book j"}
+{"t":904,"tool":"Read","sum":"{\"file_path\":\"/Users/aceroliangli/work/QA_BOTT/stacks/slot3/Xavier/snes/app/[lang]/box/page.tsx\"}"}
+{"t":908,"tool":"Bash","sum":"node \"$QA_POST_BIN\" msg \":white_check_mark: [6/11] PASS — survey card renders on /box page: account_message row active for message_id=69, card shows scale survey question with book jacket ('The Catche"}
+{"t":909,"tool":"Bash","sum":"node \"$QA_STACK_BIN\" sql --slot 3 \"SELECT a.id, a.email, a.status, am.name, p.id as policy_id, p.type FROM account a JOIN account_membership am ON a.id = am.account_id JOIN policy p ON am.policy_id = "}
+{"t":912,"tool":"Bash","sum":"node \"$QA_STACK_BIN\" sql --slot 3 \"SELECT a.id, a.email, a.status FROM account a WHERE a.id=4947838\""}
+{"t":914,"tool":"Write","sum":"{\"file_path\":\"/Users/aceroliangli/work/QA_BOTT/stacks/slot1/Xavier/core/build/scripts/adhoc/qa_case1_probe.js\",\"content\":\"\\\"use strict\\\";\\n// QA Case 1: assignPostShipSurvey eligible standard member →"}
+{"t":915,"tool":"Bash","sum":"node \"$QA_STACK_BIN\" sql --slot 3 \"SELECT id, email FROM account WHERE id=4947838\" 2>&1"}
+{"t":919,"tool":"Bash","sum":"node \"$QA_STACK_BIN\" sql --slot 3 \"DESCRIBE account\" 2>&1 | head -30"}
+{"t":919,"tool":"Bash","sum":"node \"$QA_STACK_BIN\" run-script node build/scripts/adhoc/qa_case1_probe.js --slot 1 2>&1 | grep -v \"^\\[2;90m\\|^\\[36m\\|^\\[32m\\|^--- \\|^\\[0m\""}
+{"t":922,"tool":"Bash","sum":"node \"$QA_STACK_BIN\" sql --slot 3 \"SELECT id, account_id, policy_id, type FROM membership WHERE account_id=4947838 ORDER BY id DESC LIMIT 5\" 2>&1"}
+{"t":926,"tool":"Bash","sum":"node \"$QA_STACK_BIN\" sql --slot 3 \"SHOW TABLES LIKE '%member%'\" 2>&1"}
+{"t":926,"tool":"Bash","sum":"grep -n \"postShipSurveyCache\\|policyCache\" /Users/aceroliangli/work/QA_BOTT/stacks/slot1/Xavier/core/build/api/CacheEvent.js | head -20"}
+{"t":929,"tool":"Bash","sum":"node \"$QA_STACK_BIN\" sql --slot 3 \"SELECT id, account_id, status FROM membership WHERE account_id=4947838 LIMIT 5\" 2>&1"}
+{"t":932,"tool":"Bash","sum":"node \"$QA_STACK_BIN\" sql --slot 3 \"DESCRIBE membership\" 2>&1 | head -20"}
+{"t":933,"tool":"Bash","sum":"cat \"$QA_GOTCHAS_FILE\" 2>/dev/null | head -100"}
+{"t":934,"tool":"Bash","sum":"find /Users/aceroliangli/work/QA_BOTT -name \"*.md\" -not -path \"*/node_modules/*\" | head -10 && cat /Users/aceroliangli/work/QA_BOTT/runs/92ff1da7-f197-49fa-be1c-cc0421547c39/gotchas.md 2>/dev/null"}
+{"t":936,"tool":"Bash","sum":"node \"$QA_STACK_BIN\" sql --slot 3 \"SELECT account_id, club_id, status FROM membership WHERE account_id=4947838\" 2>&1"}
+{"t":940,"tool":"Bash","sum":"cat /Users/aceroliangli/work/QA_BOTT/QA_PLAYBOOK.md | grep -A 30 \"CacheEvent\\|cache\\|flow-gated\\|direct-call\" | head -60"}
+{"t":944,"tool":"Bash","sum":"node \"$QA_STACK_BIN\" sql --slot 3 \"SELECT id, account_id, policy_id FROM account_policy WHERE account_id=4947838\" 2>&1"}
+{"t":944,"tool":"Bash","sum":"node \"$QA_STACK_BIN\" sql --slot 3 \"SELECT id, account_id, type, status FROM policy WHERE id=116\" 2>&1"}
+{"t":944,"tool":"Bash","sum":"grep -A 30 \"flow-gated\\|direct-call\\|adhoc\\|CacheEvent\\|cannot be called\" /Users/aceroliangli/work/QA_BOTT/QA_PLAYBOOK.md | head -80"}
+{"t":948,"tool":"Bash","sum":"node \"$QA_STACK_BIN\" sql --slot 3 \"SHOW TABLES LIKE '%policy%'\" 2>&1"}
+{"t":952,"tool":"Bash","sum":"node \"$QA_STACK_BIN\" sql --slot 3 \"SELECT id, type, status FROM policy WHERE id=116\" 2>&1"}
+{"t":954,"tool":"Bash","sum":"grep -rn \"assignPostShipSurvey\" /Users/aceroliangli/work/QA_BOTT/stacks/slot1/Xavier/core/src/ | grep -v \"test\\|spec\\|__\" | head -20"}
+{"t":954,"tool":"Bash","sum":"node \"$QA_STACK_BIN\" sql --slot 3 \"DESCRIBE policy\" 2>&1"}
+{"t":958,"tool":"Bash","sum":"node \"$QA_STACK_BIN\" sql --slot 3 \"SELECT id, name, type FROM policy WHERE id=116\" 2>&1"}
+{"t":961,"tool":"Bash","sum":"head -100 /Users/aceroliangli/work/QA_BOTT/stacks/slot1/Xavier/core/build/api/CacheEvent.js"}
+{"t":962,"tool":"Bash","sum":"node \"$QA_STACK_BIN\" sql --slot 3 \"SELECT * FROM account_policy WHERE account_id=4947838 LIMIT 5\" 2>&1"}
+{"t":966,"tool":"Bash","sum":"node \"$QA_STACK_BIN\" sql --slot 3 \"SHOW TABLES LIKE '%account_pol%'\" 2>&1"}
+{"t":967,"tool":"Bash","sum":"grep -n \"emit\\|CacheEvents\" /Users/aceroliangli/work/QA_BOTT/stacks/slot1/Xavier/core/build/api/CacheEvent.js | tail -20"}
+{"t":967,"tool":"Bash","sum":"head -30 /Users/aceroliangli/work/QA_BOTT/stacks/slot1/Xavier/core/build/api/PostShipSurvey/cache/PostShipSurveyCache.js"}
+{"t":969,"tool":"Bash","sum":"node \"$QA_STACK_BIN\" sql --slot 3 \"SELECT id, account_id, policy_id, status FROM subscription WHERE account_id=4947838 LIMIT 5\" 2>&1"}
+{"t":973,"tool":"Bash","sum":"node \"$QA_STACK_BIN\" sql --slot 3 \"SHOW TABLES LIKE '%subscription%'\" 2>&1 && node \"$QA_STACK_BIN\" sql --slot 3 \"SHOW TABLES LIKE '%enroll%'\" 2>&1"}
+{"t":973,"tool":"Bash","sum":"head -50 /Users/aceroliangli/work/QA_BOTT/stacks/slot1/Xavier/core/build/api/Policy/PolicyCache.js"}
+{"t":977,"tool":"Bash","sum":"node \"$QA_STACK_BIN\" sql --slot 3 \"SELECT id, account_id, policy_id FROM member_group WHERE account_id=4947838 LIMIT 3\" 2>&1 && node \"$QA_STACK_BIN\" sql --slot 3 \"SHOW TABLES LIKE '%club%'\" 2>&1"}
+{"t":981,"tool":"Bash","sum":"node \"$QA_STACK_BIN\" sql --slot 3 \"SHOW TABLES LIKE '%club%'\" 2>&1"}
+{"t":984,"tool":"Bash","sum":"node \"$QA_STACK_BIN\" sql --slot 3 \"DESCRIBE club\" 2>&1 | head -15"}
+{"t":989,"tool":"Bash","sum":"grep -r \"checkIsLead\\|isLead\" \"/Users/aceroliangli/work/QA_BOTT/stacks/slot3/Xavier/snes/app/utils/account\" 2>/dev/null || find \"/Users/aceroliangli/work/QA_BOTT/stacks/slot3/Xavier/snes\" -name \"accou"}
+{"t":993,"tool":"Bash","sum":"grep -n \"checkIsLead\\|isLead\\|policy\\|policyType\" \"/Users/aceroliangli/work/QA_BOTT/stacks/slot3/Xavier/snes/app/utils/account.ts\" | head -30"}
+{"t":993,"tool":"Write","sum":"{\"file_path\":\"/Users/aceroliangli/work/QA_BOTT/stacks/slot1/Xavier/core/build/scripts/adhoc/qa_case1_probe.js\",\"content\":\"\\\"use strict\\\";\\n// QA Case 1: assignPostShipSurvey eligible standard member →"}
+{"t":998,"tool":"Bash","sum":"node \"$QA_STACK_BIN\" run-script node build/scripts/adhoc/qa_case1_probe.js --slot 1 2>&1 | tail -30"}
+{"t":998,"tool":"Bash","sum":"node \"$QA_STACK_BIN\" sql --slot 3 \"SELECT account_id, policy_id FROM account_policy WHERE account_id=4947838 ORDER BY id DESC LIMIT 3\" 2>&1 || node \"$QA_STACK_BIN\" sql --slot 3 \"SHOW TABLES LIKE '%acc"}
+{"t":1003,"tool":"Bash","sum":"node \"$QA_STACK_BIN\" sql --slot 3 \"SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA='xavier' AND TABLE_NAME='account' AND COLUMN_NAME LIKE '%policy%'\" 2>&1"}
+{"t":1004,"tool":"Bash","sum":"node \"$QA_STACK_BIN\" run-script node build/scripts/adhoc/qa_case1_probe.js --slot 1 2>&1 | tee \"$QA_ARTIFACTS_DIR/case1_probe.txt\""}
+{"t":1006,"tool":"Bash","sum":"node \"$QA_STACK_BIN\" sql --slot 3 \"SELECT id, account_id, policy_id FROM policy_set WHERE account_id=4947838 LIMIT 5\" 2>&1"}
+{"t":1010,"tool":"Bash","sum":"node \"$QA_POST_BIN\" file \"$QA_ARTIFACTS_DIR/case1_probe.txt\" \"PASS [1]: assignPostShipSurvey returns {assigned:true}, account_message row created with message_id=70 active=1\""}
+{"t":1010,"tool":"Bash","sum":"node \"$QA_STACK_BIN\" sql --slot 3 \"DESCRIBE policy_set\" 2>&1 | head -10"}
+{"t":1015,"tool":"Bash","sum":"node \"$QA_POST_BIN\" msg \":white_check_mark: [1/11] PASS — assignPostShipSurvey returns {assigned:true}, account_message row created (message_id=70, active=1) · tally: 1 pass, 0 fail, 0 blocked\""}
+{"t":1015,"tool":"Bash","sum":"node \"$QA_STACK_BIN\" sql --slot 3 \"SELECT r.id, r.account_id, r.policy_id, p.type FROM renewal r JOIN policy p ON r.policy_id=p.id WHERE r.account_id=4947838 ORDER BY r.id DESC LIMIT 5\" 2>&1 || node \""}
+{"t":1019,"tool":"Bash","sum":"node \"$QA_STACK_BIN\" sql --slot 3 \"DESCRIBE renewals\" 2>&1 | head -15"}
+{"t":1021,"tool":"Bash","sum":"printf -- '- assignPostShipSurvey in scripts: CacheEvent.postShipSurveyCache and policyCache are undefined until CacheEvents.start() fires. Workaround: manually construct PostShipSurveyCache/PolicyCac"}
+{"t":1026,"tool":"Bash","sum":"grep -rn \"policyType\\|policy_type\" \"/Users/aceroliangli/work/QA_BOTT/stacks/slot3/Xavier/snes/app/utils/server/jwtMemberInfo.ts\" 2>/dev/null | head -20; find \"/Users/aceroliangli/work/QA_BOTT/stacks/s"}
+{"t":1029,"tool":"Read","sum":"{\"file_path\":\"/Users/aceroliangli/work/QA_BOTT/stacks/slot3/Xavier/snes/app/utils/server/jwtMemberInfo.ts\"}"}
+{"t":1037,"tool":"Bash","sum":"node \"$QA_STACK_BIN\" sql --slot 3 \"SELECT ah.id, ah.account_id, ah.policy_id, p.type, p.sub_type FROM account_history ah JOIN policy p ON ah.policy_id=p.id WHERE ah.account_id=4947838 ORDER BY ah.id D"}
+{"t":1041,"tool":"Bash","sum":"node \"$QA_STACK_BIN\" sql --slot 3 \"SHOW TABLES LIKE '%account_hist%'\" 2>&1"}
+{"t":1045,"tool":"Bash","sum":"node \"$QA_STACK_BIN\" sql --slot 3 \"DESCRIBE account_history\" 2>&1 | head -15"}
+{"t":1056,"tool":"Bash","sum":"node \"$QA_STACK_BIN\" sql --slot 3 \"SELECT id, account_id, policy_id, type FROM account_history WHERE account_id=4947838 ORDER BY id DESC LIMIT 5\" 2>&1"}
+{"t":1061,"tool":"Bash","sum":"node \"$QA_STACK_BIN\" sql --slot 3 \"SELECT id, account_id, type FROM account_history WHERE account_id=4947838 ORDER BY id DESC LIMIT 5\" 2>&1"}
+{"t":1066,"tool":"Bash","sum":"curl -s \"http://localhost:20282/api/v1/account/4947838/policy\" -H \"Content-Type: application/json\" 2>&1 | head -100"}
+{"t":1071,"tool":"Bash","sum":"# Try to get a JWT by logging in via the core API\ncurl -s -X POST \"http://localhost:20282/api/v1/auth/login\" \\\n  -H \"Content-Type: application/json\" \\\n  -d '{\"email\":\"Andrewcalogero@bookofthemonth.com"}
+{"t":1075,"tool":"Bash","sum":"curl -s -X POST \"http://localhost:20282/auth/login\" \\\n  -H \"Content-Type: application/json\" \\\n  -d '{\"email\":\"Andrewcalogero@bookofthemonth.com\",\"password\":\"QATest123!\"}' 2>&1 | head -200"}
+{"t":1081,"tool":"ToolSearch","sum":"{\"query\":\"select:mcp__lane3__browser_evaluate\",\"max_results\":1}"}
+{"t":1087,"tool":"mcp__lane3__browser_evaluate","sum":"{\"function\":\"() => {\\n  const cookies = document.cookie.split(';');\\n  const jwtCookie = cookies.find(c => c.trim().startsWith('jwt='));\\n  if (!jwtCookie) return 'no jwt cookie';\\n  const token = jwt"}
+{"t":1096,"tool":"Bash","sum":"node \"$QA_STACK_BIN\" sql --slot 3 \"SELECT id, account_id, policy_id, active, created_at FROM account_current_policy WHERE account_id=4947838 LIMIT 5\" 2>&1"}
+{"t":1096,"tool":"Bash","sum":"node \"$QA_STACK_BIN\" sql --slot 3 \"SHOW TABLES LIKE '%current%'\" 2>&1"}
+{"t":1100,"tool":"Bash","sum":"node \"$QA_STACK_BIN\" sql --slot 3 \"SHOW TABLES\" 2>&1 | grep -i \"member\\|policy\\|account\" | head -30"}
+{"t":1104,"tool":"Bash","sum":"node \"$QA_STACK_BIN\" sql --slot 3 \"SELECT id, account_id, policy_id, status, is_current FROM account_summary WHERE account_id=4947838 LIMIT 5\" 2>&1 || node \"$QA_STACK_BIN\" sql --slot 3 \"DESCRIBE accou"}
+{"t":1109,"tool":"Bash","sum":"node \"$QA_STACK_BIN\" sql --slot 3 \"SELECT id, policy_id, credits FROM account_summary WHERE id=4947838\" 2>&1"}
+{"t":1122,"tool":"Bash","sum":"node \"$QA_STACK_BIN\" logs snes 50 --slot 3 2>&1 | tail -40"}
+{"t":1128,"tool":"Read","sum":"{\"file_path\":\"/Users/aceroliangli/work/QA_BOTT/stacks/slot3/Xavier/snes/app/[lang]/box/components/BoxWrapper.tsx\",\"limit\":80}"}
+{"t":1133,"tool":"Bash","sum":"node \"$QA_STACK_BIN\" logs snes 200 --slot 3 2>&1 | grep -A5 \"404\\|error\\|Error\\|throw\\|exception\" | head -60"}
+{"t":1136,"tool":"Bash","sum":"node \"$QA_STACK_BIN\" logs core 100 --slot 3 2>&1 | tail -50"}
+{"t":1143,"tool":"mcp__lane3__browser_navigate","sum":"{\"url\":\"http://localhost:20230/box\"}"}
+{"t":1153,"tool":"mcp__lane3__browser_take_screenshot","sum":"{\"type\":\"png\",\"filename\":\"case9-box-no-lang.png\",\"fullPage\":true}"}
+{"t":1157,"tool":"mcp__lane3__browser_snapshot","sum":"{\"depth\":4}"}
+{"t":1163,"tool":"Bash","sum":"node \"$QA_STACK_BIN\" logs snes 10 --slot 3 2>&1 | tail -5"}
+{"t":1167,"tool":"mcp__lane3__browser_snapshot","sum":"{\"target\":\"generic[ref=e263]\"}"}
+{"t":1171,"tool":"mcp__lane3__browser_snapshot","sum":"{}"}
+{"t":1178,"tool":"Bash","sum":"find \"/Users/aceroliangli/work/QA_BOTT/stacks/slot3/Xavier/snes\" -name \"postShipSurvey*\" -type f 2>/dev/null"}
+{"t":1179,"tool":"mcp__lane3__browser_evaluate","sum":"{\"function\":\"() => document.body.scrollHeight\"}"}
+{"t":1183,"tool":"Read","sum":"{\"file_path\":\"/Users/aceroliangli/work/QA_BOTT/stacks/slot3/Xavier/snes/app/utils/postShipSurvey.ts\"}"}
+{"t":1191,"tool":"Bash","sum":"node \"$QA_STACK_BIN\" sql --slot 3 \"SELECT id, feature, active FROM app_feature WHERE feature LIKE '%Post Ship%' OR feature LIKE '%Survey%'\" 2>&1"}
+{"t":1195,"tool":"Bash","sum":"node \"$QA_STACK_BIN\" sql --slot 3 \"SHOW TABLES LIKE '%app_feature%'\" 2>&1"}
+{"t":1200,"tool":"Bash","sum":"node \"$QA_STACK_BIN\" sql --slot 3 \"SELECT id, feature, status FROM app_features WHERE feature LIKE '%Post Ship%' OR feature LIKE '%Survey%'\" 2>&1"}
+{"t":1204,"tool":"Bash","sum":"node \"$QA_STACK_BIN\" sql --slot 3 \"SELECT id, feature, status, country_code FROM app_features WHERE id=135\" 2>&1"}
+{"t":1207,"tool":"Bash","sum":"node \"$QA_STACK_BIN\" sql --slot 3 \"DESCRIBE app_features\" 2>&1 | head -15"}
+{"t":1211,"tool":"Bash","sum":"node \"$QA_STACK_BIN\" sql --slot 3 \"SELECT id, feature, status, excluded_policies, population FROM app_features WHERE id=135\" 2>&1"}
+{"t":1217,"tool":"Bash","sum":"node \"$QA_STACK_BIN\" sql --slot 3 \"SELECT id, message_id, active, account_id FROM account_message WHERE account_id=4947838 AND message_id=69\" 2>&1"}
+{"t":1222,"tool":"Bash","sum":"node \"$QA_STACK_BIN\" sql --slot 3 \"SELECT id, name, message FROM message WHERE id=69\" 2>&1"}
+{"t":1226,"tool":"Bash","sum":"node \"$QA_STACK_BIN\" sql --slot 3 \"SHOW TABLES LIKE '%message%'\" 2>&1"}
+{"t":1230,"tool":"Bash","sum":"node \"$QA_STACK_BIN\" sql --slot 3 \"SELECT id, name FROM message WHERE id=69\" 2>&1"}
+{"t":1234,"tool":"Bash","sum":"node \"$QA_STACK_BIN\" sql --slot 3 \"DESCRIBE message\" 2>&1"}
+{"t":1238,"tool":"Bash","sum":"node \"$QA_STACK_BIN\" sql --slot 3 \"SELECT id, message FROM message WHERE id=69\" 2>&1"}
+{"t":1245,"tool":"Bash","sum":"find \"/Users/aceroliangli/work/QA_BOTT/stacks/slot3/Xavier\" -path \"*/serverActions/accountMessage*\" -type f 2>/dev/null"}
+{"t":1250,"tool":"Read","sum":"{\"file_path\":\"/Users/aceroliangli/work/QA_BOTT/stacks/slot3/Xavier/snes/app/serverActions/accountMessage/server.ts\"}"}
+{"t":1258,"tool":"Bash","sum":"# First get a session cookie by logging in\nRESPONSE=$(curl -s -X POST \"http://localhost:20282/api/auth/login\" \\\n  -H \"Content-Type: application/json\" \\\n  -c /tmp/slot3_cookies.txt \\\n  -d '{\"email\":\"An"}
+{"t":1263,"tool":"Bash","sum":"# Try different auth endpoints\ncurl -s \"http://localhost:20282/api/\" 2>&1 | head -10\ncurl -s \"http://localhost:20282/\" 2>&1 | head -10"}
+{"t":1268,"tool":"Bash","sum":"grep -r \"router\\.\\(post\\|get\\)\\|app\\.\\(post\\|get\\)\" \"/Users/aceroliangli/work/QA_BOTT/stacks/slot3/Xavier/core/src/routes\" 2>/dev/null | grep -i \"auth\\|login\\|session\" | head -20"}
+{"t":1272,"tool":"Bash","sum":"find \"/Users/aceroliangli/work/QA_BOTT/stacks/slot3/Xavier/core\" -name \"*.ts\" -path \"*/routes/*\" 2>/dev/null | head -15"}
+{"t":1280,"tool":"Read","sum":"{\"file_path\":\"/Users/aceroliangli/work/QA_BOTT/stacks/slot3/Xavier/snes/app/[lang]/box/components/BoxWrapper.tsx\",\"limit\":200,\"offset\":80}"}
+{"t":1290,"tool":"Bash","sum":"node \"$QA_STACK_BIN\" sql --slot 3 \"SELECT id, account_id, cycle_id, type, status FROM account_history WHERE account_id=4947838 AND type='Shipment' ORDER BY id DESC LIMIT 3\" 2>&1"}
+{"t":1295,"tool":"Bash","sum":"node \"$QA_STACK_BIN\" sql --slot 3 \"SELECT id, account_id, cycle_id, type, status FROM account_history WHERE account_id=4947838 ORDER BY id DESC LIMIT 10\" 2>&1"}
+{"t":1300,"tool":"Bash","sum":"node \"$QA_STACK_BIN\" sql --slot 3 \"SELECT cycle_id, id FROM cycle WHERE id=138 OR id=139\" 2>&1 || node \"$QA_STACK_BIN\" sql --slot 3 \"SELECT id, start_date, end_date FROM cycle WHERE id=138 OR id=139\" "}
+{"t":1305,"tool":"Bash","sum":"node \"$QA_STACK_BIN\" sql --slot 3 \"SELECT id, start_date FROM cycle ORDER BY id DESC LIMIT 5\" 2>&1"}
+{"t":1309,"tool":"Bash","sum":"node \"$QA_STACK_BIN\" sql --slot 3 \"SELECT id, start_date FROM cycle WHERE id=138 OR id=139\" 2>&1"}
+{"t":1316,"tool":"Bash","sum":"node \"$QA_STACK_BIN\" sql --slot 3 \"SELECT id, account_id, cycle_id, type, status FROM account_history WHERE account_id=4947838 AND cycle_id=138 ORDER BY id DESC\" 2>&1"}
+{"t":1324,"tool":"Bash","sum":"find \"/Users/aceroliangli/work/QA_BOTT/stacks/slot3/Xavier/core/src\" -name \"*.ts\" | xargs grep -l \"boxMessage\\|box_message\" 2>/dev/null | head -10"}
+{"t":1329,"tool":"Bash","sum":"grep -n \"boxMessage\\|Shipment\\|type\" \"/Users/aceroliangli/work/QA_BOTT/stacks/slot3/Xavier/core/src/api/Box/util.ts\" | head -40"}
+{"t":1333,"tool":"Read","sum":"{\"file_path\":\"/Users/aceroliangli/work/QA_BOTT/stacks/slot3/Xavier/core/src/api/Box/util.ts\",\"limit\":120,\"offset\":600}"}
+{"t":1340,"tool":"Bash","sum":"node \"$QA_STACK_BIN\" sql --slot 3 \"SELECT id, cycle_response, cycle_response_type, cycle_response_id FROM account_summary WHERE id=4947838\" 2>&1"}
+{"t":1348,"tool":"Bash","sum":"node \"$QA_STACK_BIN\" sql --slot 3 \"SELECT id, type, status, cycle_id FROM account_history WHERE account_id=4947838 AND type='Shipment' AND status='Complete' ORDER BY id DESC LIMIT 3\" 2>&1"}
+{"t":1358,"tool":"Bash","sum":"node \"$QA_STACK_BIN\" sql --slot 3 \"UPDATE account_summary SET cycle_response_id=89322973, cycle_response_type='Shipment', cycle_response=89322973 WHERE id=4947838\" 2>&1"}
+{"t":1362,"tool":"Bash","sum":"node \"$QA_STACK_BIN\" sql --slot 3 \"SELECT id, cycle_response, cycle_response_type, cycle_response_id FROM account_summary WHERE id=4947838\" 2>&1"}
+{"t":1367,"tool":"mcp__lane3__browser_navigate","sum":"{\"url\":\"http://localhost:20230/box\"}"}
+{"t":1373,"tool":"mcp__lane3__browser_snapshot","sum":"{\"depth\":5}"}
+{"t":1379,"tool":"Read","sum":"{\"file_path\":\"/Users/aceroliangli/work/QA_BOTT/runs/92ff1da7-f197-49fa-be1c-cc0421547c39/artifacts/lane3/console-2026-06-13T10-55-09-237Z.log\"}"}
+{"t":1382,"tool":"Read","sum":"{\"file_path\":\"/Users/aceroliangli/work/QA_BOTT/runs/92ff1da7-f197-49fa-be1c-cc0421547c39/artifacts/lane3/console-2026-06-13T10-55-09-187Z.log\"}"}
+{"t":1391,"tool":"Bash","sum":"node \"$QA_STACK_BIN\" sql --slot 3 \"UPDATE account_summary SET cycle_response_id=NULL, cycle_response_type=NULL, cycle_response=NULL WHERE id=4947838\" 2>&1"}
+{"t":1400,"tool":"Bash","sum":"grep -n \"getStatus\\|boxActions\" \"/Users/aceroliangli/work/QA_BOTT/stacks/slot3/Xavier/core/src/api/Box/util.ts\" | head -20"}
+{"t":1404,"tool":"Bash","sum":"find \"/Users/aceroliangli/work/QA_BOTT/stacks/slot3/Xavier/core/src\" -name \"BoxActions*\" -o -name \"boxActions*\" 2>/dev/null | head -5"}
+{"t":1409,"tool":"Bash","sum":"grep -n \"getStatus\\|orderDetail\\|status\" \"/Users/aceroliangli/work/QA_BOTT/stacks/slot3/Xavier/core/src/api/Box/BoxActions.ts\" | head -30"}
+{"t":1412,"tool":"Read","sum":"{\"file_path\":\"/Users/aceroliangli/work/QA_BOTT/stacks/slot3/Xavier/core/src/api/Box/BoxActions.ts\",\"limit\":80,\"offset\":62}"}
+{"t":1417,"tool":"Bash","sum":"grep -rn \"getCycleResponseByCycle\" \"/Users/aceroliangli/work/QA_BOTT/stacks/slot3/Xavier/core/src\" 2>/dev/null | head -10"}
+{"t":1421,"tool":"Read","sum":"{\"file_path\":\"/Users/aceroliangli/work/QA_BOTT/stacks/slot3/Xavier/core/src/api/AccountHistory/AccountHistoryDb.ts\",\"limit\":30,\"offset\":1881}"}
+{"t":1428,"tool":"Bash","sum":"node \"$QA_STACK_BIN\" sql --slot 3 \"SELECT id, type, status, cycle_id FROM account_history WHERE account_id=4947838 AND type IN ('Skip','Shipment') AND status <> 'Cancelled' ORDER BY id DESC LIMIT 5\" 2"}
+{"t":1438,"tool":"Bash","sum":"node \"$QA_STACK_BIN\" sql --slot 3 \"DESCRIBE account_history\" 2>&1"}
+{"t":1453,"tool":"Bash","sum":"grep -n \"getBoxDetail\" \"/Users/aceroliangli/work/QA_BOTT/stacks/slot3/Xavier/core/src/api/AccountHistory/AccountHistoryDb.ts\" | head -5"}
+{"t":1457,"tool":"Bash","sum":"grep -rn \"getBoxDetail\" \"/Users/aceroliangli/work/QA_BOTT/stacks/slot3/Xavier/core/src\" 2>/dev/null | head -10"}
+{"t":1461,"tool":"Read","sum":"{\"file_path\":\"/Users/aceroliangli/work/QA_BOTT/stacks/slot3/Xavier/core/src/api/AccountHistory/AccountHistoryActions.ts\",\"limit\":80,\"offset\":57}"}
+{"t":1470,"tool":"Bash","sum":"node \"$QA_STACK_BIN\" sql --slot 3 \"SELECT am.account_id, am.active FROM account_message am WHERE am.message_id=69 AND am.active=1 LIMIT 10\" 2>&1"}
+{"t":1475,"tool":"Bash","sum":"node \"$QA_STACK_BIN\" sql --slot 3 \"SELECT id, cycle_response_type, cycle_response_id FROM account_summary WHERE id IN (5577733, 1099848, 7508378, 3291940)\" 2>&1"}
+{"t":1481,"tool":"Bash","sum":"node \"$QA_STACK_BIN\" sql --slot 3 \"SELECT ah.id, ah.type, ah.status, ah.cycle_id FROM account_history ah WHERE ah.account_id=3291940 AND ah.type='Shipment' AND ah.status <> 'Cancelled' ORDER BY ah.id "}
+{"t":1494,"tool":"Bash","sum":"node \"$QA_STACK_BIN\" sql --slot 3 \"SELECT id, cycle_response, cycle_response_type, cycle_response_id, policy_id FROM account_summary WHERE id=3291940\" 2>&1"}
+{"t":1499,"tool":"Bash","sum":"node \"$QA_STACK_BIN\" sql --slot 3 \"SELECT id, type FROM policy WHERE id=504\" 2>&1"}
+{"t":1507,"tool":"Bash","sum":"node \"$QA_STACK_BIN\" sql --slot 3 \"SELECT id, email FROM account WHERE id=3291940\" 2>&1"}
+{"t":1514,"tool":"Bash","sum":"node \"$QA_STACK_BIN\" sql --slot 3 \"SELECT id, type, status, cycle_id, fulfillment_id FROM account_history WHERE id=64262749\" 2>&1"}
+{"t":1519,"tool":"Bash","sum":"node \"$QA_STACK_BIN\" sql --slot 3 \"SELECT id, type, status, cycle_id, fulfillment_id FROM account_history WHERE id=38642309\" 2>&1"}
+{"t":1530,"tool":"Bash","sum":"grep -n \"getCycleShipment\" \"/Users/aceroliangli/work/QA_BOTT/stacks/slot3/Xavier/core/src/api/AccountHistory/AccountHistoryDb.ts\" | head -5"}
+{"t":1535,"tool":"Read","sum":"{\"file_path\":\"/Users/aceroliangli/work/QA_BOTT/stacks/slot3/Xavier/core/src/api/AccountHistory/AccountHistoryDb.ts\",\"limit\":60,\"offset\":3218}"}
+{"t":1540,"tool":"Read","sum":"{\"file_path\":\"/Users/aceroliangli/work/QA_BOTT/stacks/slot3/Xavier/core/src/api/AccountHistory/AccountHistoryDb.ts\",\"limit\":60,\"offset\":3278}"}
+{"t":1547,"tool":"Bash","sum":"node \"$QA_STACK_BIN\" sql --slot 3 \"SELECT id, account_history_id, resource_type, box_type FROM account_history_item WHERE account_history_id=89322973 LIMIT 10\" 2>&1"}
+{"t":1553,"tool":"Bash","sum":"node \"$QA_STACK_BIN\" sql --slot 3 \"SELECT id, resource_type, deleted_at FROM account_history_item WHERE account_history_id=89322973\" 2>&1"}
+{"t":1560,"tool":"Bash","sum":"node \"$QA_STACK_BIN\" sql --slot 3 \"SELECT id, fulfillment_id FROM account_history WHERE id=89322973\" 2>&1"}
+{"t":1565,"tool":"Bash","sum":"node \"$QA_STACK_BIN\" sql --slot 3 \"DESCRIBE fulfillment\" 2>&1 | head -15 && node \"$QA_STACK_BIN\" sql --slot 3 \"SELECT id, tracking_number, manifested_at FROM fulfillment WHERE id=27599951\" 2>&1"}
+{"t":1570,"tool":"Bash","sum":"node \"$QA_STACK_BIN\" sql --slot 3 \"SELECT id, tracking_number, manifested_at FROM fulfillment WHERE id=27599951\" 2>&1"}
+{"t":1577,"tool":"Bash","sum":"grep -n \"getFulfillment\" \"/Users/aceroliangli/work/QA_BOTT/stacks/slot3/Xavier/core/src/api/AccountHistory/AccountHistoryDb.ts\" | head -5"}
+{"t":1582,"tool":"Read","sum":"{\"file_path\":\"/Users/aceroliangli/work/QA_BOTT/stacks/slot3/Xavier/core/src/api/AccountHistory/AccountHistoryDb.ts\",\"limit\":30,\"offset\":278}"}
+{"t":1588,"tool":"Bash","sum":"grep -n \"fromShipment\" \"/Users/aceroliangli/work/QA_BOTT/stacks/slot3/Xavier/core/src/api/Box/BoxActions.ts\" | head -5"}
+{"t":1592,"tool":"Bash","sum":"find \"/Users/aceroliangli/work/QA_BOTT/stacks/slot3/Xavier/core/src\" -name \"BoxStatus*\" -type f 2>/dev/null"}
+{"t":1597,"tool":"Bash","sum":"find \"/Users/aceroliangli/work/QA_BOTT/stacks/slot3/Xavier/core/src\" -name \"BoxStatus.ts\" -o -name \"boxStatus.ts\" 2>/dev/null"}
+{"t":1602,"tool":"Bash","sum":"grep -rn \"class BoxStatus\\|fromShipment\" \"/Users/aceroliangli/work/QA_BOTT/stacks/slot3/Xavier/core/src\" 2>/dev/null | head -10"}
+{"t":1608,"tool":"Read","sum":"{\"file_path\":\"/Users/aceroliangli/work/QA_BOTT/stacks/slot3/Xavier/core/src/shared/BoxStatus/index.ts\",\"limit\":100,\"offset\":156}"}
+{"t":1624,"tool":"Bash","sum":"node \"$QA_STACK_BIN\" sql --slot 3 \"SELECT password_hash, password_salt FROM account WHERE id=3291940\" 2>&1"}
+{"t":1629,"tool":"Bash","sum":"# Copy password from account 4947838 (which we know works: QATest123!)\nnode \"$QA_STACK_BIN\" sql --slot 3 \"SELECT password_hash, password_salt FROM account WHERE id=4947838\" 2>&1"}
+{"t":1642,"tool":"Bash","sum":"node \"$QA_STACK_BIN\" sql --slot 3 \"UPDATE account_history SET status='Settled' WHERE id=89322973\" 2>&1 && node \"$QA_STACK_BIN\" sql --slot 3 \"UPDATE account_summary SET cycle_response=89322973, cycle_r"}
+{"t":1647,"tool":"mcp__lane3__browser_navigate","sum":"{\"url\":\"http://localhost:20230/box\"}"}
+{"t":1655,"tool":"Read","sum":"{\"file_path\":\"/Users/aceroliangli/work/QA_BOTT/runs/92ff1da7-f197-49fa-be1c-cc0421547c39/artifacts/lane3/console-2026-06-13T10-59-49-618Z.log\"}"}
+{"t":1662,"tool":"mcp__lane3__browser_take_screenshot","sum":"{\"type\":\"png\",\"filename\":\"case9-scale-survey-before.png\",\"fullPage\":true}"}
+{"t":1666,"tool":"mcp__lane3__browser_snapshot","sum":"{\"depth\":6}"}
+{"t":1674,"tool":"Read","sum":"{\"file_path\":\"/Users/aceroliangli/work/QA_BOTT/runs/92ff1da7-f197-49fa-be1c-cc0421547c39/artifacts/lane3/case9-scale-survey-before.png\"}"}
+{"t":1681,"tool":"Bash","sum":"ls \"$QA_ARTIFACTS_DIR/lane3/\" | grep \"case9\""}
+{"t":1687,"tool":"Bash","sum":"ls \"$QA_ARTIFACTS_DIR/\" | head -20"}
+{"t":1695,"tool":"Bash","sum":"ls \"$QA_ARTIFACTS_DIR/lane3/\" | tail -20"}
+{"t":1701,"tool":"mcp__lane3__browser_take_screenshot","sum":"{\"type\":\"png\",\"filename\":\"case9-scale-survey-before-submit.png\"}"}
+{"t":1706,"tool":"Bash","sum":"ls -la \"$QA_ARTIFACTS_DIR/lane3/\" | grep \"case9\""}
+{"t":1710,"tool":"Bash","sum":"ls -la /Users/aceroliangli/work/QA_BOTT/runs/92ff1da7-f197-49fa-be1c-cc0421547c39/ | head -20"}
+{"t":1717,"tool":"Read","sum":"{\"file_path\":\"/Users/aceroliangli/work/QA_BOTT/runs/92ff1da7-f197-49fa-be1c-cc0421547c39/case9-scale-survey-before-submit.png\"}"}
+{"t":1724,"tool":"mcp__lane3__browser_evaluate","sum":"{\"function\":\"() => window.scrollTo(0, 700)\"}"}
+{"t":1727,"tool":"mcp__lane3__browser_take_screenshot","sum":"{\"type\":\"png\",\"filename\":\"case9-scale-survey-card-full.png\"}"}
+{"t":1730,"tool":"Read","sum":"{\"file_path\":\"/Users/aceroliangli/work/QA_BOTT/runs/92ff1da7-f197-49fa-be1c-cc0421547c39/case9-scale-survey-card-full.png\"}"}
+{"t":1736,"tool":"Bash","sum":"node \"$QA_POST_BIN\" img \"/Users/aceroliangli/work/QA_BOTT/runs/92ff1da7-f197-49fa-be1c-cc0421547c39/case9-scale-survey-card-full.png\" \"PASS [9]: Scale survey card showing 1-5 selector options before s"}
+{"t":1744,"tool":"mcp__lane3__browser_snapshot","sum":"{}"}
+{"t":1749,"tool":"mcp__lane3__browser_click","sum":"{\"target\":\"e457\",\"element\":\"Scale option 3\"}"}
+{"t":1754,"tool":"mcp__lane3__browser_take_screenshot","sum":"{\"type\":\"png\",\"filename\":\"case9-option3-selected.png\"}"}
+{"t":1758,"tool":"Read","sum":"{\"file_path\":\"/Users/aceroliangli/work/QA_BOTT/runs/92ff1da7-f197-49fa-be1c-cc0421547c39/case9-option3-selected.png\"}"}
+{"t":1762,"tool":"mcp__lane3__browser_click","sum":"{\"target\":\"e468\",\"element\":\"Submit button\"}"}
+{"t":1766,"tool":"mcp__lane3__browser_wait_for","sum":"{\"time\":2}"}
+{"t":1772,"tool":"mcp__lane3__browser_take_screenshot","sum":"{\"type\":\"png\",\"filename\":\"case9-after-submit.png\"}"}
+{"t":1775,"tool":"Read","sum":"{\"file_path\":\"/Users/aceroliangli/work/QA_BOTT/runs/92ff1da7-f197-49fa-be1c-cc0421547c39/case9-after-submit.png\"}"}
+{"t":1784,"tool":"Bash","sum":"node \"$QA_POST_BIN\" img \"/Users/aceroliangli/work/QA_BOTT/runs/92ff1da7-f197-49fa-be1c-cc0421547c39/case9-after-submit.png\" \"PASS [9]: 'Thanks for your response!' shown after submitting scale option 3"}
+{"t":1786,"tool":"Bash","sum":"node \"$QA_STACK_BIN\" sql --slot 3 \"SELECT id, survey_id, response, account_id FROM survey_response WHERE account_id=4947838 ORDER BY id DESC LIMIT 3\" 2>&1"}
+{"t":1791,"tool":"Bash","sum":"node \"$QA_STACK_BIN\" sql --slot 3 \"SELECT id, message_id, active FROM account_message WHERE account_id=4947838 AND message_id=69\" 2>&1"}
+{"t":1796,"tool":"Read","sum":"{\"file_path\":\"/Users/aceroliangli/work/QA_BOTT/runs/92ff1da7-f197-49fa-be1c-cc0421547c39/artifacts/lane3/console-2026-06-13T10-59-49-618Z.log\",\"offset\":21}"}
+{"t":1804,"tool":"Bash","sum":"node \"$QA_POST_BIN\" msg \":white_check_mark: [9/11] PASS — scale survey (option 3) submitted: card showed 'Thanks for your response!', survey_response row created (id=11357254, survey_id=50, response=7"}
+{"t":1808,"tool":"Bash","sum":"cat \"$QA_GOTCHAS_FILE\" 2>/dev/null | head -20"}
+{"t":1818,"tool":"Bash","sum":"cat >> \"$QA_GOTCHAS_FILE\" << 'EOF'\n- SNES box page is at /box (NOT /en/box — that returns 404 on test stacks)\n- Post Ship ScaleSurvey card only renders inside getPostShipmentContent() — requires accou"}
+{"t":1875,"tool":"Bash","sum":"ls -A \"$QA_INBOX\" 2>/dev/null && echo \"inbox_checked\""}
+{"t":1887,"tool":"Bash","sum":"# Set up round 2 arrangements:\n\n# Lane 3: re-activate account 4947838's survey message for case 10 (dismiss)\nnode \"$QA_STACK_BIN\" sql --slot 3 \"UPDATE account_message SET active=1, seen_at=NULL, seen_"}
+{"t":1912,"tool":"Agent","sum":"{\"description\":\"Case 2: Core probe - FF inactive no assignment\",\"subagent_type\":\"qa-case-executor\",\"prompt\":\"You are executing QA case 2/11 for PR #18835 (EN-14656 Post Ship Survey). Post Slack update"}
+{"t":1918,"tool":"Bash","sum":"echo \"QA_POST_BIN=$QA_POST_BIN\" && echo \"QA_STACK_BIN=$QA_STACK_BIN\" && echo \"QA_ARTIFACTS_DIR=$QA_ARTIFACTS_DIR\" && echo \"QA_XAVIER_CHECKOUT=$QA_XAVIER_CHECKOUT\" && echo \"QA_STACK_SLOT=$QA_STACK_SLOT"}
+{"t":1920,"tool":"Agent","sum":"{\"description\":\"Case 3: Core probe - Friend this cycle excluded\",\"subagent_type\":\"qa-case-executor\",\"prompt\":\"You are executing QA case 3/11 for PR #18835 (EN-14656 Post Ship Survey). Post Slack updat"}
+{"t":1922,"tool":"Bash","sum":"ls /Users/aceroliangli/work/QA_BOTT/stacks/slot1/Xavier/core/build/scripts/adhoc/ 2>/dev/null | head -20"}
+{"t":1924,"tool":"Bash","sum":"ls /Users/aceroliangli/work/QA_BOTT/stacks/slot1/Xavier/core/build/scripts/adhoc/ | grep -i qa"}
+{"t":1925,"tool":"Bash","sum":"echo \"QA_POST_BIN: $QA_POST_BIN\" && echo \"QA_STACK_BIN: $QA_STACK_BIN\" && echo \"QA_ARTIFACTS_DIR: $QA_ARTIFACTS_DIR\" && echo \"QA_XAVIER_CHECKOUT: $QA_XAVIER_CHECKOUT\" && echo \"QA_STACK_SLOT: $QA_STACK"}
+{"t":1928,"tool":"Bash","sum":"node \"$QA_POST_BIN\" msg \"▶ [3/11] Member becoming Friend THIS cycle → excluded from post-ship survey\""}
+{"t":1929,"tool":"Read","sum":"{\"file_path\":\"/Users/aceroliangli/work/QA_BOTT/stacks/slot1/Xavier/core/build/scripts/adhoc/qa_case1_probe.js\"}"}
+{"t":1933,"tool":"Bash","sum":"node \"$QA_STACK_BIN\" sql \"SELECT message_id, active FROM account_message WHERE account_id=1145708 AND message_id=60\" --slot 1"}
+{"t":1933,"tool":"Bash","sum":"ls \"$QA_XAVIER_CHECKOUT/core/build/scripts/adhoc/\""}
+{"t":1933,"tool":"Bash","sum":"node \"$QA_POST_BIN\" msg \"▶ [2/11] Feature flag (id=135) inactive → assignPostShipSurvey returns 'Feature Flag Inactive'\""}
+{"t":1935,"tool":"Agent","sum":"{\"description\":\"Case 4: Conformance - Friend prior cycle perpetually excluded\",\"subagent_type\":\"qa-case-executor\",\"prompt\":\"You are executing QA case 4/11 for PR #18835 (EN-14656 Post Ship Survey). Th"}
+{"t":1937,"tool":"Bash","sum":"node \"$QA_STACK_BIN\" sql \"DELETE FROM account_message WHERE account_id=1379107 AND message_id IN (69,70)\" --slot 1"}
+{"t":1937,"tool":"Read","sum":"{\"file_path\":\"/Users/aceroliangli/work/QA_BOTT/stacks/slot1/Xavier/core/build/scripts/adhoc/qa_case1_probe.js\"}"}
+{"t":1938,"tool":"Bash","sum":"ls \"$QA_XAVIER_CHECKOUT/core/src/scripts/adhoc/\" | grep -i qa_case"}
+{"t":1940,"tool":"Bash","sum":"echo $QA_POST_BIN && echo $QA_STACK_BIN && echo $QA_ARTIFACTS_DIR && echo $QA_XAVIER_CHECKOUT && echo $QA_STACK_SLOT && echo $QA_GOTCHAS_FILE"}
+{"t":1942,"tool":"Bash","sum":"ls \"$QA_XAVIER_CHECKOUT/core/src/scripts/adhoc/\" | grep qa"}
+{"t":1943,"tool":"Bash","sum":"node \"$QA_STACK_BIN\" sql \"UPDATE app_features SET status='Inactive' WHERE id=135\" --slot 1"}
+{"t":1943,"tool":"Bash","sum":"node /Users/aceroliangli/work/QA_BOTT/bin/qa-post.mjs msg \"▶ [4/11] Friend from PRIOR cycle should be eligible for survey this cycle — hypothesis: bug in hasMessage() scope\""}
+{"t":1946,"tool":"Bash","sum":"node \"$QA_STACK_BIN\" sql \"SELECT id, name, status FROM app_features WHERE id=135\" --slot 1"}
+{"t":1947,"tool":"Agent","sum":"{\"description\":\"Case 7: SNES %Title% substitution in survey question\",\"subagent_type\":\"qa-case-executor\",\"prompt\":\"You are executing QA case 7/11 for PR #18835 (EN-14656 Post Ship Survey). Post Slack "}
+{"t":1948,"tool":"Bash","sum":"node /Users/aceroliangli/work/QA_BOTT/bin/qa-stack.mjs sql \"SELECT message_id, active, seen_at, seen_cycle_id FROM account_message WHERE account_id=1145720 AND message_id=60\" --slot 1"}
+{"t":1948,"tool":"Bash","sum":"find /Users/aceroliangli/work/QA_BOTT/stacks/slot1/Xavier/core -name \"PostShipSurveyActions.ts\" 2>/dev/null | head -5"}
+{"t":1950,"tool":"Bash","sum":"node \"$QA_STACK_BIN\" sql \"SELECT id, name, status FROM app_features WHERE id=135\" --slot 1 2>&1"}
+{"t":1951,"tool":"Bash","sum":"echo $QA_POST_BIN && echo $QA_ARTIFACTS_DIR && echo $QA_STACK_BIN && echo $QA_STACK_SLOT"}
+{"t":1953,"tool":"Bash","sum":"node /Users/aceroliangli/work/QA_BOTT/bin/qa-stack.mjs sql \"SELECT id, name, status FROM app_features WHERE id=135\" --slot 1 2>&1 || true"}
+{"t":1953,"tool":"Read","sum":"{\"file_path\":\"/Users/aceroliangli/work/QA_BOTT/stacks/slot1/Xavier/core/src/api/PostShipSurvey/actions/PostShipSurveyActions.ts\"}"}
+{"t":1954,"tool":"Bash","sum":"node \"/Users/aceroliangli/work/QA_BOTT/bin/qa-post.mjs\" msg \"▶ [7/11] Survey question shows actual book title replacing %Title% token\""}
+{"t":1956,"tool":"Write","sum":"{\"file_path\":\"/Users/aceroliangli/work/QA_BOTT/stacks/slot1/Xavier/core/build/scripts/adhoc/qa_case3_probe.js\",\"content\":\"\\\"use strict\\\";\\n// QA Case 3: Member becoming Friend THIS cycle → excluded fr"}
+{"t":1956,"tool":"Bash","sum":"node /Users/aceroliangli/work/QA_BOTT/bin/qa-stack.mjs sql \"SELECT 1\" --slot 1 2>&1 || true"}
+{"t":1957,"tool":"Bash","sum":"grep -r \"hasMessageByCycle\\|hasMessage\" /Users/aceroliangli/work/QA_BOTT/stacks/slot1/Xavier/core/src --include=\"*.ts\" -l | head -10"}
+{"t":1958,"tool":"Bash","sum":"grep -rn \"hasMessage\" /Users/aceroliangli/work/QA_BOTT/stacks/slot1/Xavier/core/src/db --include=\"*.ts\" | head -20"}
+{"t":1958,"tool":"ToolSearch","sum":"{\"query\":\"select:mcp__lane2__browser_navigate,mcp__lane2__browser_take_screenshot,mcp__lane2__browser_snapshot\",\"max_results\":5}"}
+{"t":1960,"tool":"Bash","sum":"node \"$QA_STACK_BIN\" run-script node build/scripts/adhoc/qa_case3_probe.js --slot 1 2>&1 | tee \"$QA_ARTIFACTS_DIR/case3_probe.txt\""}
+{"t":1960,"tool":"Bash","sum":"node /Users/aceroliangli/work/QA_BOTT/bin/qa-stack.mjs sql \"SELECT id, name, status FROM app_features LIMIT 5\" --slot 1 2>&1 || true"}
+{"t":1961,"tool":"Agent","sum":"{\"description\":\"Case 10: SNES dismiss survey card\",\"subagent_type\":\"qa-case-executor\",\"prompt\":\"You are executing QA case 10/11 for PR #18835 (EN-14656 Post Ship Survey). Post Slack updates yourself.\\"}
+{"t":1961,"tool":"Read","sum":"{\"file_path\":\"/Users/aceroliangli/work/QA_BOTT/stacks/slot1/Xavier/core/src/api/AccountMessage/AccountMessageDb.ts\"}"}
+{"t":1961,"tool":"mcp__lane2__browser_snapshot","sum":"{}"}
+{"t":1964,"tool":"Bash","sum":"node /Users/aceroliangli/work/QA_BOTT/bin/qa-stack.mjs sql \"SHOW TABLES LIKE 'app%'\" --slot 1 2>&1 || true"}
+{"t":1965,"tool":"Bash","sum":"echo \"QA_POST_BIN: $QA_POST_BIN\" && echo \"QA_STACK_BIN: $QA_STACK_BIN\" && echo \"QA_ARTIFACTS_DIR: $QA_ARTIFACTS_DIR\" && echo \"QA_STACK_SLOT: $QA_STACK_SLOT\" && echo \"QA_XAVIER_CHECKOUT: $QA_XAVIER_CHE"}
+{"t":1967,"tool":"Bash","sum":"node /Users/aceroliangli/work/QA_BOTT/bin/qa-stack.mjs sql \"SHOW COLUMNS FROM app_features\" --slot 1 2>&1 || true"}
+{"t":1968,"tool":"mcp__lane2__browser_take_screenshot","sum":"{\"type\":\"png\",\"filename\":\"case7_survey_question_title_substitution.png\",\"target\":\"ref=e294\",\"element\":\"Survey card with question text and book jacket\"}"}
+{"t":1968,"tool":"Bash","sum":"node \"$QA_STACK_BIN\" sql --slot 3 \"SELECT message_id, active FROM account_message WHERE account_id=4947838 AND message_id=69\""}
+{"t":1969,"tool":"Bash","sum":"node /Users/aceroliangli/work/QA_BOTT/bin/qa-stack.mjs sql \"SELECT message_id, active, seen_at, seen_cycle_id FROM account_message WHERE account_id=1145720 AND message_id IN (69,70)\" --slot 1"}
+{"t":1970,"tool":"Bash","sum":"find \"$QA_XAVIER_CHECKOUT/core/src\" -name \"PostShipSurveyActions*\" -type f"}
+{"t":1970,"tool":"Bash","sum":"ls /Users/aceroliangli/work/QA_BOTT/stacks/slot1/Xavier/core/build/scripts/adhoc/ 2>/dev/null || echo \"adhoc dir not found\""}
+{"t":1971,"tool":"Bash","sum":"node /Users/aceroliangli/work/QA_BOTT/bin/qa-stack.mjs sql \"SELECT * FROM app_features WHERE id=135\" --slot 1 2>&1 || true"}
+{"t":1972,"tool":"mcp__lane2__browser_take_screenshot","sum":"{\"type\":\"png\",\"filename\":\"case7_survey_question_title_substitution.png\"}"}
+{"t":1972,"tool":"Bash","sum":"find \"$QA_XAVIER_CHECKOUT\" -name \"PostShipSurveyCard*\" -type f 2>/dev/null | head -20"}
+{"t":1973,"tool":"Read","sum":"{\"file_path\":\"/Users/aceroliangli/work/QA_BOTT/stacks/slot1/Xavier/core/src/api/PostShipSurvey/actions/PostShipSurveyActions.ts\"}"}
+{"t":1975,"tool":"Bash","sum":"cat /Users/aceroliangli/work/QA_BOTT/stacks/slot1/Xavier/core/build/scripts/adhoc/qa_postship_probe.js | head -30"}
+{"t":1975,"tool":"Bash","sum":"ls /Users/aceroliangli/work/QA_BOTT/stacks/slot1/Xavier/core/src/scripts/adhoc/ | grep -i postship"}
+{"t":1976,"tool":"Read","sum":"{\"file_path\":\"/Users/aceroliangli/work/QA_BOTT/runs/92ff1da7-f197-49fa-be1c-cc0421547c39/artifacts/case7_survey_question_title_substitution.png\"}"}
+{"t":1976,"tool":"Read","sum":"{\"file_path\":\"/Users/aceroliangli/work/QA_BOTT/stacks/slot1/Xavier/snes/app/[lang]/box/components/PostShipSurveyCard.tsx\"}"}
+{"t":1979,"tool":"Read","sum":"{\"file_path\":\"/Users/aceroliangli/work/QA_BOTT/stacks/slot1/Xavier/core/build/scripts/adhoc/qa_postship_probe.js\"}"}
+{"t":1980,"tool":"Bash","sum":"ls /Users/aceroliangli/work/QA_BOTT/runs/92ff1da7-f197-49fa-be1c-cc0421547c39/artifacts/"}
+{"t":1980,"tool":"Bash","sum":"node \"$QA_STACK_BIN\" sql \"SELECT * FROM app_feature WHERE name LIKE '%Post Ship Survey%' OR name LIKE '%post_ship%' OR name LIKE '%survey%'\" --slot 1"}
+{"t":1981,"tool":"Bash","sum":"find \"$QA_XAVIER_CHECKOUT\" -path \"*/snes/*\" -name \"SurveyCard*\" -type f 2>/dev/null | head -10"}
+{"t":1984,"tool":"Bash","sum":"ls /Users/aceroliangli/work/QA_BOTT/runs/92ff1da7-f197-49fa-be1c-cc0421547c39/artifacts/lane2/"}
+{"t":1984,"tool":"Read","sum":"{\"file_path\":\"/Users/aceroliangli/work/QA_BOTT/stacks/slot1/Xavier/snes/app/components/cards/SurveyCard.tsx\"}"}
+{"t":1984,"tool":"Bash","sum":"node \"$QA_STACK_BIN\" sql \"SHOW TABLES LIKE '%app_feature%'\" --slot 1"}
+{"t":1987,"tool":"Bash","sum":"find \"$QA_XAVIER_CHECKOUT\" -path \"*/snes/*\" -name \"ScaleSurvey*\" -type f 2>/dev/null | head -10"}
+{"t":1987,"tool":"Write","sum":"{\"file_path\":\"/Users/aceroliangli/work/QA_BOTT/stacks/slot1/Xavier/core/build/scripts/adhoc/qa_case2_probe.js\",\"content\":\"\\\"use strict\\\";\\n// QA Case 2: assignPostShipSurvey when FF id=135 is Inactive"}
+{"t":1988,"tool":"ToolSearch","sum":"{\"query\":\"select:mcp__lane2__browser_evaluate\",\"max_results\":1}"}
+{"t":1989,"tool":"Bash","sum":"node \"$QA_STACK_BIN\" sql \"SELECT * FROM app_features WHERE name LIKE '%Post Ship%' OR name LIKE '%survey%'\" --slot 1"}
+{"t":1991,"tool":"Read","sum":"{\"file_path\":\"/Users/aceroliangli/work/QA_BOTT/stacks/slot1/Xavier/snes/app/components/survey/ScaleSurvey.tsx\"}"}
+{"t":1991,"tool":"Bash","sum":"node \"$QA_STACK_BIN\" run-script node build/scripts/adhoc/qa_case2_probe.js --slot 1 2>&1"}
+{"t":1993,"tool":"mcp__lane2__browser_evaluate","sum":"{\"function\":\"() => { const el = document.querySelector('[class*=\\\"survey\\\"], [class*=\\\"Survey\\\"], [class*=\\\"scale\\\"], [class*=\\\"Scale\\\"]'); if (el) { el.scrollIntoView({behavior: 'instant', block: 'ce"}
+{"t":1993,"tool":"Bash","sum":"node \"$QA_STACK_BIN\" sql \"SELECT name FROM app_features LIMIT 20\" --slot 1"}
+{"t":1996,"tool":"Bash","sum":"node \"$QA_STACK_BIN\" sql \"DESCRIBE app_features\" --slot 1"}
+{"t":1996,"tool":"Bash","sum":"node \"$QA_POST_BIN\" msg \"▶ [10/11] Dismiss survey card → card disappears immediately\""}
+{"t":1998,"tool":"mcp__lane2__browser_take_screenshot","sum":"{\"type\":\"png\",\"filename\":\"/Users/aceroliangli/work/QA_BOTT/runs/92ff1da7-f197-49fa-be1c-cc0421547c39/artifacts/case7_survey_title_substitution.png\"}"}
+{"t":1998,"tool":"Bash","sum":"node \"$QA_STACK_BIN\" sql \"UPDATE app_features SET status='Active' WHERE id=135\" --slot 1 2>&1 && node /Users/aceroliangli/work/QA_BOTT/bin/qa-stack.mjs sql \"SELECT * FROM app_features WHERE id=135\" --"}
+{"t":2000,"tool":"ToolSearch","sum":"{\"query\":\"select:mcp__lane3__browser_navigate,mcp__lane3__browser_take_screenshot,mcp__lane3__browser_snapshot,mcp__lane3__browser_fill_form,mcp__lane3__browser_click,mcp__lane3__browser_wait_for\",\"ma"}
+{"t":2001,"tool":"Bash","sum":"node \"$QA_STACK_BIN\" sql \"SELECT id, feature, status FROM app_features WHERE feature LIKE '%Post Ship%' OR feature LIKE '%survey%' OR feature LIKE '%Survey%'\" --slot 1"}
+{"t":2004,"tool":"Write","sum":"{\"file_path\":\"/Users/aceroliangli/work/QA_BOTT/stacks/slot1/Xavier/core/build/scripts/adhoc/qa_case4_probe.js\",\"content\":\"\\\"use strict\\\";\\n// Case 4 probe: Friend from PRIOR cycle (cycle 135) should b"}
+{"t":2004,"tool":"mcp__lane3__browser_navigate","sum":"{\"url\":\"http://localhost:20230/login\"}"}
+{"t":2004,"tool":"Bash","sum":"node \"$QA_STACK_BIN\" sql \"SELECT * FROM account_message WHERE account_id=1379107 AND message_id IN (69,70)\" --slot 1 2>&1"}
+{"t":2006,"tool":"Bash","sum":"ls /Users/aceroliangli/work/QA_BOTT/runs/92ff1da7-f197-49fa-be1c-cc0421547c39/artifacts/case7*"}
+{"t":2008,"tool":"Bash","sum":"find \"$QA_XAVIER_CHECKOUT/core/src\" -name \"*.ts\" | xargs grep -l \"isAppFeatureEligible\" 2>/dev/null | head -5"}
+{"t":2013,"tool":"Bash","sum":"grep -n \"isAppFeatureEligible\" \"$QA_XAVIER_CHECKOUT/core/src/api/AppFeature/AppFeatureDb.ts\" | head -20"}
+{"t":2013,"tool":"Read","sum":"{\"file_path\":\"/Users/aceroliangli/work/QA_BOTT/runs/92ff1da7-f197-49fa-be1c-cc0421547c39/artifacts/case7_survey_title_substitution.png\"}"}
+{"t":2014,"tool":"Bash","sum":"node /Users/aceroliangli/work/QA_BOTT/bin/qa-stack.mjs run-script node build/scripts/adhoc/qa_case4_probe.js --slot 1 2>&1"}
+{"t":2014,"tool":"mcp__lane3__browser_fill_form","sum":"{\"fields\":[{\"target\":\"input[name='email'], [placeholder*='email' i], input[type='email']\",\"name\":\"email\",\"type\":\"textbox\",\"value\":\"Andrewcalogero@bookofthemonth.com\"},{\"target\":\"input[name='password']"}
+{"t":2016,"tool":"Read","sum":"{\"file_path\":\"/Users/aceroliangli/work/QA_BOTT/stacks/slot1/Xavier/core/src/api/AppFeature/AppFeatureDb.ts\",\"offset\":277,\"limit\":60}"}
+{"t":2017,"tool":"Write","sum":"{\"file_path\":\"/Users/aceroliangli/work/QA_BOTT/runs/92ff1da7-f197-49fa-be1c-cc0421547c39/artifacts/case2_probe.txt\",\"content\":\"QA Case 2: Feature flag (id=135) inactive → assignPostShipSurvey returns "}
+{"t":2018,"tool":"mcp__lane3__browser_fill_form","sum":"{\"fields\":[{\"target\":\"#email-defaultlogin\",\"name\":\"email\",\"type\":\"textbox\",\"value\":\"Andrewcalogero@bookofthemonth.com\"},{\"target\":\"input[type='password']\",\"name\":\"password\",\"type\":\"textbox\",\"value\":\"Q"}
+{"t":2021,"tool":"Bash","sum":"grep -n \"getByName\\|featureName\\|Post Ship Survey\" \"$QA_XAVIER_CHECKOUT/core/src/api/AppFeature/AppFeatureDb.ts\" | head -20"}
+{"t":2021,"tool":"Bash","sum":"node \"/Users/aceroliangli/work/QA_BOTT/bin/qa-post.mjs\" img \"/Users/aceroliangli/work/QA_BOTT/runs/92ff1da7-f197-49fa-be1c-cc0421547c39/artifacts/case7_survey_title_substitution.png\" \"PASS [7]: Survey"}
+{"t":2021,"tool":"mcp__lane3__browser_click","sum":"{\"target\":\"button[type='submit'], [data-cy*='login' i][type='submit'], button:has-text('Log in')\",\"element\":\"Login submit button\"}"}
+{"t":2021,"tool":"Bash","sum":"node \"$QA_POST_BIN\" file \"/Users/aceroliangli/work/QA_BOTT/runs/92ff1da7-f197-49fa-be1c-cc0421547c39/artifacts/case2_probe.txt\" \"PASS [2]: FF=Inactive → assignPostShipSurvey returned {assigned:false, "}
+{"t":2024,"tool":"mcp__lane3__browser_click","sum":"{\"target\":\"#account-submit-login\",\"element\":\"Login submit button\"}"}
+{"t":2025,"tool":"Read","sum":"{\"file_path\":\"/Users/aceroliangli/work/QA_BOTT/stacks/slot1/Xavier/core/src/api/AppFeature/AppFeatureDb.ts\",\"offset\":100,\"limit\":20}"}
+{"t":2025,"tool":"Bash","sum":"node \"$QA_POST_BIN\" msg \":white_check_mark: [2/11] PASS — FF inactive → Feature Flag Inactive returned, no message created · tally: 2 pass, 0 fail, 0 blocked\""}
+{"t":2026,"tool":"Bash","sum":"node \"/Users/aceroliangli/work/QA_BOTT/bin/qa-post.mjs\" msg \":white_check_mark: [7/11] PASS — %Title% correctly substituted with \\\"The Catcher in the Rye\\\" in survey question; book jacket visible, no "}
+{"t":2029,"tool":"Bash","sum":"cat > /Users/aceroliangli/work/QA_BOTT/runs/92ff1da7-f197-49fa-be1c-cc0421547c39/artifacts/case4_probe.txt << 'EOF'\nCASE 4 PROBE OUTPUT\n===================\nAccount: 1145720 (jenna.green+999@bookofthem"}
+{"t":2030,"tool":"Bash","sum":"node \"$QA_STACK_BIN\" sql \"SELECT id, feature, status FROM app_features WHERE feature = 'Post Ship Survey'\" --slot 1"}
+{"t":2030,"tool":"mcp__lane3__browser_wait_for","sum":"{\"time\":3}"}
+{"t":2036,"tool":"Bash","sum":"node \"$QA_STACK_BIN\" sql \"SELECT excluded_policies FROM app_features WHERE feature = 'Post Ship Survey'\" --slot 1"}
+{"t":2037,"tool":"mcp__lane3__browser_navigate","sum":"{\"url\":\"http://localhost:20230/box\"}"}
+{"t":2039,"tool":"Bash","sum":"node /Users/aceroliangli/work/QA_BOTT/bin/qa-post.mjs file \"/Users/aceroliangli/work/QA_BOTT/runs/92ff1da7-f197-49fa-be1c-cc0421547c39/artifacts/case4_probe.txt\" \"FAIL [4]: probe result — account 1145"}
+{"t":2042,"tool":"mcp__lane3__browser_wait_for","sum":"{\"time\":3}"}
+{"t":2044,"tool":"Bash","sum":"node /Users/aceroliangli/work/QA_BOTT/bin/qa-post.mjs msg \":x: [4/11] FAIL — spec says excluded only that month; member who became Friend in cycle 135 still excluded in cycle 138 (cause: hasMessage() "}
+{"t":2048,"tool":"mcp__lane3__browser_snapshot","sum":"{}"}
+{"t":2050,"tool":"Bash","sum":"echo \"- hasMessage() in AccountMessageDb.ts (line 219) has NO cycle filter; hasMessageByCycle() (line 234) does. PostShipSurveyActions.ts:44-57 uses the former, causing permanent exclusion of any memb"}
+{"t":2058,"tool":"mcp__lane3__browser_take_screenshot","sum":"{\"type\":\"png\",\"filename\":\"case10-before-dismiss.png\"}"}
+{"t":2059,"tool":"Write","sum":"{\"file_path\":\"/Users/aceroliangli/work/QA_BOTT/stacks/slot1/Xavier/core/build/scripts/adhoc/qa_case3_probe.js\",\"content\":\"\\\"use strict\\\";\\n// QA Case 3: Member becoming Friend THIS cycle → excluded fr"}
+{"t":2062,"tool":"Bash","sum":"node \"$QA_STACK_BIN\" run-script node build/scripts/adhoc/qa_case3_probe.js --slot 1 2>&1 | grep -E \"DEBUG|PRECONDITION|RESULT|PASS|FAIL|ERROR\" | head -20"}
+{"t":2062,"tool":"Bash","sum":"ls -la /Users/aceroliangli/work/QA_BOTT/runs/92ff1da7-f197-49fa-be1c-cc0421547c39/artifacts/ | grep case10"}
+{"t":2065,"tool":"Bash","sum":"find /Users/aceroliangli/work/QA_BOTT/runs/92ff1da7-f197-49fa-be1c-cc0421547c39/artifacts/ -name \"case10*\" 2>/dev/null"}
+{"t":2069,"tool":"Bash","sum":"ls /Users/aceroliangli/work/QA_BOTT/runs/92ff1da7-f197-49fa-be1c-cc0421547c39/artifacts/"}
+{"t":2071,"tool":"Bash","sum":"node \"$QA_STACK_BIN\" run-script node build/scripts/adhoc/qa_case3_probe.js --slot 1 2>&1 | grep -v \"^\\[\" | grep -v \"^$\" | grep -v \"^---\" | grep -v \"Unset\\|Loaded\\|Default\" | tail -30"}
+{"t":2072,"tool":"Bash","sum":"ls /Users/aceroliangli/work/QA_BOTT/runs/92ff1da7-f197-49fa-be1c-cc0421547c39/artifacts/lane3/ | head -20"}
+{"t":2076,"tool":"ToolSearch","sum":"{\"query\":\"select:mcp__lane3__browser_take_screenshot\",\"max_results\":1}"}
+{"t":2080,"tool":"mcp__lane3__browser_take_screenshot","sum":"{\"type\":\"png\",\"filename\":\"case10-survey-visible.png\",\"fullPage\":false}"}
+{"t":2083,"tool":"Bash","sum":"find /Users/aceroliangli/work/QA_BOTT/runs/92ff1da7-f197-49fa-be1c-cc0421547c39 -name \"case10-survey-visible.png\" 2>/dev/null"}
+{"t":2088,"tool":"Write","sum":"{\"file_path\":\"/Users/aceroliangli/work/QA_BOTT/stacks/slot1/Xavier/core/build/scripts/adhoc/qa_case3_probe.js\",\"content\":\"\\\"use strict\\\";\\n// QA Case 3: Member becoming Friend THIS cycle → excluded fr"}
+{"t":2093,"tool":"Bash","sum":"node \"$QA_STACK_BIN\" run-script node build/scripts/adhoc/qa_case3_probe.js --slot 1 2>&1 | tee \"$QA_ARTIFACTS_DIR/case3_probe.txt\""}
+{"t":2102,"tool":"Bash","sum":"node \"$QA_STACK_BIN\" run-script node build/scripts/adhoc/qa_case3_probe.js --slot 1 2>&1 | grep -E \"PRECONDITION|ARRANGE|started|RESULT|DB_CHECK|PASS|FAIL\" > \"$QA_ARTIFACTS_DIR/case3_probe.txt\" && cat"}
+{"t":2106,"tool":"Bash","sum":"grep -n \"dismiss\\|close\\|onDismiss\\|handleDismiss\" /Users/aceroliangli/work/QA_BOTT/stacks/slot1/Xavier/snes/app/components/survey/ScaleSurvey.tsx"}
+{"t":2107,"tool":"Bash","sum":"node \"$QA_POST_BIN\" file \"$QA_ARTIFACTS_DIR/case3_probe.txt\" \"PASS [3]: assignPostShipSurvey returned {assigned:false, reason:'Receiving new loyalty tier popup flow'} for account with active Friend ti"}
+{"t":2111,"tool":"Bash","sum":"grep -rn \"dismiss\\|close\\|onDismiss\" /Users/aceroliangli/work/QA_BOTT/stacks/slot1/Xavier/snes/app/components/cards/SurveyCard.tsx"}
+{"t":2114,"tool":"Bash","sum":"node \"$QA_POST_BIN\" msg \":white_check_mark: [3/11] PASS — Friend becoming this cycle correctly excluded · assignPostShipSurvey returned {assigned:false, reason:'Receiving new loyalty tier popup flow'}"}
+{"t":2115,"tool":"Bash","sum":"grep -rn \"dismiss\\|close\\|onDismiss\\|handleDismiss\" /Users/aceroliangli/work/QA_BOTT/stacks/slot1/Xavier/snes/app/components/cards/Card.tsx 2>/dev/null | head -20"}
+{"t":2126,"tool":"Bash","sum":"node \"$QA_STACK_BIN\" sql --slot 3 \"SELECT message_id, active FROM account_message WHERE account_id=4947838 AND message_id=69\""}
+{"t":2145,"tool":"mcp__lane3__browser_take_screenshot","sum":"{\"type\":\"png\",\"filename\":\"case10-survey-card-full.png\",\"fullPage\":true}"}
+{"t":2150,"tool":"Bash","sum":"find /Users/aceroliangli/work/QA_BOTT/runs/92ff1da7-f197-49fa-be1c-cc0421547c39 -name \"case10-survey-card-full.png\" 2>/dev/null"}
+{"t":2154,"tool":"Read","sum":"{\"file_path\":\"/Users/aceroliangli/work/QA_BOTT/runs/92ff1da7-f197-49fa-be1c-cc0421547c39/case10-survey-card-full.png\"}"}
+{"t":2164,"tool":"Bash","sum":"cp /Users/aceroliangli/work/QA_BOTT/runs/92ff1da7-f197-49fa-be1c-cc0421547c39/case10-survey-card-full.png \"$QA_ARTIFACTS_DIR/case10-survey-visible.png\""}
+{"t":2168,"tool":"Bash","sum":"node \"$QA_POST_BIN\" img \"$QA_ARTIFACTS_DIR/case10-survey-visible.png\" \"PASS [10]: Survey card visible on /box page with scale 1-5 and Submit button, no pre-submit dismiss button present\""}
+{"t":2174,"tool":"mcp__lane3__browser_click","sum":"{\"target\":\"e468\",\"element\":\"Submit survey button\"}"}
+{"t":2178,"tool":"mcp__lane3__browser_wait_for","sum":"{\"time\":2}"}
+{"t":2182,"tool":"mcp__lane3__browser_snapshot","sum":"{\"target\":\"e440\"}"}
+{"t":2187,"tool":"Bash","sum":"node \"$QA_STACK_BIN\" sql --slot 3 \"SELECT message_id, active FROM account_message WHERE account_id=4947838 AND message_id=69\""}
+{"t":2191,"tool":"mcp__lane3__browser_take_screenshot","sum":"{\"type\":\"png\",\"filename\":\"case10-thanks-with-dismiss.png\"}"}
+{"t":2196,"tool":"Bash","sum":"cp /Users/aceroliangli/work/QA_BOTT/runs/92ff1da7-f197-49fa-be1c-cc0421547c39/case10-thanks-with-dismiss.png \"$QA_ARTIFACTS_DIR/case10-thanks-with-dismiss.png\""}
+{"t":2200,"tool":"mcp__lane3__browser_click","sum":"{\"target\":\"e570\",\"element\":\"Dismiss link after survey submission\"}"}
+{"t":2203,"tool":"mcp__lane3__browser_wait_for","sum":"{\"time\":1}"}
+{"t":2207,"tool":"mcp__lane3__browser_snapshot","sum":"{}"}
+{"t":2213,"tool":"mcp__lane3__browser_take_screenshot","sum":"{\"type\":\"png\",\"filename\":\"case10-after-dismiss.png\"}"}
+{"t":2219,"tool":"Bash","sum":"cp /Users/aceroliangli/work/QA_BOTT/runs/92ff1da7-f197-49fa-be1c-cc0421547c39/case10-after-dismiss.png \"$QA_ARTIFACTS_DIR/case10-after-dismiss.png\" && node \"$QA_STACK_BIN\" sql --slot 3 \"SELECT message"}
+{"t":2222,"tool":"Read","sum":"{\"file_path\":\"/Users/aceroliangli/work/QA_BOTT/runs/92ff1da7-f197-49fa-be1c-cc0421547c39/case10-after-dismiss.png\"}"}
+{"t":2234,"tool":"Bash","sum":"node \"$QA_POST_BIN\" img \"$QA_ARTIFACTS_DIR/case10-thanks-with-dismiss.png\" \"PASS [10]: Survey card shows 'Thanks for your response!' with Dismiss link after submission\""}
+{"t":2239,"tool":"Bash","sum":"node \"$QA_POST_BIN\" img \"$QA_ARTIFACTS_DIR/case10-after-dismiss.png\" \"PASS [10]: Survey card gone immediately after clicking Dismiss — only 'Box summary' and 'Where to next?' sections remain\""}
+{"t":2247,"tool":"Bash","sum":"node \"$QA_POST_BIN\" msg \":white_check_mark: [10/11] PASS — dismiss hides survey card immediately; Dismiss link only appears post-submit in SNES ScaleSurvey; dismiss itself does not call markMessageAsS"}
+{"t":2252,"tool":"Bash","sum":"echo \"SNES ScaleSurvey Dismiss: the 'Dismiss' link only renders in the hasSubmitted=true branch (post-submit 'Thanks for your response!' state). There is no pre-submit dismiss button. Dismiss calls se"}
+{"t":2281,"tool":"Bash","sum":"ls -A \"$QA_INBOX\" 2>/dev/null && echo \"inbox_ok\""}
+{"t":2291,"tool":"Bash","sum":"# Lane 2: switch account 666817 to YesNo survey for case 8\nnode \"$QA_STACK_BIN\" sql --slot 2 \"UPDATE account_message SET active=0 WHERE account_id=666817 AND message_id=69; INSERT IGNORE INTO account_"}
+{"t":2314,"tool":"Agent","sum":"{\"description\":\"Case 5: Core - Scale vs YesNo split\",\"subagent_type\":\"qa-case-executor\",\"prompt\":\"You are executing QA case 5/11 for PR #18835 (EN-14656 Post Ship Survey). Post Slack updates yourself."}
+{"t":2318,"tool":"Bash","sum":"echo \"QA_POST_BIN=$QA_POST_BIN\" && echo \"QA_ARTIFACTS_DIR=$QA_ARTIFACTS_DIR\" && echo \"QA_STACK_BIN=$QA_STACK_BIN\" && echo \"QA_XAVIER_CHECKOUT=$QA_XAVIER_CHECKOUT\" && echo \"QA_GOTCHAS_FILE=$QA_GOTCHAS_"}
+{"t":2325,"tool":"Bash","sum":"node \"$QA_POST_BIN\" msg \"▶ [5/11] Even-bucket member → Scale message (msg_id=69); odd-bucket → YesNo (msg_id=70)\""}
+{"t":2328,"tool":"Agent","sum":"{\"description\":\"Case 8: SNES YesNo survey submission\",\"subagent_type\":\"qa-case-executor\",\"prompt\":\"You are executing QA case 8/11 for PR #18835 (EN-14656 Post Ship Survey). Post Slack updates yourself"}
+{"t":2330,"tool":"Bash","sum":"ls \"$QA_XAVIER_CHECKOUT/core/src/api/PostShipSurvey/\" 2>/dev/null || find \"$QA_XAVIER_CHECKOUT/core/src\" -path \"*PostShipSurvey*\" -type f 2>/dev/null | head -20"}
+{"t":2332,"tool":"ToolSearch","sum":"{\"query\":\"select:mcp__lane2__browser_navigate,mcp__lane2__browser_take_screenshot,mcp__lane2__browser_snapshot,mcp__lane2__browser_click\",\"max_results\":4}"}
+{"t":2332,"tool":"Bash","sum":"echo $QA_POST_BIN && echo $QA_ARTIFACTS_DIR && echo $QA_STACK_BIN && echo $QA_STACK_SLOT"}
+{"t":2333,"tool":"Bash","sum":"ls \"$QA_XAVIER_CHECKOUT/core/src/api/PostShipSurvey/actions/\" && ls \"$QA_XAVIER_CHECKOUT/core/src/api/PostShipSurvey/utils/\""}
+{"t":2336,"tool":"Agent","sum":"{\"description\":\"Case 11: SNES FF inactive no survey card\",\"subagent_type\":\"qa-case-executor\",\"prompt\":\"You are executing QA case 11/11 for PR #18835 (EN-14656 Post Ship Survey). Post Slack updates you"}
+{"t":2337,"tool":"Bash","sum":"node \"/Users/aceroliangli/work/QA_BOTT/bin/qa-post.mjs\" msg \"▶ [8/11] YesNo survey — click Yes/No answer → success state + message marked seen\""}
+{"t":2337,"tool":"Bash","sum":"node \"/Users/aceroliangli/work/QA_BOTT/bin/qa-stack.mjs\" sql --slot 2 \"SELECT message_id, active FROM account_message WHERE account_id=666817 AND message_id IN (69,70)\""}
+{"t":2340,"tool":"ToolSearch","sum":"{\"query\":\"select:mcp__lane3__browser_navigate,mcp__lane3__browser_take_screenshot,mcp__lane3__browser_snapshot,mcp__lane3__browser_fill_form,mcp__lane3__browser_click,mcp__lane3__browser_wait_for\",\"ma"}
+{"t":2342,"tool":"Read","sum":"{\"file_path\":\"/Users/aceroliangli/work/QA_BOTT/stacks/slot1/Xavier/core/src/api/PostShipSurvey/utils/PostShipSurveyUtils.ts\"}"}
+{"t":2342,"tool":"mcp__lane2__browser_navigate","sum":"{\"url\":\"http://localhost:20130/login\"}"}
+{"t":2344,"tool":"Bash","sum":"echo $QA_POST_BIN && echo $QA_STACK_BIN && echo $QA_ARTIFACTS_DIR && echo $QA_STACK_SLOT"}
+{"t":2345,"tool":"Read","sum":"{\"file_path\":\"/Users/aceroliangli/work/QA_BOTT/stacks/slot1/Xavier/core/src/api/PostShipSurvey/actions/PostShipSurveyActions.ts\"}"}
+{"t":2347,"tool":"ToolSearch","sum":"{\"query\":\"select:mcp__lane2__browser_fill_form,mcp__lane2__browser_type\",\"max_results\":2}"}
+{"t":2348,"tool":"Bash","sum":"node \"/Users/aceroliangli/work/QA_BOTT/bin/qa-post.mjs\" msg \"▶ [11/11] Feature flag (id=135) Inactive → no survey card on /box page\""}
+{"t":2350,"tool":"Bash","sum":"node \"$QA_STACK_BIN\" sql \"DELETE FROM account_message WHERE account_id IN (1145670, 1345842) AND message_id IN (69, 70)\" --slot 1"}
+{"t":2352,"tool":"Bash","sum":"node \"/Users/aceroliangli/work/QA_BOTT/bin/qa-stack.mjs\" sql --slot 3 \"SELECT message_id, active FROM account_message WHERE account_id=4947838 AND message_id=69\""}
+{"t":2354,"tool":"Bash","sum":"ls \"$QA_XAVIER_CHECKOUT/core/build/api/PostShipSurvey/actions/\" 2>/dev/null && ls \"$QA_XAVIER_CHECKOUT/core/build/api/PostShipSurvey/utils/\" 2>/dev/null"}
+{"t":2356,"tool":"Bash","sum":"node \"/Users/aceroliangli/work/QA_BOTT/bin/qa-stack.mjs\" sql --slot 3 \"UPDATE app_features SET status='Inactive' WHERE id=135\""}
+{"t":2357,"tool":"mcp__lane2__browser_fill_form","sum":"{\"fields\":[{\"target\":\"input[name='email']\",\"name\":\"email\",\"type\":\"textbox\",\"value\":\"cris.vergara@bookofthemonth.com\"},{\"target\":\"input[name='password']\",\"name\":\"password\",\"type\":\"textbox\",\"value\":\"QAT"}
+{"t":2358,"tool":"Bash","sum":"ls \"$QA_XAVIER_CHECKOUT/core/build/scripts/adhoc/\" 2>/dev/null || mkdir -p \"$QA_XAVIER_CHECKOUT/core/build/scripts/adhoc/\""}
+{"t":2360,"tool":"mcp__lane2__browser_fill_form","sum":"{\"fields\":[{\"target\":\"#email-defaultlogin\",\"name\":\"email\",\"type\":\"textbox\",\"value\":\"cris.vergara@bookofthemonth.com\"},{\"target\":\"input[name='password']\",\"name\":\"password\",\"type\":\"textbox\",\"value\":\"QAT"}
+{"t":2360,"tool":"Bash","sum":"node \"/Users/aceroliangli/work/QA_BOTT/bin/qa-stack.mjs\" sql --slot 3 \"SELECT id, status FROM app_features WHERE id=135\""}
+{"t":2363,"tool":"mcp__lane2__browser_click","sum":"{\"target\":\"button[type='submit']\",\"element\":\"Login submit button\"}"}
+{"t":2364,"tool":"mcp__lane3__browser_navigate","sum":"{\"url\":\"http://localhost:20230/login\"}"}
+{"t":2366,"tool":"mcp__lane2__browser_click","sum":"{\"target\":\"#account-submit-login\",\"element\":\"Log in button\"}"}
+{"t":2370,"tool":"mcp__lane3__browser_fill_form","sum":"{\"fields\":[{\"target\":\"input[name='email']\",\"name\":\"Email\",\"type\":\"textbox\",\"value\":\"Andrewcalogero@bookofthemonth.com\"},{\"target\":\"input[name='password']\",\"name\":\"Password\",\"type\":\"textbox\",\"value\":\"Q"}
+{"t":2370,"tool":"Write","sum":"{\"file_path\":\"/Users/aceroliangli/work/QA_BOTT/stacks/slot1/Xavier/core/build/scripts/adhoc/qa_case5_probe.js\",\"content\":\"'use strict';\\n\\nconst core = require('../../api').default;\\nconst { assignPos"}
+{"t":2373,"tool":"mcp__lane3__browser_fill_form","sum":"{\"fields\":[{\"target\":\"#email-defaultlogin\",\"name\":\"Email\",\"type\":\"textbox\",\"value\":\"Andrewcalogero@bookofthemonth.com\"},{\"target\":\"#password-defaultlogin\",\"name\":\"Password\",\"type\":\"textbox\",\"value\":\"Q"}
+{"t":2373,"tool":"ToolSearch","sum":"{\"query\":\"select:mcp__lane2__browser_wait_for\",\"max_results\":1}"}
+{"t":2374,"tool":"Bash","sum":"node \"$QA_STACK_BIN\" run-script node build/scripts/adhoc/qa_case5_probe.js --slot 1 2>&1"}
+{"t":2376,"tool":"mcp__lane2__browser_wait_for","sum":"{\"time\":3}"}
+{"t":2377,"tool":"mcp__lane3__browser_click","sum":"{\"target\":\"button[data-cy='login-submit-defaultlogin']\",\"element\":\"Login submit button\"}"}
+{"t":2380,"tool":"mcp__lane3__browser_snapshot","sum":"{}"}
+{"t":2380,"tool":"Bash","sum":"node \"$QA_STACK_BIN\" logs core 50 --slot 1 2>&1 | tail -30"}
+{"t":2384,"tool":"Bash","sum":"cat \"$QA_XAVIER_CHECKOUT/core/build/scripts/adhoc/qa_case1_probe.js\" 2>/dev/null | head -60"}
+{"t":2385,"tool":"mcp__lane3__browser_click","sum":"{\"target\":\"e282\",\"element\":\"Log in button\"}"}
+{"t":2386,"tool":"mcp__lane2__browser_navigate","sum":"{\"url\":\"http://localhost:20130/box\"}"}
+{"t":2388,"tool":"Bash","sum":"cat \"$QA_XAVIER_CHECKOUT/core/build/scripts/adhoc/qa_case1_probe.js\" 2>/dev/null"}
+{"t":2391,"tool":"mcp__lane2__browser_snapshot","sum":"{}"}
+{"t":2392,"tool":"mcp__lane3__browser_wait_for","sum":"{\"time\":2}"}
+{"t":2394,"tool":"Bash","sum":"node \"$QA_STACK_BIN\" sql \"SELECT a.id, a.email, a.policy_id, p.name as policy_name FROM account a JOIN policy p ON a.policy_id=p.id WHERE a.id IN (1145670, 1345842)\" --slot 1"}
+{"t":2395,"tool":"mcp__lane2__browser_take_screenshot","sum":"{\"type\":\"png\",\"filename\":\"case8-yesno-card-before.png\"}"}
+{"t":2397,"tool":"mcp__lane3__browser_navigate","sum":"{\"url\":\"http://localhost:20230/box\"}"}
+{"t":2397,"tool":"Bash","sum":"node \"$QA_STACK_BIN\" sql \"SELECT a.id, a.email, a.policy_id FROM account a WHERE a.id IN (1145670, 1345842)\" --slot 1"}
+{"t":2401,"tool":"mcp__lane3__browser_snapshot","sum":"{}"}
+{"t":2402,"tool":"Bash","sum":"node \"$QA_STACK_BIN\" sql \"SELECT id, email, policy_id FROM account WHERE id IN (1145670, 1345842)\" --slot 1 2>&1"}
+{"t":2403,"tool":"Bash","sum":"node \"/Users/aceroliangli/work/QA_BOTT/bin/qa-post.mjs\" img \"/Users/aceroliangli/work/QA_BOTT/runs/92ff1da7-f197-49fa-be1c-cc0421547c39/artifacts/lane2/case8-yesno-card-before.png\" \"PASS [8]: YesNo su"}
+{"t":2406,"tool":"Bash","sum":"MYSQL_HOST=127.0.0.1 MYSQL_PORT=20006 MYSQL_USER=xavier_write MYSQL_PWD=xavier mysql -h 127.0.0.1 -P 20006 -u xavier_write -pxavier xavier -e \"SELECT id, email, policy_id FROM account WHERE id IN (114"}
+{"t":2407,"tool":"Bash","sum":"ls /Users/aceroliangli/work/QA_BOTT/runs/92ff1da7-f197-49fa-be1c-cc0421547c39/artifacts/"}
+{"t":2408,"tool":"mcp__lane3__browser_take_screenshot","sum":"{\"type\":\"png\",\"filename\":\"case11-ff-inactive-box-page.png\",\"fullPage\":true}"}
+{"t":2409,"tool":"Bash","sum":"cat \"$QA_XAVIER_CHECKOUT/core/build/scripts/utils/db.js\" 2>/dev/null | head -30"}
+{"t":2410,"tool":"Bash","sum":"ls /Users/aceroliangli/work/QA_BOTT/runs/92ff1da7-f197-49fa-be1c-cc0421547c39/artifacts/lane2/"}
+{"t":2414,"tool":"Bash","sum":"node \"/Users/aceroliangli/work/QA_BOTT/bin/qa-stack.mjs\" sql --slot 3 \"UPDATE app_features SET status='Active' WHERE id=135\""}
+{"t":2415,"tool":"Bash","sum":"find /Users/aceroliangli/work/QA_BOTT -name \"case8-yesno-card-before.png\" 2>/dev/null"}
+{"t":2417,"tool":"Bash","sum":"node \"/Users/aceroliangli/work/QA_BOTT/bin/qa-stack.mjs\" sql --slot 3 \"SELECT id, status FROM app_features WHERE id=135\""}
+{"t":2421,"tool":"Bash","sum":"cp /Users/aceroliangli/work/QA_BOTT/runs/92ff1da7-f197-49fa-be1c-cc0421547c39/case8-yesno-card-before.png /Users/aceroliangli/work/QA_BOTT/runs/92ff1da7-f197-49fa-be1c-cc0421547c39/artifacts/lane2/cas"}
+{"t":2423,"tool":"Bash","sum":"node \"/Users/aceroliangli/work/QA_BOTT/bin/qa-post.mjs\" img \"/Users/aceroliangli/work/QA_BOTT/runs/92ff1da7-f197-49fa-be1c-cc0421547c39/artifacts/case11-ff-inactive-box-page.png\" \"PASS [11]: FF id=135"}
+{"t":2425,"tool":"Bash","sum":"node \"/Users/aceroliangli/work/QA_BOTT/bin/qa-post.mjs\" img \"/Users/aceroliangli/work/QA_BOTT/runs/92ff1da7-f197-49fa-be1c-cc0421547c39/artifacts/lane2/case8-yesno-card-before.png\" \"PASS [8]: YesNo su"}
+{"t":2427,"tool":"Bash","sum":"ls /Users/aceroliangli/work/QA_BOTT/runs/92ff1da7-f197-49fa-be1c-cc0421547c39/artifacts/ | grep case11"}
+{"t":2428,"tool":"Write","sum":"{\"file_path\":\"/Users/aceroliangli/work/QA_BOTT/stacks/slot1/Xavier/core/build/scripts/adhoc/qa_case5_probe.js\",\"content\":\"'use strict';\\n// QA Case 5: Even-bucket → Scale(69), Odd-bucket → YesNo(70)\\n"}
+{"t":2429,"tool":"mcp__lane2__browser_click","sum":"{\"target\":\"e450\",\"element\":\"Yes link in YesNo survey\"}"}
+{"t":2430,"tool":"Bash","sum":"ls /Users/aceroliangli/work/QA_BOTT/runs/92ff1da7-f197-49fa-be1c-cc0421547c39/artifacts/ && find /Users/aceroliangli/work/QA_BOTT/runs/92ff1da7-f197-49fa-be1c-cc0421547c39 -name \"*.png\" | head -20"}
+{"t":2433,"tool":"mcp__lane2__browser_wait_for","sum":"{\"text\":\"Thanks for your response\"}"}
+{"t":2433,"tool":"Bash","sum":"node \"$QA_STACK_BIN\" run-script node build/scripts/adhoc/qa_case5_probe.js --slot 1 2>&1"}
+{"t":2436,"tool":"Bash","sum":"cp /Users/aceroliangli/work/QA_BOTT/runs/92ff1da7-f197-49fa-be1c-cc0421547c39/case11-ff-inactive-box-page.png /Users/aceroliangli/work/QA_BOTT/runs/92ff1da7-f197-49fa-be1c-cc0421547c39/artifacts/case1"}
+{"t":2437,"tool":"mcp__lane2__browser_take_screenshot","sum":"{\"type\":\"png\",\"filename\":\"case8-yesno-success.png\"}"}
+{"t":2438,"tool":"Bash","sum":"node \"/Users/aceroliangli/work/QA_BOTT/bin/qa-stack.mjs\" sql --slot 2 \"SELECT id, survey_id, response, account_id FROM survey_response WHERE account_id=666817 ORDER BY id DESC LIMIT 3\""}
+{"t":2439,"tool":"Bash","sum":"node \"/Users/aceroliangli/work/QA_BOTT/bin/qa-post.mjs\" img \"/Users/aceroliangli/work/QA_BOTT/runs/92ff1da7-f197-49fa-be1c-cc0421547c39/artifacts/case11-ff-inactive-box-page.png\" \"PASS [11]: FF id=135"}
+{"t":2440,"tool":"Bash","sum":"node \"/Users/aceroliangli/work/QA_BOTT/bin/qa-stack.mjs\" sql --slot 2 \"SELECT message_id, active FROM account_message WHERE account_id=666817 AND message_id=70\""}
+{"t":2440,"tool":"Bash","sum":"node \"$QA_STACK_BIN\" run-script node build/scripts/adhoc/qa_case5_probe.js --slot 1 2>&1 | grep -A 100 \"ARRANGE:\" > \"$QA_ARTIFACTS_DIR/case5_probe.txt\" && echo \"Saved\""}
+{"t":2445,"tool":"Bash","sum":"node \"/Users/aceroliangli/work/QA_BOTT/bin/qa-post.mjs\" msg \":white_check_mark: [11/11] PASS — FF inactive (id=135) → no survey card on /box page; box summary rendered normally · tally: 6 pass, 1 fail"}
+{"t":2445,"tool":"Bash","sum":"node \"$QA_POST_BIN\" file \"$QA_ARTIFACTS_DIR/case5_probe.txt\" \"PASS [5]: Bucket analysis — acct 1145670 bucket=60657 (odd→msg_id=70 YesNo), acct 1345842 bucket=53076 (even→msg_id=69 Scale); both assign"}
+{"t":2445,"tool":"Bash","sum":"cp /Users/aceroliangli/work/QA_BOTT/runs/92ff1da7-f197-49fa-be1c-cc0421547c39/case8-yesno-success.png /Users/aceroliangli/work/QA_BOTT/runs/92ff1da7-f197-49fa-be1c-cc0421547c39/artifacts/lane2/case8-y"}
+{"t":2450,"tool":"Bash","sum":"node \"/Users/aceroliangli/work/QA_BOTT/bin/qa-post.mjs\" img \"/Users/aceroliangli/work/QA_BOTT/runs/92ff1da7-f197-49fa-be1c-cc0421547c39/artifacts/lane2/case8-yesno-success.png\" \"PASS [8]: After clicki"}
+{"t":2451,"tool":"Bash","sum":"node \"$QA_POST_BIN\" msg \":white_check_mark: [5/11] PASS — even-bucket(53076)→Scale(69), odd-bucket(60657)→YesNo(70) split verified; DB rows confirmed for both accounts · tally: 6 pass, 1 fail, 0 block"}
+{"t":2456,"tool":"Bash","sum":"node \"/Users/aceroliangli/work/QA_BOTT/bin/qa-post.mjs\" msg \":white_check_mark: [8/11] PASS — YesNo survey click-to-submit works: clicking 'Yes' immediately submitted (no Submit button needed), succes"}
+{"t":2479,"tool":"Bash","sum":"ls -A \"$QA_INBOX\" 2>/dev/null && echo \"inbox_ok\""}
+{"t":2491,"tool":"Bash","sum":"node \"$QA_POST_BIN\" msg --mention \"results: 10/11 passed\n\n- [1] :white_check_mark: PASS — assignPostShipSurvey with testOverride assigns survey message to eligible standard member\n- [2] :white_check_m"}
+{"t":2502,"tool":"Bash","sum":"printf -- '- SNES box route: /box (no /en/ prefix) — /en/box returns 404\\n' >> \"$QA_GOTCHAS_FILE\"\nprintf -- '- PostShipSurveyCard (SNES) only renders when account_summary.cycle_response_id points to a"}
