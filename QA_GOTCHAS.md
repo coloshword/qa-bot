@@ -60,3 +60,13 @@ SNES login via form does NOT update the Core (port 20082) session cookie in the 
 post-ship survey Friend exclusion uses hasMessage() (AccountMessageDb.ts:219-231) which is a bare existence check with no cycle/date filter; a hasMessageByCycle() method exists at line 234 but is unused for this check — old Friend popup rows (msg_id=60/61) from any past cycle permanently exclude the member from future surveys
 - Friend tier popup exclusion (msg_id=60/61) uses bare hasMessage() with no cycle scope — members who were ever Friends are permanently excluded from post-ship survey; fix: hasMessageByCycle() scoped to currentCycleId
 - survey_response table has no resource_title column; SNES SubmitSurveyOptions also lacks resourceTitle; title recoverable via resource_id→pdp join
+- YesNo survey (post-ship): password hash format is SHA2(CONCAT(password, password_salt), 224); salt is NOT account id, it's a separate field. For pre-seeded test accounts, set password via SQL: UPDATE account SET password_hash = SHA2(CONCAT('testpass123', password_salt), 224) WHERE id=<id>.
+- PR-18835 / EN-14656 (run 4, 2026-06-13): test account passwords reset at stack start — always run SHA2 password trick before fastLogin: UPDATE account SET password_hash = SHA2(CONCAT('testpass123', password_salt), 224) WHERE id=<id>
+
+## PR-18835 / EN-14656 Post Ship Survey — 2026-06-13 (run 4)
+- core.query(sql, params) is the raw SQL method on Core (extends Pool<ICoreDb>); core.db.query does not exist
+- core.db.message.query() also not exposed; use core.query() for ad-hoc SQL in scripts
+- Test account passwords need to be set: UPDATE account SET password_hash=SHA2(CONCAT("testpass123",password_salt),224) WHERE id=<id>
+- postShipSurveyCache.get() fails when assignPostShipSurvey is run standalone in script context (cache not init); use with full core server or test components individually
+- hasMessage() behavior proven: returns true for past-cycle Friend popup; hasMessageByCycle() correctly returns false — bug confirmed behaviorally
+- survey_response source=site for SNES submissions; app submissions should send source=app

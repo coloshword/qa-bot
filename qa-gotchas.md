@@ -1,0 +1,2 @@
+- SNES logout via /en-US/logout page does NOT clear the browser session cookie (HttpOnly, JS cannot clear it); true logout requires calling http://localhost:20282/api/account/logout directly from browser context (fetch with credentials:include) — session is Redis-backed via session_id cookie
+- Test account passwords may not be 'testpass123' by default; reset via SQL: UPDATE account SET password_hash = SHA2(CONCAT('testpass123',password_salt),224) WHERE id=<id> (hash algo: SHA2-224)

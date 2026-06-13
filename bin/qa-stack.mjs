@@ -396,9 +396,18 @@ async function redisEnsureAndFlush() {
 // service lifecycle
 // ---------------------------------------------------------------------------
 
-async function buildCore() {
+async function buildCore(headSha, state) {
+  // Skip the clean rebuild if this slot's build is already at the target SHA — the agent
+  // treats the checkout read-only, so a same-SHA build is valid. Big recurring win for the
+  // benchmark loop (same branch every iteration) and for lanes building a SHA the slot built before.
+  const built = path.join(repoDir, 'core', 'build', 'api', 'server.js');
+  if (state?.buildHead === headSha && fs.existsSync(built)) {
+    console.log(`[slot${slot}] core build already at ${headSha.slice(0, 8)} — skipping tsc`);
+    return;
+  }
   console.log(`[slot${slot}] building core (clean tsc)...`);
   await sh('rm -rf build && npx tsc', { cwd: path.join(repoDir, 'core'), timeoutMs: 600_000 });
+  if (state) state.buildHead = headSha;
   console.log(`[slot${slot}] core built`);
 }
 
@@ -497,11 +506,12 @@ async function cmdUp() {
   await npmInstallIfNeeded(state, headSha);
   writeState(state);
 
-  // slow parts in parallel: db reset + redis | core clean build
+  // slow parts in parallel: db reset + redis | core build (skipped if already at this SHA)
   await Promise.all([
     dbReset(whitelabel, !flags.noPull).then(() => redisEnsureAndFlush()),
-    buildCore(),
+    buildCore(headSha, state),
   ]);
+  writeState(state); // persist buildHead
 
   await migrate(whitelabel);
   await startService(state, 'core');
