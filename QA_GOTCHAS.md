@@ -25,3 +25,12 @@
 - category API is GET /api/category?list=<slug> (under /api prefix); mobileAuth does not block unauthenticated requests
 - current-features = bomFeatureData[0] from pdp_featured; june-2026 (CMS) = categoryData from allv2(); after PR merge order flip, CMS wins slug collisions
 - series commitment book pdp_id: pdp 81 = The Exquisite Torment of Loving Your Enemy (product_id 81, commitment_book id 2)
+
+## PR-18835 / EN-14656 Post Ship Survey — 2026-06-12
+- Post Ship Survey feature is Active in app_features (id=135, status=Active)
+- Survey IDs: 50=ScaleSurvey (style=scale), 51=YesNoSurvey (style=yesNo); message IDs: 69=ScaleSurvey, 70=YesNoSurvey
+- Survey questions sorted by id (ascending): scale has IDs 7743-7747 (1-5), yesNo has 7748=Yes, 7749=No
+- Survey only shows if account has active account_message (active=1, seen_cycle_id=NULL) for msg_id 69 or 70
+- Test accounts (pw=testpass123): charlotte.calderwood@bookofthemonth.com (id=7793690, scale msg), Ava.meisel@bookofthemonth.com (id=7793673, yesno msg), alexandra.kent@bookofthemonth.com (id=7794164, no msg), dana.allen@bookofthemonth.com (id=5286615, seen msg)
+- getPostShipSurveyData is called server-side on box page; fetches accountMessages then surveys via API
+- Scale survey Submit button id=button-scale-survey-submit; Dismiss link id=link-scale-survey-dismiss
