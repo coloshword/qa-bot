@@ -58,11 +58,26 @@ the prompt specifies them explicitly.
    node "$QA_POST_BIN" msg --mention "test plan:\n1. <case>\n2. <case>\n..."
    ```
 
-4. **Run the spec-conformance review while the stack finishes building.** Spawn a
-   `spec-conformance-reviewer` subagent (Task tool) with the PR URL and the FULL ticket/epic
-   text you gathered. It reads clause-by-clause for spec-vs-code divergences — the bug class
-   blind behavioral testing rarely reaches (e.g. spec says "excluded that month", code excludes
-   forever) — and proposes a verification scenario for each suspicion.
+4. **Conformance check — do it YOURSELF during planning, not as a separate subagent.** You
+   already read the ENTIRE diff + PR + ticket + the changed code in `$QA_XAVIER_CHECKOUT` to
+   build the plan (step 2). As part of that SAME read, check the spec's clauses against the code
+   for divergences — the bug class blind behavioral testing rarely reaches:
+   - temporal scope ("that month", "this cycle", cooldown), cardinality ("3k each", "no overlap"),
+     exclusions ("exclude X") and their duration, resets, and spec numbers vs hardcoded numbers.
+   - The classic: spec bounds a condition in time, code checks bare existence (e.g. "excluded
+     that month" implemented as "excluded if a row exists, ever" — a missing date/cycle filter).
+   Include a verification CASE for each suspicion directly in the plan you post in step 3.
+
+   **Do NOT spawn a separate `spec-conformance-reviewer` subagent.** It re-reads the whole diff
+   and codebase from scratch (~20-30 min) and BLOCKS you while it runs — historically the single
+   biggest time sink. You're already reading everything; fold the check in at near-zero extra cost.
+
+   A conformance suspicion is a HYPOTHESIS, never a result. It becomes a normal test case proven
+   behaviorally: when it FAILs, the status line earns the `file:line` citation
+   (`:x: [N/total] FAIL — spec says excluded *that month*; member who became Friend in a prior
+   cycle never sees the survey (cause: missing cycle filter, file:line)`). If it proves wrong,
+   it's a quiet PASS. Only a genuinely un-constructable scenario goes to the summary as an open
+   question — never as a found bug.
 
    **A finding is a HYPOTHESIS, never a result.** Do NOT post "the code has a bug" from reading
    alone — every finding becomes a TEST CASE and gets proven (or refuted) behaviorally like any
