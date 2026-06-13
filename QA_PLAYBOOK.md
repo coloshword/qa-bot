@@ -41,43 +41,43 @@ the prompt specifies them explicitly.
         - Epic: same curl with the epic key
         - Children: `curl -s -u "$JIRA_EMAIL:$JIRA_API_TOKEN" "$JIRA_BASE_URL/rest/api/3/search/jql" --data-urlencode 'jql=parent=<EPIC_KEY>' -G --data-urlencode 'fields=summary,description'`
         Read the summaries and descriptions of the children — they give you the full picture of what the epic is building.
-     5. **The actual code.** Once the background `up` logs `SOURCE READY` (seconds in), the full
-        Xavier repo at `$QA_XAVIER_CHECKOUT` is on the PR's branch — read the changed files in
-        context (see "Reading the codebase"): how is the changed code reached, what gates it
-        (whitelabel/config/experiment), which surfaces render it?
-     Then generate test cases **scaled to the change**: a small PR gets 2–5; a big PR or epic
-     (multiple child tickets, dozens of files) genuinely deserves more — typically 8–20, covering
-     every shipped user-visible behavior, each child ticket's main flow, plus regressions. Do not
-     compress an epic into 5 cases.
-     Prioritize: happy path first, then edge cases, then regression (does anything the PR touches still work).
-     The diff tells you what changed; the PR + ticket + epic tell you what it's supposed to do;
-     the code tells you where it's actually reachable. Use all of it.
+     5. **A QUICK skim of the changed code** (not exhaustive) — `$QA_XAVIER_CHECKOUT` is on the
+        branch once `up` logs `SOURCE READY`. Glance at the changed files to see which surfaces
+        render the behavior; you do NOT need a deep clause-by-clause read here — that happens in
+        parallel (the conformance subagent in step 5b) while cases already run.
+     Then generate test cases **scaled to the change** but kept FOCUSED — a small PR gets 2–5; an
+     epic gets ~6–8 high-value cases covering the DISTINCT user-visible behaviors + each child
+     ticket's main flow. Consolidate trivial variations (don't make scale-submit, yesno-submit,
+     dismiss, mark-seen, title-sub each their own case if one flow exercises several). More cases
+     ≠ better QA; they multiply run time. Conformance-divergence cases get added in step 5b.
+     Prioritize happy path first, then the conformance divergences, then regression.
+
+     **SPEED — this planning phase is on the critical path; keep it tight.** Skim, don't
+     exhaustively read; the deep code analysis is delegated to a parallel subagent next.
 
 3. **Post the test plan** — @-mention the requester:
    ```
    node "$QA_POST_BIN" msg --mention "test plan:\n1. <case>\n2. <case>\n..."
    ```
 
-4. **Conformance check — do it YOURSELF during planning, not as a separate subagent.** You
-   already read the ENTIRE diff + PR + ticket + the changed code in `$QA_XAVIER_CHECKOUT` to
-   build the plan (step 2). As part of that SAME read, check the spec's clauses against the code
-   for divergences — the bug class blind behavioral testing rarely reaches:
-   - temporal scope ("that month", "this cycle", cooldown), cardinality ("3k each", "no overlap"),
-     exclusions ("exclude X") and their duration, resets, and spec numbers vs hardcoded numbers.
-   - The classic: spec bounds a condition in time, code checks bare existence (e.g. "excluded
-     that month" implemented as "excluded if a row exists, ever" — a missing date/cycle filter).
-   Include a verification CASE for each suspicion directly in the plan you post in step 3.
+4. **Run conformance CONCURRENTLY with the first case wave — never before it.** The spec-vs-code
+   clause check (the bug class blind testing misses) takes ~20-30 min of reading. Doing it before
+   cases — whether as a blocking subagent OR inline during planning — puts that whole cost on the
+   critical path. Instead, OVERLAP it with case execution:
 
-   **Do NOT spawn a separate `spec-conformance-reviewer` subagent.** It re-reads the whole diff
-   and codebase from scratch (~20-30 min) and BLOCKS you while it runs — historically the single
-   biggest time sink. You're already reading everything; fold the check in at near-zero extra cost.
+   In step 6, your FIRST delegation message batches, concurrently (multiple Task calls in one
+   message run in parallel): the `spec-conformance-reviewer` subagent (pure reading, needs no
+   lane) **+** your first wave of happy-path case subagents. The reviewer reads clause-by-clause
+   for divergences — temporal scope ("that month", cooldown), cardinality, exclusions and their
+   duration, spec-vs-hardcoded numbers; the classic being "spec bounds a condition in time, code
+   checks bare existence" (missing date/cycle filter) — WHILE the happy cases run. Its findings
+   come back with that batch; promote each to a verification case in the next wave.
 
-   A conformance suspicion is a HYPOTHESIS, never a result. It becomes a normal test case proven
-   behaviorally: when it FAILs, the status line earns the `file:line` citation
-   (`:x: [N/total] FAIL — spec says excluded *that month*; member who became Friend in a prior
+   A conformance suspicion is a HYPOTHESIS, never a result — it becomes a normal case proven
+   behaviorally. When it FAILs, the status line earns the `file:line` citation
+   (`:x: [N/total] FAIL — spec says excluded *that month*; a member who became Friend in a prior
    cycle never sees the survey (cause: missing cycle filter, file:line)`). If it proves wrong,
-   it's a quiet PASS. Only a genuinely un-constructable scenario goes to the summary as an open
-   question — never as a found bug.
+   quiet PASS. Only a genuinely un-constructable scenario goes to the summary as an open question.
 
    **A finding is a HYPOTHESIS, never a result.** Do NOT post "the code has a bug" from reading
    alone — every finding becomes a TEST CASE and gets proven (or refuted) behaviorally like any
