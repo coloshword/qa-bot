@@ -70,3 +70,11 @@ post-ship survey Friend exclusion uses hasMessage() (AccountMessageDb.ts:219-231
 - postShipSurveyCache.get() fails when assignPostShipSurvey is run standalone in script context (cache not init); use with full core server or test components individually
 - hasMessage() behavior proven: returns true for past-cycle Friend popup; hasMessageByCycle() correctly returns false — bug confirmed behaviorally
 - survey_response source=site for SNES submissions; app submissions should send source=app
+
+## PR-18835 / EN-14656 Post Ship Survey — 2026-06-13 (run 5 / app-side)
+- Scale survey radio IDs: button-scale-survey-text-selector-{1-5}; option IDs are survey question IDs, not integers 1-5
+- SNES submits survey with source=site; app (SurveyContext.tsx) submits with source=app — both record correctly in survey_response.source
+- surveyId vs surveyID casing (backend.js uses uppercase D in URL; SurveyContext sends lowercase d) — NOT a bug; Core ignores URL param and uses body surveyId field, POST to survey/undefined still saves correctly
+- Screenshots taken by subagents go to run root dir (QA_BOTT/runs/<run-id>/) NOT to artifacts/; use full path for qa-post img
+- Survey 50 (scale) question options are named "1"-"5" in DB, not "Very unlikely"/"Very likely"; UI adds hardcoded endpoint labels
+- Lane 2 add-lane completes asynchronously; check status with qa-stack status --slot 2 before spawning subagents

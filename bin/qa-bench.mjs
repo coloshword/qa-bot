@@ -123,8 +123,13 @@ async function main() {
 
   const spec = fs.readFileSync(specFile, 'utf8');
   const playbook = fs.readFileSync(path.join(ROOT, 'QA_PLAYBOOK.md'), 'utf8');
-  const gotchasFile = path.join(ROOT, 'QA_GOTCHAS.md');
-  const priorGotchas = fs.existsSync(gotchasFile) ? fs.readFileSync(gotchasFile, 'utf8').slice(-6000) : '';
+  // Frozen, spoiler-free gotchas: every benchmark run starts from the SAME fresh-QA knowledge
+  // state and appends to a throwaway. Otherwise prior runs leak the bug ("already known from
+  // run 4") and later runs skip re-proving it — wrecking both correctness signal and reproducibility.
+  const frozen = path.join(BENCH_DIR, 'gotchas-frozen.md');
+  const gotchasFile = path.join(runDir, 'gotchas.md');
+  fs.copyFileSync(frozen, gotchasFile);
+  const priorGotchas = fs.readFileSync(gotchasFile, 'utf8').slice(-6000);
   const prompt = renderPrompt(spec, priorGotchas);
 
   const env = {

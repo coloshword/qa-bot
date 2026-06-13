@@ -1,0 +1,228 @@
+{"t":8,"tool":"Bash","sum":"echo \"QA_STACK_BIN=$QA_STACK_BIN\" && echo \"QA_POST_BIN=$QA_POST_BIN\" && echo \"QA_ARTIFACTS_DIR=$QA_ARTIFACTS_DIR\" && echo \"QA_STACK_SLOT=$QA_STACK_SLOT\" && echo \"QA_RUN_ID=$QA_RUN_ID\" && echo \"QA_GOTC"}
+{"t":9,"tool":"Bash","sum":"gh pr view https://github.com/bookofthemonthclub/Xavier/pull/18835 --json headRefName,title,body,url,author"}
+{"t":14,"tool":"Bash","sum":"node \"$QA_STACK_BIN\" up qa-bot-test-17647 --whitelabel botm 2>&1 &\necho \"Stack build started in background with PID $!\""}
+{"t":15,"tool":"Bash","sum":"gh pr diff https://github.com/bookofthemonthclub/Xavier/pull/18835 2>&1 | head -2000"}
+{"t":18,"tool":"Bash","sum":"curl -s -u \"$JIRA_EMAIL:$JIRA_API_TOKEN\" \"$JIRA_BASE_URL/rest/api/3/issue/EN-14656?fields=summary,description,parent,issuetype\" 2>&1 | python3 -c \"\nimport json,sys\nd=json.load(sys.stdin)\nprint('Summar"}
+{"t":24,"tool":"Read","sum":"{\"file_path\":\"/Users/aceroliangli/.claude/projects/-Users-aceroliangli-work-QA-BOTT-runs-fdf7797d-7fc3-4ee9-9bb9-842d2c106827/fdf7797d-7fc3-4ee9-9bb9-842d2c106827/tool-results/b1wrri65j.txt\"}"}
+{"t":26,"tool":"Bash","sum":"Read /private/tmp/claude-502/-Users-aceroliangli-work-QA-BOTT-runs-fdf7797d-7fc3-4ee9-9bb9-842d2c106827/fdf7797d-7fc3-4ee9-9bb9-842d2c106827/tasks/bl38h33u1.output 2>/dev/null | tail -50 || cat /priva"}
+{"t":30,"tool":"Bash","sum":"curl -s -u \"$JIRA_EMAIL:$JIRA_API_TOKEN\" \"$JIRA_BASE_URL/rest/api/3/search/jql\" --data-urlencode 'jql=parent=EN-14656' -G --data-urlencode 'fields=summary,description' 2>&1 | python3 -c \"\nimport json,"}
+{"t":76,"tool":"Bash","sum":"node \"$QA_STACK_BIN\" status 2>&1"}
+{"t":77,"tool":"Bash","sum":"gh pr diff https://github.com/bookofthemonthclub/Xavier/pull/18835 2>&1 | grep \"^diff --git\" | head -50"}
+{"t":88,"tool":"Bash","sum":"node \"$QA_STACK_BIN\" up qa-bot-test-17647 --whitelabel botm 2>&1 | tail -20 &\necho \"Restarting stack...\""}
+{"t":89,"tool":"Bash","sum":"cat \"$QA_XAVIER_CHECKOUT/core/src/api/PostShipSurvey/actions/PostShipSurveyActions.ts\" 2>/dev/null | head -200"}
+{"t":91,"tool":"Bash","sum":"cat \"$QA_XAVIER_CHECKOUT/core/src/api/AccountMessage/AccountMessageDb.ts\" 2>/dev/null | grep -n \"hasMessage\\|hasMessageBy\\|postShip\\|survey\\|friend\\|Friend\\|bff\\|BFF\\|cycle\" | head -60"}
+{"t":92,"tool":"Bash","sum":"cat \"$QA_XAVIER_CHECKOUT/core/src/api/Box/BoxActions.ts\" 2>/dev/null | grep -n \"postShip\\|survey\\|assignPost\" | head -30"}
+{"t":100,"tool":"Bash","sum":"node \"$QA_STACK_BIN\" status 2>&1"}
+{"t":101,"tool":"Bash","sum":"cat \"$QA_XAVIER_CHECKOUT/core/src/api/PostShipSurvey/utils/PostShipSurveyUtils.ts\" 2>/dev/null"}
+{"t":102,"tool":"Bash","sum":"cat \"$QA_XAVIER_CHECKOUT/app/src/utils/getPostShipSurveyInfo.ts\" 2>/dev/null"}
+{"t":162,"tool":"Bash","sum":"node \"$QA_STACK_BIN\" start snes 2>&1 &\necho \"Starting SNES...\""}
+{"t":163,"tool":"Bash","sum":"node \"$QA_STACK_BIN\" sql \"SELECT id, name FROM message WHERE name LIKE '%Post Ship%' OR name LIKE '%Survey%' OR name LIKE '%survey%' LIMIT 20\""}
+{"t":164,"tool":"Bash","sum":"node \"$QA_STACK_BIN\" sql \"DESCRIBE survey_response\""}
+{"t":164,"tool":"Bash","sum":"cat \"$QA_XAVIER_CHECKOUT/app/src/utils/getSelectionProductFromCycle.ts\" 2>/dev/null"}
+{"t":172,"tool":"Bash","sum":"node \"$QA_STACK_BIN\" status 2>&1"}
+{"t":173,"tool":"Bash","sum":"node \"$QA_STACK_BIN\" sql \"SELECT id, name FROM message WHERE name LIKE '%Post Ship%' OR name LIKE '%Survey%'\" 2>&1"}
+{"t":174,"tool":"Bash","sum":"node \"$QA_STACK_BIN\" sql \"SELECT id, cycle_id, bucket_start, bucket_end FROM post_ship_survey_config ORDER BY id DESC LIMIT 5\" 2>&1"}
+{"t":179,"tool":"Bash","sum":"node \"$QA_STACK_BIN\" logs snes 50 2>&1 | tail -30"}
+{"t":180,"tool":"Bash","sum":"node \"$QA_STACK_BIN\" sql \"SHOW TABLES LIKE 'message'\" 2>&1"}
+{"t":181,"tool":"Bash","sum":"node \"$QA_STACK_BIN\" sql \"SELECT id, name FROM message LIMIT 5\" 2>&1"}
+{"t":187,"tool":"Bash","sum":"lsof -i :20030 2>&1 | head -10"}
+{"t":187,"tool":"Bash","sum":"node \"$QA_STACK_BIN\" sql \"DESCRIBE message\" 2>&1"}
+{"t":197,"tool":"Bash","sum":"node \"$QA_STACK_BIN\" sql \"SELECT id, message FROM message WHERE id IN (69, 70, 60, 61)\" 2>&1"}
+{"t":197,"tool":"Bash","sum":"node \"$QA_STACK_BIN\" sql \"DESCRIBE account_message\" 2>&1"}
+{"t":197,"tool":"Bash","sum":"kill 1579 2>&1 && sleep 2 && node \"$QA_STACK_BIN\" start snes 2>&1 &\necho \"Killing old SNES and restarting...\""}
+{"t":211,"tool":"Bash","sum":"cat \"$QA_XAVIER_CHECKOUT/core/src/api/AccountMessage/AccountMessageDb.ts\" 2>/dev/null | sed -n '215,260p'"}
+{"t":211,"tool":"Bash","sum":"node \"$QA_STACK_BIN\" pool 2>&1"}
+{"t":298,"tool":"Bash","sum":"node \"$QA_STACK_BIN\" status 2>&1 && curl -s -o /dev/null -w \"%{http_code}\" http://localhost:20030/en-US/box 2>&1"}
+{"t":298,"tool":"Bash","sum":"node \"$QA_STACK_BIN\" logs snes 30 2>&1 | tail -20"}
+{"t":361,"tool":"Bash","sum":"node \"$QA_STACK_BIN\" add-lane qa-bot-test-17647 --owner \"$QA_RUN_ID\" --whitelabel botm 2>&1 &\necho \"Adding lane 2...\""}
+{"t":361,"tool":"Bash","sum":"node \"$QA_STACK_BIN\" sql \"SELECT id, email FROM account WHERE email IN ('ava.meisel@bookofthemonth.com','dana.allen@bookofthemonth.com','gabriela.voll@bookofthemonth.com') ORDER BY id\" 2>&1"}
+{"t":364,"tool":"Bash","sum":"node \"$QA_STACK_BIN\" sql \"SELECT am.account_id, am.message_id, m.message, am.active, am.seen_cycle_id FROM account_message am JOIN message m ON m.id=am.message_id WHERE am.account_id IN (7793673, 5286"}
+{"t":375,"tool":"Bash","sum":"cat /private/tmp/claude-502/-Users-aceroliangli-work-QA-BOTT-runs-fdf7797d-7fc3-4ee9-9bb9-842d2c106827/fdf7797d-7fc3-4ee9-9bb9-842d2c106827/tasks/bfvqj8cmr.output 2>/dev/null"}
+{"t":377,"tool":"Bash","sum":"node \"$QA_STACK_BIN\" add-lane qa-bot-test-17647 --owner \"$QA_RUN_ID\" --whitelabel botm 2>&1 &\necho \"Adding lane 3...\""}
+{"t":383,"tool":"Bash","sum":"cat /private/tmp/claude-502/-Users-aceroliangli-work-QA-BOTT-runs-fdf7797d-7fc3-4ee9-9bb9-842d2c106827/fdf7797d-7fc3-4ee9-9bb9-842d2c106827/tasks/by6l8tx5g.output 2>/dev/null"}
+{"t":383,"tool":"Bash","sum":"node \"$QA_STACK_BIN\" pool 2>&1"}
+{"t":433,"tool":"Bash","sum":"node \"$QA_POST_BIN\" msg --mention \"test plan for PR #18835 (EN-14656 Post Ship Survey — run 5, app-side):\n\nThis PR adds the React Native app implementation (EN-14678 + EN-14670) on top of previously-m"}
+{"t":464,"tool":"Agent","sum":"{\"description\":\"Spec conformance review for PR 18835\",\"subagent_type\":\"spec-conformance-reviewer\",\"prompt\":\"Perform a clause-by-clause spec conformance review of PR https://github.com/bookofthemonthcl"}
+{"t":468,"tool":"Bash","sum":"gh pr diff https://github.com/bookofthemonthclub/Xavier/pull/18835 2>/dev/null | head -200"}
+{"t":469,"tool":"Bash","sum":"ls $QA_XAVIER_CHECKOUT/app/src/ui/components/box/ 2>/dev/null || echo \"QA_XAVIER_CHECKOUT not set or path not found\""}
+{"t":473,"tool":"Bash","sum":"cat -n $QA_XAVIER_CHECKOUT/app/src/ui/components/box/PostShipSurveyCard.tsx"}
+{"t":474,"tool":"Bash","sum":"cat -n $QA_XAVIER_CHECKOUT/app/src/ui/contexts/SurveyContext.tsx"}
+{"t":479,"tool":"Bash","sum":"cat -n $QA_XAVIER_CHECKOUT/app/src/ui/components/survey/Survey/ScaleSurvey.tsx"}
+{"t":479,"tool":"Bash","sum":"cat -n $QA_XAVIER_CHECKOUT/app/src/ui/components/survey/Survey/YesNoSurvey.tsx"}
+{"t":483,"tool":"Bash","sum":"cat -n $QA_XAVIER_CHECKOUT/app/src/ui/elements/cards/SurveyCard.tsx"}
+{"t":484,"tool":"Bash","sum":"cat -n $QA_XAVIER_CHECKOUT/app/src/utils/getPostShipSurveyInfo.ts"}
+{"t":487,"tool":"Bash","sum":"cat -n $QA_XAVIER_CHECKOUT/app/src/utils/getSelectionProductFromCycle.ts"}
+{"t":487,"tool":"Bash","sum":"cat -n $QA_XAVIER_CHECKOUT/app/src/ui/components/survey/Survey/utils.ts"}
+{"t":492,"tool":"Bash","sum":"cat -n $QA_XAVIER_CHECKOUT/core/src/api/PostShipSurvey/actions/PostShipSurveyActions.ts"}
+{"t":492,"tool":"Bash","sum":"cat -n $QA_XAVIER_CHECKOUT/core/src/api/AccountMessage/AccountMessageDb.ts 2>/dev/null | head -280"}
+{"t":497,"tool":"Bash","sum":"cat -n $QA_XAVIER_CHECKOUT/core/src/api/AccountMessage/AccountMessageDb.ts 2>/dev/null | tail -80"}
+{"t":497,"tool":"Bash","sum":"find $QA_XAVIER_CHECKOUT/core/src/api -name \"PostShipSurveyUtils*\" 2>/dev/null"}
+{"t":501,"tool":"Bash","sum":"cat -n $QA_XAVIER_CHECKOUT/core/src/api/PostShipSurvey/utils/PostShipSurveyUtils.ts"}
+{"t":503,"tool":"Bash","sum":"grep -rn \"FRIEND_TIER_BOX_CONFIRMATION_POPUP_MESSAGE_ID\\|BFF_TIER_BOX_CONFIRMATION_POPUP_MESSAGE_ID\" $QA_XAVIER_CHECKOUT/core/src/api/Box/BoxDb.ts 2>/dev/null | head -20"}
+{"t":507,"tool":"Bash","sum":"grep -n \"hasMessage\\|hasMessageByCycle\" $QA_XAVIER_CHECKOUT/core/src/api/PostShipSurvey/actions/PostShipSurveyActions.ts"}
+{"t":508,"tool":"Bash","sum":"grep -rn \"showAppFeature\\|feature.*135\\|135.*feature\\|Post Ship Survey\" $QA_XAVIER_CHECKOUT/app/src/utils/showAppFeature.ts 2>/dev/null || find $QA_XAVIER_CHECKOUT/app/src/utils -name \"showAppFeature*"}
+{"t":511,"tool":"Bash","sum":"cat -n $QA_XAVIER_CHECKOUT/app/src/utils/showAppFeature.ts"}
+{"t":512,"tool":"Bash","sum":"grep -rn \"feature.*id.*135\\|135.*feature\\|Post Ship Survey\" $QA_XAVIER_CHECKOUT/core/src/api/ 2>/dev/null | grep -v \".test.\" | head -20"}
+{"t":515,"tool":"Bash","sum":"grep -rn \"featureId.*135\\|id.*135\\|135.*id\\|Post Ship Survey\" $QA_XAVIER_CHECKOUT/core/src/api/ 2>/dev/null | grep -v \".test.\" | head -30"}
+{"t":516,"tool":"Bash","sum":"grep -rn \"isAppFeatureEligible\\|featureName\" $QA_XAVIER_CHECKOUT/core/src/api/ 2>/dev/null | grep -v \".test.\" | head -20"}
+{"t":519,"tool":"Bash","sum":"cat -n $QA_XAVIER_CHECKOUT/core/src/api/AppFeature/AppFeatureDb.ts | sed -n '270,310p'"}
+{"t":520,"tool":"Bash","sum":"grep -n \"markMessageAsSeen\\|justSubmittedPostShipSurvey\\|account_message\" $QA_XAVIER_CHECKOUT/app/src/ui/hooks/useAccount.ts 2>/dev/null | head -20"}
+{"t":524,"tool":"Bash","sum":"grep -rn \"markMessageAsSeen\\|getActiveMessageByName\" $QA_XAVIER_CHECKOUT/app/src/ui/hooks/ 2>/dev/null | head -30"}
+{"t":525,"tool":"Bash","sum":"grep -rn \"markMessageAsSeen\\|getActiveMessageByName\" $QA_XAVIER_CHECKOUT/app/src/ 2>/dev/null | grep -v \".test.\" | head -20"}
+{"t":529,"tool":"Bash","sum":"sed -n '310,360p' $QA_XAVIER_CHECKOUT/app/src/ui/skeleton/AccountProvider.js"}
+{"t":530,"tool":"Bash","sum":"sed -n '330,360p' $QA_XAVIER_CHECKOUT/app/src/ui/skeleton/AccountProvider.js"}
+{"t":533,"tool":"Bash","sum":"grep -n \"updateIfExists\\|setSurveyResponse\" $QA_XAVIER_CHECKOUT/app/src/state/survey/backend.ts 2>/dev/null || find $QA_XAVIER_CHECKOUT/app/src/state -name \"*.ts\" -path \"*survey*\" 2>/dev/null"}
+{"t":534,"tool":"Bash","sum":"find $QA_XAVIER_CHECKOUT/app/src -path \"*survey*backend*\" -o -path \"*survey*Backend*\" 2>/dev/null | head -5"}
+{"t":537,"tool":"Bash","sum":"cat -n $QA_XAVIER_CHECKOUT/app/src/state/survey/backend.js"}
+{"t":540,"tool":"Bash","sum":"grep -n \"surveyID\\|surveyId\" $QA_XAVIER_CHECKOUT/app/src/state/survey/backend.js $QA_XAVIER_CHECKOUT/app/src/ui/contexts/SurveyContext.tsx 2>/dev/null | head -20"}
+{"t":547,"tool":"Bash","sum":"grep -n \"surveyID\\|surveyId\" $QA_XAVIER_CHECKOUT/app/src/ui/contexts/SurveyContext.tsx | grep -i \"response\\|setSurveyResponse\\|post\""}
+{"t":550,"tool":"Bash","sum":"grep -n \"surveyResponse\\s*=\" $QA_XAVIER_CHECKOUT/app/src/ui/contexts/SurveyContext.tsx | head -10"}
+{"t":553,"tool":"Bash","sum":"sed -n '538,562p' $QA_XAVIER_CHECKOUT/app/src/ui/contexts/SurveyContext.tsx"}
+{"t":558,"tool":"Bash","sum":"grep -rn \"surveyID\\b\" $QA_XAVIER_CHECKOUT/app/src/ 2>/dev/null | grep -v \".test.\" | head -20"}
+{"t":559,"tool":"Bash","sum":"grep -rn \"setSurveyResponse\\|surveyID\\|surveyId\" $QA_XAVIER_CHECKOUT/app/src/state/survey/ 2>/dev/null"}
+{"t":563,"tool":"Bash","sum":"grep -rn \"surveyId\\|surveyID\" $QA_XAVIER_CHECKOUT/app/src/state/survey/ $QA_XAVIER_CHECKOUT/app/src/ui/screens/ 2>/dev/null | grep \"setSurveyResponse\\|surveyResponse\" | grep -v \".test.\" | head -20"}
+{"t":568,"tool":"Bash","sum":"grep -rn \"surveyId\\|surveyID\" $QA_XAVIER_CHECKOUT/app/src/ui/screens/ 2>/dev/null | grep -v \".test.\" | grep \"surveyResponse\\|setSurvey\" | head -20"}
+{"t":569,"tool":"Bash","sum":"find $QA_XAVIER_CHECKOUT/app/src -name \"*.tsx\" -o -name \"*.ts\" -o -name \"*.js\" | xargs grep -l \"setSurveyResponse\\|submitSurvey\" 2>/dev/null | grep -v \".test.\" | head -10"}
+{"t":573,"tool":"Bash","sum":"grep -n \"surveyID\\|surveyId\" $QA_XAVIER_CHECKOUT/app/src/ui/screens/SkipSurveyModal.js | head -10"}
+{"t":574,"tool":"Bash","sum":"grep -n \"surveyID\\|surveyId\" $QA_XAVIER_CHECKOUT/app/src/ui/components/survey/SurveyQuestions.js | head -10"}
+{"t":579,"tool":"Bash","sum":"grep -n \"setSurveyResponse\\|surveyID\\|surveyId\" $QA_XAVIER_CHECKOUT/app/src/ui/components/survey/SurveyQuestions.js | head -20"}
+{"t":587,"tool":"Bash","sum":"grep -n \"surveyID\\|surveyId\" $QA_XAVIER_CHECKOUT/app/src/ui/components/post_join/PostJoinSurvey.js | head -20"}
+{"t":588,"tool":"Bash","sum":"grep -rn \"surveyID\" $QA_XAVIER_CHECKOUT/core/src/ 2>/dev/null | grep -v \".test.\" | head -10"}
+{"t":593,"tool":"Bash","sum":"grep -n \"source.*app\\|source.*site\\|source:\" $QA_XAVIER_CHECKOUT/app/src/ui/components/survey/SurveyQuestions.js | head -10"}
+{"t":595,"tool":"Bash","sum":"grep -rn \"source.*app\\|source.*site\" $QA_XAVIER_CHECKOUT/app/src/ 2>/dev/null | grep -v \".test.\\|node_modules\\|.map\" | grep \"survey\\|Survey\" | head -15"}
+{"t":600,"tool":"Bash","sum":"grep -n \"feature.*id\\|featureId\\|feature_id\\|id.*135\\|135\" $QA_XAVIER_CHECKOUT/core/src/api/AppFeature/AppFeatureDb.ts | head -20"}
+{"t":600,"tool":"Bash","sum":"grep -rn \"135\\b\" $QA_XAVIER_CHECKOUT/core/src/api/PostShipSurvey/ 2>/dev/null | head -10"}
+{"t":605,"tool":"Bash","sum":"grep -rn \"'Post Ship Survey'\\|\\\"Post Ship Survey\\\"\" $QA_XAVIER_CHECKOUT/app/src/ $QA_XAVIER_CHECKOUT/core/src/ 2>/dev/null | grep -v \".test.\" | head -10"}
+{"t":609,"tool":"Bash","sum":"grep -rn \"Post Ship ScaleSurvey\\|Post Ship YesNoSurvey\\|Post Ship\" $QA_XAVIER_CHECKOUT/core/src/ 2>/dev/null | grep -v \".test.\" | head -10"}
+{"t":613,"tool":"Bash","sum":"grep -rn \"message.*69\\|message.*70\\|messageId.*69\\|messageId.*70\\|69.*message\\|70.*message\\|POST_SHIP_SURVEY\" $QA_XAVIER_CHECKOUT/core/src/ 2>/dev/null | grep -v \".test.\" | head -20"}
+{"t":617,"tool":"Bash","sum":"grep -rn \"Post Ship ScaleSurvey\\|Post Ship YesNoSurvey\\|Post Ship\" $QA_XAVIER_CHECKOUT/core/src/ $QA_XAVIER_CHECKOUT/app/src/ 2>/dev/null | grep -v \".test.\" | head -15"}
+{"t":619,"tool":"Bash","sum":"grep -rn \"INSERT.*message\\|message.*69\\|69.*message\\|70.*message\" $QA_XAVIER_CHECKOUT/core/src/ 2>/dev/null | grep -i \"post.ship\\|scale\\|yesno\\|yes.no\" | head -10"}
+{"t":622,"tool":"Bash","sum":"grep -rn \"Post Ship\\|postShip\\|post_ship\" $QA_XAVIER_CHECKOUT/core/db/ 2>/dev/null | head -20 || find $QA_XAVIER_CHECKOUT -name \"*.sql\" -o -name \"*seed*\" -o -name \"*migration*\" 2>/dev/null | xargs gre"}
+{"t":626,"tool":"Bash","sum":"find $QA_XAVIER_CHECKOUT -name \"*.sql\" 2>/dev/null | head -10 && find $QA_XAVIER_CHECKOUT -name \"*seed*\" 2>/dev/null | head -10"}
+{"t":626,"tool":"Bash","sum":"find $QA_XAVIER_CHECKOUT -name \"*migration*\" -o -name \"*seed*\" 2>/dev/null | grep -v \"node_modules\\|.git\" | head -10"}
+{"t":629,"tool":"Bash","sum":"ls $QA_XAVIER_CHECKOUT/core/migrations/ | sort | tail -20"}
+{"t":633,"tool":"Bash","sum":"grep -l \"Post Ship\\|PostShip\\|post_ship\\|ScaleSurvey\\|YesNoSurvey\" $QA_XAVIER_CHECKOUT/core/migrations/*.sql 2>/dev/null"}
+{"t":636,"tool":"Bash","sum":"cat $QA_XAVIER_CHECKOUT/core/migrations/2026_01_08_11_02_47.sql"}
+{"t":639,"tool":"Bash","sum":"cat $QA_XAVIER_CHECKOUT/core/migrations/2026_01_08_14_32_25.sql $QA_XAVIER_CHECKOUT/core/migrations/2026_01_12_17_35_54.sql 2>/dev/null"}
+{"t":644,"tool":"Bash","sum":"grep -rn \"message.*Post Ship\\|Post Ship.*message\\|id.*69\\|id.*70\" $QA_XAVIER_CHECKOUT/core/db/ 2>/dev/null | head -10 || find $QA_XAVIER_CHECKOUT/core -name \"*.json\" -path \"*seed*\" 2>/dev/null | head "}
+{"t":645,"tool":"Bash","sum":"find $QA_XAVIER_CHECKOUT/core -name \"*.json\" 2>/dev/null | xargs grep -l \"Post Ship\\|ScaleSurvey\\|YesNoSurvey\" 2>/dev/null | head -5"}
+{"t":649,"tool":"Bash","sum":"find $QA_XAVIER_CHECKOUT -name \"*.sql\" -o -name \"*.json\" -o -name \"*.ts\" -o -name \"*.js\" 2>/dev/null | xargs grep -l \"Post Ship ScaleSurvey\\|Post Ship YesNoSurvey\" 2>/dev/null | grep -v node_modules |"}
+{"t":696,"tool":"Bash","sum":"cat $QA_XAVIER_CHECKOUT/core/data_migrations/botm/production/2026_01_09_11_23_05.sql"}
+{"t":696,"tool":"Bash","sum":"cat $QA_XAVIER_CHECKOUT/core/data_migrations/botm/production/2026_01_12_17_42_01.sql"}
+{"t":703,"tool":"Bash","sum":"grep -rn \"id.*50\\|id.*51\\|surveyId.*50\\|surveyId.*51\\|50.*surveyId\\|51.*surveyId\" $QA_XAVIER_CHECKOUT/core/src/api/PostShipSurvey/ $QA_XAVIER_CHECKOUT/app/src/utils/ 2>/dev/null | grep -v \".test.\" | h"}
+{"t":704,"tool":"Bash","sum":"grep -rn \"surveyId.*50\\|surveyId.*51\\|50\\|51\" $QA_XAVIER_CHECKOUT/app/src/utils/getPostShipSurveyInfo.ts"}
+{"t":707,"tool":"Bash","sum":"cat $QA_XAVIER_CHECKOUT/snes/app/utils/postShipSurvey.ts 2>/dev/null"}
+{"t":712,"tool":"Bash","sum":"grep -n \"handleDismiss\\|onDismiss\\|markMessageAsSeen\" $QA_XAVIER_CHECKOUT/app/src/ui/components/box/PostShipSurveyCard.tsx"}
+{"t":714,"tool":"Bash","sum":"grep -rn \"active.*0\\|active.*false\\|deactivate\\|markMessageAsSeen\" $QA_XAVIER_CHECKOUT/core/src/api/AccountMessage/ 2>/dev/null | grep -v \".test.\" | head -15"}
+{"t":719,"tool":"Bash","sum":"sed -n '80,83p' $QA_XAVIER_CHECKOUT/app/src/ui/components/box/PostShipSurveyCard.tsx"}
+{"t":721,"tool":"Bash","sum":"grep -n \"onDismiss\\|handleDismiss\" $QA_XAVIER_CHECKOUT/app/src/ui/components/survey/Survey/ScaleSurvey.tsx $QA_XAVIER_CHECKOUT/app/src/ui/components/survey/Survey/YesNoSurvey.tsx $QA_XAVIER_CHECKOUT/a"}
+{"t":724,"tool":"Bash","sum":"sed -n '57,70p' $QA_XAVIER_CHECKOUT/app/src/ui/components/survey/Survey/ScaleSurvey.tsx && echo \"---\" && sed -n '59,71p' $QA_XAVIER_CHECKOUT/app/src/ui/components/survey/Survey/YesNoSurvey.tsx"}
+{"t":730,"tool":"Bash","sum":"grep -n \"Dismiss\\|dismiss\\|close\" $QA_XAVIER_CHECKOUT/app/src/ui/components/survey/Survey/ScaleSurvey.tsx $QA_XAVIER_CHECKOUT/app/src/ui/components/survey/Survey/YesNoSurvey.tsx | head -20"}
+{"t":731,"tool":"Bash","sum":"grep -n \"Dismiss\\|dismiss\\|close\\|X\\|skip\" $QA_XAVIER_CHECKOUT/app/src/ui/elements/cards/SurveyCard.tsx"}
+{"t":736,"tool":"Bash","sum":"grep -rn \"bucket.*2\\|%.*2\\|%2\\|even.*odd\\|odd.*even\\|split\\|50.*50\" $QA_XAVIER_CHECKOUT/core/src/api/PostShipSurvey/ 2>/dev/null | head -10"}
+{"t":737,"tool":"Bash","sum":"cat -n $QA_XAVIER_CHECKOUT/core/src/api/PostShipSurvey/utils/PostShipSurveyUtils.test.ts 2>/dev/null | head -80"}
+{"t":741,"tool":"Bash","sum":"grep -rn \"isStandardMember\\|standard.*member\\|Standard\" $QA_XAVIER_CHECKOUT/core/src/api/Account/util.ts 2>/dev/null | head -10 || find $QA_XAVIER_CHECKOUT/core/src -name \"util.ts\" -path \"*Account*\" 2"}
+{"t":744,"tool":"Bash","sum":"sed -n '180,195p' $QA_XAVIER_CHECKOUT/core/src/api/Account/util.ts"}
+{"t":754,"tool":"Bash","sum":"sed -n '54,78p' $QA_XAVIER_CHECKOUT/app/src/ui/components/box/PostShipSurveyCard.tsx"}
+{"t":754,"tool":"Bash","sum":"grep -n \"active.*messageList\\|messageList.*active\\|!active\\|active === false\" $QA_XAVIER_CHECKOUT/app/src/utils/getPostShipSurveyInfo.ts"}
+{"t":854,"tool":"Bash","sum":"cat \"$QA_XAVIER_CHECKOUT/app/src/state/survey/backend.js\" 2>/dev/null | head -50"}
+{"t":855,"tool":"Bash","sum":"cat \"$QA_XAVIER_CHECKOUT/app/src/state/survey/backend.js\" 2>/dev/null"}
+{"t":888,"tool":"Bash","sum":"# First get a JWT via fastLogin for Ava Meisel (id=7793673)\n# Set password first\nnode \"$QA_STACK_BIN\" sql \"UPDATE account SET password_hash=SHA2(CONCAT('testpass123',password_salt),224) WHERE id=77936"}
+{"t":888,"tool":"Bash","sum":"# Check current cycle\nnode \"$QA_STACK_BIN\" sql \"SELECT current_cycle_id FROM store WHERE id=1\" 2>&1"}
+{"t":896,"tool":"Bash","sum":"# Check the login API response format\ncurl -s -X POST \"http://localhost:20082/api/account/fastLogin?action=login\" \\\n  -H \"Content-Type: application/json\" \\\n  -d '{\"email\":\"Ava.meisel@bookofthemonth.co"}
+{"t":905,"tool":"Bash","sum":"# Capture cookie from login\ncurl -sv -X POST \"http://localhost:20082/api/account/fastLogin?action=login\" \\\n  -H \"Content-Type: application/json\" \\\n  -c /tmp/qa-cookies-ava.txt \\\n  -d '{\"email\":\"Ava.me"}
+{"t":921,"tool":"Bash","sum":"JWT=\"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI3NzkzNjczIiwiZXhwIjoxNzgxOTM0Mzg3LCJyZnQiOjE3ODEzMzA0ODcsInBvbCI6Ik1lbWJlciIsInBzYiI6IkNvdXJ0ZXN5IiwicmduIjoiVVMiLCJmbm0iOiJBdmEiLCJhdmEiOiJIYXBweS"}
+{"t":926,"tool":"Bash","sum":"JWT=\"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI3NzkzNjczIiwiZXhwIjoxNzgxOTM0Mzg3LCJyZnQiOjE3ODEzMzA0ODcsInBvbCI6Ik1lbWJlciIsInBzYiI6IkNvdXJ0ZXN5IiwicmduIjoiVVMiLCJmbm0iOiJBdmEiLCJhdmEiOiJIYXBweS"}
+{"t":941,"tool":"Bash","sum":"node \"$QA_STACK_BIN\" sql \"SELECT id, survey_id, response, source, account_id FROM survey_response WHERE account_id=7793673 ORDER BY id DESC LIMIT 5\" 2>&1"}
+{"t":942,"tool":"Bash","sum":"grep -n \"router\\|post\\|survey\\|undefined\" \"$QA_XAVIER_CHECKOUT/core/src/api/Survey/SurveyDb.ts\" 2>/dev/null | head -30"}
+{"t":943,"tool":"Bash","sum":"find \"$QA_XAVIER_CHECKOUT/core/src\" -name \"*.ts\" | xargs grep -l \"survey\\/:id\\|survey.*POST\\|setSurveyResponse\" 2>/dev/null | head -10"}
+{"t":967,"tool":"Bash","sum":"node \"$QA_STACK_BIN\" sql \"DELETE FROM survey_response WHERE id IN (11357254, 11357255)\" 2>&1"}
+{"t":968,"tool":"Bash","sum":"node \"$QA_STACK_BIN\" sql \"SELECT id, name FROM survey WHERE id IN (50, 51)\" 2>&1"}
+{"t":968,"tool":"Bash","sum":"node \"$QA_STACK_BIN\" status 2>&1"}
+{"t":975,"tool":"Bash","sum":"node \"$QA_STACK_BIN\" pool 2>&1"}
+{"t":982,"tool":"Bash","sum":"# Check if lane 2 core is up\ncurl -s -o /dev/null -w \"Lane2 core: %{http_code}\" http://localhost:20182 2>&1\necho \"\"\n# Check if lane 3 core is up\ncurl -s -o /dev/null -w \"Lane3 core: %{http_code}\" http"}
+{"t":989,"tool":"Bash","sum":"node \"$QA_STACK_BIN\" status --slot 2 2>&1 && echo \"---\" && node \"$QA_STACK_BIN\" status --slot 3 2>&1"}
+{"t":1032,"tool":"Bash","sum":"node \"$QA_POST_BIN\" msg \":mag: conformance review flagged 4 clauses worth verifying — resolved as follows:\n\n• Finding #1 (HIGH): Friend exclusion uses \\`hasMessage()\\` without cycle scope — **KNOWN BU"}
+{"t":1035,"tool":"Bash","sum":"# Lane 2: arrange Ava Meisel (id=7793673) with active scale survey msg\nnode \"$QA_STACK_BIN\" sql --slot 2 \"UPDATE account SET password_hash=SHA2(CONCAT('testpass123',password_salt),224) WHERE id=779367"}
+{"t":1037,"tool":"Bash","sum":"# Lane 3: arrange dana.allen (id=5286615) with active yesno survey msg\nnode \"$QA_STACK_BIN\" sql --slot 3 \"UPDATE account SET password_hash=SHA2(CONCAT('testpass123',password_salt),224) WHERE id=528661"}
+{"t":1042,"tool":"Bash","sum":"node \"$QA_STACK_BIN\" sql --slot 2 \"SELECT am.account_id, am.message_id, m.message, am.active FROM account_message am JOIN message m ON m.id=am.message_id WHERE am.account_id=7793673 AND am.message_id "}
+{"t":1057,"tool":"Bash","sum":"# Check if survey API needs auth\ncurl -s -w \"\\nHTTP:%{http_code}\" \"http://localhost:20082/api/survey/50\" 2>&1 | tail -20"}
+{"t":1090,"tool":"Bash","sum":"node \"$QA_POST_BIN\" msg \"▶ [1/8] Survey 50 (scale) API structure\" 2>&1"}
+{"t":1093,"tool":"Bash","sum":"curl -s \"http://localhost:20082/api/survey/50\" 2>&1 | python3 -c \"\nimport json,sys\nd=json.load(sys.stdin)\nprint('Style:', d.get('style'))\nprint('Name:', d.get('name'))\nprint('Question truncated:', str"}
+{"t":1095,"tool":"Bash","sum":"curl -s \"http://localhost:20082/api/survey/51\" 2>&1 | python3 -c \"\nimport json,sys\nd=json.load(sys.stdin)\nprint('Style:', d.get('style'))\nprint('Name:', d.get('name'))\nprint('Question truncated:', str"}
+{"t":1114,"tool":"Bash","sum":"cat > \"$QA_ARTIFACTS_DIR/case1-survey50.txt\" << 'EOF'\nGET /api/survey/50\nStyle: scale\nName: Post Ship ScaleSurvey\nQuestion: \"If BOTM had not featured %Title%, how likely is it that you would have purc"}
+{"t":1120,"tool":"Bash","sum":"node \"$QA_POST_BIN\" file \"$QA_ARTIFACTS_DIR/case1-survey50.txt\" \"[1+2] Survey 50+51 API structure\" 2>&1"}
+{"t":1127,"tool":"Bash","sum":"node \"$QA_POST_BIN\" msg \":white_check_mark: [1/8] PASS — Survey 50 returns style='scale' with 5 radio options (1-5) and %Title% in question; Survey 51 returns style='yesNo' with Yes/No options and %Ti"}
+{"t":1138,"tool":"Bash","sum":"node \"$QA_POST_BIN\" msg \"▶ [2/8] Survey 51 (yesNo) API structure\" 2>&1 && node \"$QA_POST_BIN\" msg \":white_check_mark: [2/8] PASS — Survey 51 returns style='yesNo' with 2 options (Yes id=7748, No id=77"}
+{"t":1139,"tool":"Bash","sum":"node \"$QA_POST_BIN\" msg \"▶ [3/8] Survey submit with source='app' records correctly in DB\" 2>&1"}
+{"t":1160,"tool":"Bash","sum":"JWT=\"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI3NzkzNjczIiwiZXhwIjoxNzgxOTM0Mzg3LCJyZnQiOjE3ODEzMzA0ODcsInBvbCI6Ik1lbWJlciIsInBzYiI6IkNvdXJ0ZXN5IiwicmduIjoiVVMiLCJmbm0iOiJBdmEiLCJhdmEiOiJIYXBweS"}
+{"t":1163,"tool":"Bash","sum":"node \"$QA_STACK_BIN\" sql \"SELECT id, survey_id, response, source, account_id, resource_id, resource_type FROM survey_response WHERE id=11357256\" 2>&1"}
+{"t":1176,"tool":"Bash","sum":"cat > \"$QA_ARTIFACTS_DIR/case3-source-app.txt\" << 'EOF'\nTest: Survey submission with source='app'\nAccount: Ava.meisel@bookofthemonth.com (id=7793673)\nPOST /api/survey/50?updateIfExists=false\nBody: {su"}
+{"t":1182,"tool":"Bash","sum":"node \"$QA_POST_BIN\" msg \":white_check_mark: [3/8] PASS — Survey response submitted with source='app' via Core API; DB record shows source='app', resourceType='Pdp', correct surveyId and accountId. Sur"}
+{"t":1210,"tool":"Agent","sum":"{\"description\":\"Scale survey browser test cases 4-5 on lane 2\",\"subagent_type\":\"qa-case-executor\",\"prompt\":\"You are executing QA test cases 4 and 5 of 8 for PR #18835 (Post Ship Survey, app-side EN-14"}
+{"t":1215,"tool":"ToolSearch","sum":"{\"query\":\"select:mcp__lane2__browser_navigate,mcp__lane2__browser_take_screenshot,mcp__lane2__browser_snapshot,mcp__lane2__browser_click,mcp__lane2__browser_fill_form,mcp__lane2__browser_type,mcp__lan"}
+{"t":1219,"tool":"Bash","sum":"node \"/Users/aceroliangli/work/QA_BOTT/bin/qa-post.mjs\" msg \"▶ [4/8] Scale survey renders on box page\""}
+{"t":1222,"tool":"mcp__lane2__browser_navigate","sum":"{\"url\":\"http://localhost:20130/en-US/login\"}"}
+{"t":1227,"tool":"Agent","sum":"{\"description\":\"YesNo survey browser test cases 6-7-8 on lane 3\",\"subagent_type\":\"qa-case-executor\",\"prompt\":\"You are executing QA test cases 6, 7, and 8 of 8 for PR #18835 (Post Ship Survey, app-side"}
+{"t":1231,"tool":"ToolSearch","sum":"{\"query\":\"select:mcp__lane3__browser_navigate,mcp__lane3__browser_take_screenshot,mcp__lane3__browser_snapshot,mcp__lane3__browser_click,mcp__lane3__browser_fill_form,mcp__lane3__browser_type,mcp__lan"}
+{"t":1232,"tool":"mcp__lane2__browser_fill_form","sum":"{\"fields\":[{\"target\":\"#email-defaultlogin\",\"name\":\"email\",\"type\":\"textbox\",\"value\":\"Ava.meisel@bookofthemonth.com\"},{\"target\":\"#password-defaultlogin\",\"name\":\"password\",\"type\":\"textbox\",\"value\":\"testp"}
+{"t":1234,"tool":"mcp__lane2__browser_click","sum":"{\"target\":\"#account-submit-login\",\"element\":\"Login submit button\"}"}
+{"t":1235,"tool":"Bash","sum":"node \"$QA_POST_BIN\" msg \"▶ [6/8] YesNo survey renders on box page\""}
+{"t":1235,"tool":"mcp__lane3__browser_navigate","sum":"{\"url\":\"http://localhost:20230/en-US/login\"}"}
+{"t":1240,"tool":"mcp__lane2__browser_wait_for","sum":"{\"time\":3}"}
+{"t":1241,"tool":"mcp__lane3__browser_fill_form","sum":"{\"fields\":[{\"target\":\"#email-defaultlogin\",\"name\":\"email\",\"type\":\"textbox\",\"value\":\"dana.allen@bookofthemonth.com\"},{\"target\":\"#password-defaultlogin\",\"name\":\"password\",\"type\":\"textbox\",\"value\":\"testp"}
+{"t":1244,"tool":"mcp__lane3__browser_click","sum":"{\"target\":\"#account-submit-login\",\"element\":\"Login submit button\"}"}
+{"t":1246,"tool":"mcp__lane2__browser_navigate","sum":"{\"url\":\"http://localhost:20130/en-US/box\"}"}
+{"t":1252,"tool":"mcp__lane2__browser_wait_for","sum":"{\"time\":2}"}
+{"t":1255,"tool":"mcp__lane3__browser_navigate","sum":"{\"url\":\"http://localhost:20230/en-US/box\"}"}
+{"t":1255,"tool":"mcp__lane2__browser_snapshot","sum":"{}"}
+{"t":1261,"tool":"mcp__lane2__browser_take_screenshot","sum":"{\"type\":\"png\",\"filename\":\"case4-survey-renders.png\",\"fullPage\":false}"}
+{"t":1262,"tool":"mcp__lane3__browser_snapshot","sum":"{}"}
+{"t":1267,"tool":"mcp__lane3__browser_take_screenshot","sum":"{\"type\":\"png\",\"filename\":\"case6-survey-renders.png\"}"}
+{"t":1267,"tool":"Bash","sum":"node \"/Users/aceroliangli/work/QA_BOTT/bin/qa-post.mjs\" img \"/Users/aceroliangli/work/QA_BOTT/runs/fdf7797d-7fc3-4ee9-9bb9-842d2c106827/artifacts/case4-survey-renders.png\" \"PASS [4]: PostShipSurveyCar"}
+{"t":1270,"tool":"Bash","sum":"ls /Users/aceroliangli/work/QA_BOTT/runs/fdf7797d-7fc3-4ee9-9bb9-842d2c106827/artifacts/"}
+{"t":1271,"tool":"Bash","sum":"node \"$QA_POST_BIN\" img \"$QA_ARTIFACTS_DIR/case6-survey-renders.png\" \"PASS [6]: PostShipSurveyCard renders on box page with question 'Did you first hear about The Lowe Job from BOTM?' and Yes/No links"}
+{"t":1273,"tool":"Bash","sum":"ls /Users/aceroliangli/work/QA_BOTT/runs/fdf7797d-7fc3-4ee9-9bb9-842d2c106827/artifacts/lane2/"}
+{"t":1274,"tool":"Bash","sum":"ls /Users/aceroliangli/work/QA_BOTT/runs/fdf7797d-7fc3-4ee9-9bb9-842d2c106827/artifacts/"}
+{"t":1275,"tool":"mcp__lane2__browser_take_screenshot","sum":"{\"type\":\"png\",\"filename\":\"lane2/case4-survey-renders.png\"}"}
+{"t":1281,"tool":"Bash","sum":"ls /Users/aceroliangli/work/QA_BOTT/runs/fdf7797d-7fc3-4ee9-9bb9-842d2c106827/"}
+{"t":1283,"tool":"Bash","sum":"ls /Users/aceroliangli/work/QA_BOTT/runs/fdf7797d-7fc3-4ee9-9bb9-842d2c106827/artifacts/lane3/"}
+{"t":1286,"tool":"mcp__lane3__browser_take_screenshot","sum":"{\"type\":\"png\",\"filename\":\"lane3/case6-survey-renders.png\"}"}
+{"t":1286,"tool":"Bash","sum":"node \"/Users/aceroliangli/work/QA_BOTT/bin/qa-post.mjs\" img \"/Users/aceroliangli/work/QA_BOTT/runs/fdf7797d-7fc3-4ee9-9bb9-842d2c106827/case4-survey-renders.png\" \"PASS [4]: PostShipSurveyCard renders "}
+{"t":1289,"tool":"Bash","sum":"ls /Users/aceroliangli/work/QA_BOTT/runs/fdf7797d-7fc3-4ee9-9bb9-842d2c106827/"}
+{"t":1291,"tool":"Bash","sum":"node \"/Users/aceroliangli/work/QA_BOTT/bin/qa-post.mjs\" msg \":white_check_mark: [4/8] PASS — Expected: PostShipSurveyCard with book title, 5 options, Submit disabled. Observed: Card shows 'Main Charac"}
+{"t":1292,"tool":"Bash","sum":"node \"$QA_POST_BIN\" img \"/Users/aceroliangli/work/QA_BOTT/runs/fdf7797d-7fc3-4ee9-9bb9-842d2c106827/case6-survey-renders.png\" \"PASS [6]: PostShipSurveyCard renders on box page with question 'Did you f"}
+{"t":1294,"tool":"Bash","sum":"node \"/Users/aceroliangli/work/QA_BOTT/bin/qa-post.mjs\" msg \"▶ [5/8] Scale survey submit flow\""}
+{"t":1296,"tool":"Bash","sum":"node \"$QA_POST_BIN\" msg \":white_check_mark: [6/8] PASS — PostShipSurveyCard renders on box page showing survey question with book title substituted and Yes/No options · tally: 6/8 cases run\""}
+{"t":1298,"tool":"mcp__lane2__browser_click","sum":"{\"target\":\"ref=e307\",\"element\":\"Scale option 1\"}"}
+{"t":1300,"tool":"Bash","sum":"node \"$QA_POST_BIN\" msg \"▶ [7/8] YesNo survey submit flow\""}
+{"t":1301,"tool":"mcp__lane2__browser_click","sum":"{\"target\":\"[ref=e307]\",\"element\":\"Scale option 1\"}"}
+{"t":1303,"tool":"mcp__lane2__browser_click","sum":"{\"target\":\"input[type=\\\"radio\\\"][value=\\\"1\\\"]\",\"element\":\"Scale radio option 1\"}"}
+{"t":1305,"tool":"mcp__lane3__browser_click","sum":"{\"target\":\"#link-yesno-survey-option-Yes\",\"element\":\"Yes survey option link\"}"}
+{"t":1306,"tool":"mcp__lane2__browser_snapshot","sum":"{\"target\":\"#button-scale-survey-submit\"}"}
+{"t":1308,"tool":"mcp__lane3__browser_snapshot","sum":"{}"}
+{"t":1309,"tool":"mcp__lane2__browser_snapshot","sum":"{\"target\":\"ref=e304\"}"}
+{"t":1312,"tool":"mcp__lane3__browser_take_screenshot","sum":"{\"type\":\"png\",\"filename\":\"case7-survey-submitted.png\"}"}
+{"t":1312,"tool":"ToolSearch","sum":"{\"query\":\"select:mcp__lane2__browser_evaluate\",\"max_results\":1}"}
+{"t":1314,"tool":"Bash","sum":"node \"$QA_STACK_BIN\" sql --slot 3 \"SELECT id, survey_id, response, source FROM survey_response WHERE account_id=5286615 ORDER BY id DESC LIMIT 1\""}
+{"t":1316,"tool":"mcp__lane2__browser_evaluate","sum":"{\"function\":\"() => {\\n  const radios = document.querySelectorAll('input[type=\\\"radio\\\"]');\\n  return Array.from(radios).map(r => ({ id: r.id, name: r.name, value: r.value, type: r.type }));\\n}\"}"}
+{"t":1319,"tool":"mcp__lane2__browser_click","sum":"{\"target\":\"#button-scale-survey-text-selector-1\",\"element\":\"Scale survey option 1\"}"}
+{"t":1320,"tool":"Bash","sum":"node \"$QA_POST_BIN\" img \"/Users/aceroliangli/work/QA_BOTT/runs/fdf7797d-7fc3-4ee9-9bb9-842d2c106827/case7-survey-submitted.png\" \"PASS [7]: Clicking Yes immediately shows 'Thanks for your response!' an"}
+{"t":1325,"tool":"Bash","sum":"node \"$QA_POST_BIN\" msg \":white_check_mark: [7/8] PASS — clicking Yes submits immediately, 'Thanks for your response!' shown, Dismiss link appears, DB survey_response.source='site' · tally: 7/8 cases "}
+{"t":1328,"tool":"mcp__lane2__browser_evaluate","sum":"{\"function\":\"() => {\\n  const radio = document.querySelector('#button-scale-survey-text-selector-1');\\n  if (!radio) return 'not found';\\n  const label = radio.closest('label') || radio.parentElement;"}
+{"t":1331,"tool":"mcp__lane2__browser_click","sum":"{\"target\":\".TextSelector_container__InrLD\",\"element\":\"Scale survey option 1 container\"}"}
+{"t":1331,"tool":"Bash","sum":"node \"$QA_POST_BIN\" msg \"▶ [8/8] %Title% substitution in survey question\""}
+{"t":1334,"tool":"mcp__lane2__browser_click","sum":"{\"target\":\"div.TextSelector_container__InrLD:has(#button-scale-survey-text-selector-1)\",\"element\":\"Scale survey option 1 container\"}"}
+{"t":1336,"tool":"Bash","sum":"node \"$QA_POST_BIN\" img \"/Users/aceroliangli/work/QA_BOTT/runs/fdf7797d-7fc3-4ee9-9bb9-842d2c106827/case6-survey-renders.png\" \"PASS [8]: Survey question shows 'Did you first hear about The Lowe Job fr"}
+{"t":1337,"tool":"mcp__lane2__browser_snapshot","sum":"{\"target\":\"#button-scale-survey-submit\"}"}
+{"t":1340,"tool":"Bash","sum":"node \"$QA_POST_BIN\" msg \":white_check_mark: [8/8] PASS — survey question shows 'Did you first hear about The Lowe Job from BOTM?' with actual book title substituted for %Title% · tally: 8/8 complete, "}
+{"t":1342,"tool":"mcp__lane2__browser_click","sum":"{\"target\":\"#button-scale-survey-submit\",\"element\":\"Submit survey button\"}"}
+{"t":1345,"tool":"mcp__lane2__browser_wait_for","sum":"{\"time\":2}"}
+{"t":1348,"tool":"mcp__lane2__browser_snapshot","sum":"{}"}
+{"t":1353,"tool":"mcp__lane2__browser_take_screenshot","sum":"{\"type\":\"png\",\"filename\":\"case5-survey-submitted.png\"}"}
+{"t":1359,"tool":"Bash","sum":"node \"/Users/aceroliangli/work/QA_BOTT/bin/qa-stack.mjs\" sql --slot 2 \"SELECT id, survey_id, response, source FROM survey_response WHERE account_id=7793673 ORDER BY id DESC LIMIT 1\""}
+{"t":1367,"tool":"Bash","sum":"node \"/Users/aceroliangli/work/QA_BOTT/bin/qa-post.mjs\" img \"/Users/aceroliangli/work/QA_BOTT/runs/fdf7797d-7fc3-4ee9-9bb9-842d2c106827/case5-survey-submitted.png\" \"PASS [5]: After selecting option 1 "}
+{"t":1372,"tool":"Bash","sum":"node \"/Users/aceroliangli/work/QA_BOTT/bin/qa-post.mjs\" msg \":white_check_mark: [5/8] PASS — Expected: Submit enables after option selected, 'Thanks for your response!' appears, Dismiss link shown, DB"}
+{"t":1398,"tool":"Bash","sum":"ls -A \"$QA_INBOX\" 2>/dev/null && echo \"Inbox checked\""}
+{"t":1407,"tool":"Bash","sum":"printf '\\n## PR-18835 / EN-14656 Post Ship Survey — 2026-06-13 (run 5 / app-side)\\n' >> \"$QA_GOTCHAS_FILE\"\nprintf -- '- Scale survey radio IDs: button-scale-survey-text-selector-{1-5}; option IDs are "}
+{"t":1421,"tool":"Bash","sum":"node \"$QA_POST_BIN\" msg --mention \"results: 8/8 passed\n\n- [1] PASS — Survey 50 (scale): style='scale', 5 radio options (1-5, sorted by ID), question with %Title% marker ✓\n- [2] PASS — Survey 51 (yesNo"}
