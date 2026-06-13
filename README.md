@@ -55,7 +55,7 @@ READY) to the QA thread itself.
 | `QA_MODEL` | no | default `claude-sonnet-4-6` |
 | `CLAUDE_MAX_TURNS` | no | default `1500` |
 | `GH_TOKEN` | no | passed to `gh` |
-| `QA_STACK_SLOTS` | no | parallel QA runs / stack slots, default `2` |
+| `QA_TOTAL_STACKS` | no | global budget of isolated stacks shared across all runs, default `3` (RAM-bound, ~3 on 24GB). A run takes 1; a big-epic orchestrator claims more as concurrent lanes. |
 | `QA_XAVIER_SOURCE` | no | path to the seed Xavier clone, default `../Xavier` |
 | `QA_STACKS_DIR` | no | where slot clones live, default `./stacks` |
 | `JIRA_BASE_URL` / `JIRA_EMAIL` / `JIRA_API_TOKEN` | no | Jira ticket context |

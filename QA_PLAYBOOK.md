@@ -120,12 +120,33 @@ snapshots would flood your context and you must last the whole run.
 `subagent_type: "qa-case-executor"`.** Narrating "delegating case N" and then doing the work
 yourself is the #1 failure mode — it defeats the entire design and will exhaust your context on
 a long epic. Hard rules:
-- You may NOT call any `mcp__playwright__*` browser tool. If you're about to, STOP — that work
-  belongs in a Task subagent.
-- One Task at a time (subagents share the one browser); wait for each to return before the next.
+- You may NOT call any `mcp__playwright__*` / `mcp__lane*__*` browser tool yourself. If you're
+  about to, STOP — that work belongs in a Task subagent.
 - The ONLY case you may run inline is a pure-SQL/migration check with no browser step.
 - If a Task call errors "no such agent type", the agent file is at `.claude/agents/` in your cwd
   — that's a real error to report, not a reason to do the case yourself.
+
+### Run cases in parallel across lanes
+
+You start with ONE stack (your primary lane: browser server `playwright`, your `$QA_STACK_SLOT`).
+For a big plan, claim more lanes so cases run concurrently — each lane is a fully isolated stack
+(own DB, redis, core, snes, browser), so cases can't collide even when they mutate state:
+
+1. Check the budget: `node "$QA_STACK_BIN" pool`. For each extra lane you want (up to free count),
+   `node "$QA_STACK_BIN" add-lane <branch> --owner "$QA_RUN_ID" --whitelabel <wl>`. It prints
+   `LANE <id>`, the **browser server** to use (`lane2`, `lane3`, …), and that lane's URLs.
+   (Returns `POOL_FULL` if none free — just run with the lanes you have.)
+2. Distribute cases across lanes and spawn their subagents **concurrently** — issue multiple
+   `Task` calls in ONE message. Each subagent's brief MUST pin it to its lane:
+   - which browser server to use (`mcp__playwright__*` for primary, `mcp__lane2__*` for lane 2, …)
+   - that lane's storefront/core URLs
+   - that lane's `--slot <id>` for any `qa-stack sql/run-script/logs/reset-db`
+3. A subagent must use ONLY its assigned lane's server + URLs + slot — never another lane's.
+4. Keep at most (number of lanes) cases running at once. As one returns, send the next case to
+   that free lane. Update tally + fold STATE_CHANGED into later briefs as before.
+
+Lanes are released automatically when the run ends. One stack = serial (still fine for small
+plans); don't add lanes for ≤4 cases.
 
 Each subagent knows the QA rules but knows NOTHING about this run — its brief must be
 self-contained:

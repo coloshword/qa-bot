@@ -32,5 +32,8 @@ export const config = {
   playbookPath: process.env.PLAYBOOK_PATH ?? path.resolve('QA_PLAYBOOK.md'),
   gotchasPath: process.env.QA_GOTCHAS_FILE ?? path.resolve('QA_GOTCHAS.md'),
   runTimeoutMs: Number(process.env.QA_RUN_TIMEOUT_MINS ?? '90') * 60 * 1000,
-  stackSlots: Number(process.env.QA_STACK_SLOTS ?? '2'),
+  stacksDir: process.env.QA_STACKS_DIR ?? path.resolve('stacks'),
+  // Global budget of isolated stacks shared across all runs (RAM-bound, ~3 on a 24GB box).
+  // A run takes 1 as primary; a big-epic orchestrator claims more as concurrent lanes.
+  totalStacks: Number(process.env.QA_TOTAL_STACKS ?? '3'),
 };

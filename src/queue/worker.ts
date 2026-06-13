@@ -8,6 +8,7 @@ import { runClaude } from '../claude/runner.js';
 import { renderPrompt } from '../claude/prompt.js';
 import { post } from '../slack/post.js';
 import { syncGotchas } from '../gotchas-sync.js';
+import * as pool from '../stack-pool.js';
 import * as sessionStore from '../session-store.js';
 
 const QA_POST_BIN = fileURLToPath(new URL('../../bin/qa-post.mjs', import.meta.url));
@@ -34,16 +35,13 @@ export interface Job {
 
 interface ActiveRun {
   thread: string;
+  primarySlot: number;
+  runId: string;
   kill: () => void;
 }
 
 const queue: Job[] = [];
-const active = new Map<number, ActiveRun>(); // slot -> running job
-
-function freeSlot(): number | undefined {
-  for (let s = 1; s <= config.stackSlots; s++) if (!active.has(s)) return s;
-  return undefined;
-}
+const active = new Map<string, ActiveRun>(); // thread -> running job (holds its primary + any lanes)
 
 export function enqueue(job: Job): void {
   queue.push(job);
@@ -53,9 +51,9 @@ export function enqueue(job: Job): void {
 export function interrupt(thread: string, message: string, client: WebClient, channel: string, requester?: string): boolean {
   const session = sessionStore.get(thread);
   if (!session) return false;
-  const entry = [...active.entries()].find(([, run]) => run.thread === thread);
-  if (!entry) return false;
-  const [slot, run] = entry;
+  const run = active.get(thread);
+  if (!run) return false;
+  const slot = run.primarySlot;
 
   // Explicit stop words are the only thing that kills a run (and its subagents).
   if (/^\s*(stop|abort|cancel|kill)\b/i.test(message)) {
@@ -92,26 +90,39 @@ export function interrupt(thread: string, message: string, client: WebClient, ch
 function pump(): void {
   for (let i = 0; i < queue.length; ) {
     const job = queue[i];
-    const slot = job.requiredSlot ?? freeSlot();
-    if (slot === undefined || active.has(slot)) {
-      i++; // this job can't run now; a later one might (different required slot)
+    if (active.has(job.thread)) {
+      i++; // a run is already live on this thread; don't double-start
+      continue;
+    }
+    const runId = randomUUID();
+    // Resumes try to return to their built stack; fresh jobs take any free stack.
+    let slot: number | undefined;
+    if (job.requiredSlot && pool.claimSpecific(job.requiredSlot, runId)) {
+      slot = job.requiredSlot;
+    } else {
+      slot = pool.claimAny(runId);
+    }
+    if (slot === undefined) {
+      i++; // pool full — leave queued; a finishing run will pump() again
       continue;
     }
     queue.splice(i, 1);
-    active.set(slot, { thread: job.thread, kill: () => {} });
-    void runJob(job, slot).finally(() => {
-      active.delete(slot);
+    active.set(job.thread, { thread: job.thread, primarySlot: slot, runId, kill: () => {} });
+    void runJob(job, slot, runId).finally(() => {
+      const released = pool.releaseOwner(runId); // primary + any lanes the run claimed
+      console.log(`[worker] released stacks [${released.join(',')}] for run ${runId.slice(0, 8)}`);
+      active.delete(job.thread);
       pump();
     });
   }
 }
 
-async function runJob(job: Job, slot: number): Promise<void> {
+async function runJob(job: Job, slot: number, runId: string): Promise<void> {
   try {
     if (job.isResume && job.resumeSessionId) {
-      await executeJob(job, slot, { resumeSessionId: job.resumeSessionId });
+      await executeJob(job, slot, runId, { resumeSessionId: job.resumeSessionId });
     } else {
-      await executeJob(job, slot, {});
+      await executeJob(job, slot, runId, {});
     }
   } catch (e) {
     console.error(`[worker] job failed (slot ${slot})`, e);
@@ -143,25 +154,25 @@ function summarizeTool(name: string, input: unknown): string {
   }
 }
 
+// One browser per possible lane so concurrent subagents don't serialize on a shared browser.
+// First server is `playwright` (the primary lane — keeps single-lane runs unchanged); extras
+// are `lane2`, `lane3`, … The orchestrator assigns an added lane the next free browser server.
+// Servers start lazily-ish (a node process each; the Chromium only launches on first browser call).
 function writeMcpConfig(mcpPath: string, artifactsDir: string): void {
-  fs.writeFileSync(
-    mcpPath,
-    JSON.stringify(
-      {
-        mcpServers: {
-          playwright: {
-            command: 'npx',
-            args: ['@playwright/mcp@latest', '--headless', '--isolated', '--no-sandbox', '--output-dir', artifactsDir],
-          },
-        },
-      },
-      null,
-      2,
-    ),
-  );
+  const servers: Record<string, unknown> = {};
+  for (let id = 1; id <= config.totalStacks; id++) {
+    const name = id === 1 ? 'playwright' : `lane${id}`;
+    const out = path.join(artifactsDir, name);
+    fs.mkdirSync(out, { recursive: true });
+    servers[name] = {
+      command: 'npx',
+      args: ['@playwright/mcp@latest', '--headless', '--isolated', '--no-sandbox', '--output-dir', out],
+    };
+  }
+  fs.writeFileSync(mcpPath, JSON.stringify({ mcpServers: servers }, null, 2));
 }
 
-async function executeJob(job: Job, slot: number, opts: { resumeSessionId?: string }): Promise<void> {
+async function executeJob(job: Job, slot: number, runId: string, opts: { resumeSessionId?: string }): Promise<void> {
   const resuming = !!opts.resumeSessionId;
   const session = resuming ? sessionStore.get(job.thread) : undefined;
   const jobId = randomUUID();
@@ -218,6 +229,7 @@ async function executeJob(job: Job, slot: number, opts: { resumeSessionId?: stri
     QA_DB_BIN,
     QA_STACK_BIN,
     QA_STACK_SLOT: String(slot),
+    QA_RUN_ID: runId, // pool-ownership tag: `qa-stack add-lane --owner $QA_RUN_ID` claims under this
     QA_XAVIER_CHECKOUT: path.join(STACKS_DIR, `slot${slot}`, 'Xavier'),
     QA_INBOX: inboxDir,
     QA_ARTIFACTS_DIR: artifactsDir,
@@ -270,7 +282,7 @@ async function executeJob(job: Job, slot: number, opts: { resumeSessionId?: stri
       },
     },
   );
-  const run = active.get(slot);
+  const run = active.get(job.thread);
   if (run) run.kill = handle.kill;
   const { timedOut } = await handle.promise;
 

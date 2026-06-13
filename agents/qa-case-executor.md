@@ -49,10 +49,21 @@ an EFFECT: before/after DB state around the run, the script's own output, or the
 trigger the mechanism locally → STATUS: BLOCKED ("suspected bug at file:line, couldn't exercise
 the mechanism"), never FAIL. Code-reading + querying existing state is BLOCKED, not FAIL.
 
+## Your lane (isolation)
+
+Your brief names a LANE: a browser server, a set of URLs, and a `--slot <id>`. You may run
+concurrently with other case-executors on other lanes, so stay strictly inside yours:
+
+- Use ONLY your lane's browser tools: `mcp__<server>__*` where `<server>` is the one in your
+  brief (`playwright` for the primary lane, `lane2`/`lane3`/… otherwise). Never another lane's.
+- Use ONLY your lane's URLs, and pass your lane's `--slot <id>` to every
+  `qa-stack sql/run-script/logs/reset-db` so you hit your own DB, not a sibling's.
+- If no lane is specified, you're the only executor: use `playwright` and `$QA_STACK_SLOT`.
+
 ## Tools
 
-- Browser: Playwright MCP tools (screenshots land in `$QA_ARTIFACTS_DIR`).
-- DB: `node "$QA_STACK_BIN" sql "<SQL>"` · logs: `node "$QA_STACK_BIN" logs <svc> [lines]`
+- Browser: your lane's Playwright MCP server (screenshots land in `$QA_ARTIFACTS_DIR`).
+- DB: `node "$QA_STACK_BIN" sql "<SQL>" --slot <your-lane-id>` · logs: `... logs <svc> [n] --slot <id>`
 - Source (read-only, branch under test): `$QA_XAVIER_CHECKOUT`
 - Append non-obvious learnings to `$QA_GOTCHAS_FILE` (terse, reusable lines a stranger could apply).
 

@@ -27,6 +27,57 @@ import { fileURLToPath } from 'node:url';
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const XAVIER_SOURCE = process.env.QA_XAVIER_SOURCE ?? path.resolve(ROOT, '..', 'Xavier');
 const STACKS_DIR = process.env.QA_STACKS_DIR ?? path.join(ROOT, 'stacks');
+const TOTAL_STACKS = Number(process.env.QA_TOTAL_STACKS ?? '3');
+const POOL_DIR = path.join(STACKS_DIR, '.pool');
+
+// Allocation pool, mirroring src/stack-pool.ts (atomic mkdir claims). Shared with the worker.
+function poolTryClaim(id, owner) {
+  fs.mkdirSync(POOL_DIR, { recursive: true });
+  const marker = path.join(POOL_DIR, `claimed-${id}`);
+  try {
+    fs.mkdirSync(marker);
+  } catch {
+    return false;
+  }
+  fs.writeFileSync(path.join(marker, 'owner'), owner);
+  return true;
+}
+function poolClaimAny(owner) {
+  for (let id = 1; id <= TOTAL_STACKS; id++) if (poolTryClaim(id, owner)) return id;
+  return undefined;
+}
+function poolReleaseOwner(owner) {
+  fs.mkdirSync(POOL_DIR, { recursive: true });
+  const released = [];
+  for (const entry of fs.readdirSync(POOL_DIR)) {
+    const m = entry.match(/^claimed-(\d+)$/);
+    if (!m) continue;
+    const dir = path.join(POOL_DIR, entry);
+    let o = '';
+    try {
+      o = fs.readFileSync(path.join(dir, 'owner'), 'utf8').trim();
+    } catch {}
+    if (o === owner) {
+      fs.rmSync(dir, { recursive: true, force: true });
+      released.push(Number(m[1]));
+    }
+  }
+  return released;
+}
+function poolStatus() {
+  fs.mkdirSync(POOL_DIR, { recursive: true });
+  const claimed = {};
+  for (const entry of fs.readdirSync(POOL_DIR)) {
+    const m = entry.match(/^claimed-(\d+)$/);
+    if (!m) continue;
+    let o = '?';
+    try {
+      o = fs.readFileSync(path.join(POOL_DIR, entry, 'owner'), 'utf8').trim();
+    } catch {}
+    claimed[Number(m[1])] = o;
+  }
+  return claimed;
+}
 
 const DB_IMAGES = {
   botm: 'ghcr.io/bookofthemonthclub/xavier/xavier-accountless-db:latest',
@@ -48,13 +99,16 @@ for (let i = 0; i < rawArgs.length; i++) {
   const a = rawArgs[i];
   if (a === '--slot') flags.slot = Number(rawArgs[++i]);
   else if (a === '--whitelabel') flags.whitelabel = rawArgs[++i];
+  else if (a === '--owner') flags.owner = rawArgs[++i];
   else if (a === '--no-pull') flags.noPull = true;
   else args.push(a);
 }
 const cmd = args.shift();
 
+// Pool-level commands operate across stacks and don't need a preset slot.
+const POOL_CMDS = new Set(['pool', 'add-lane', 'release']);
 const slot = flags.slot ?? Number(process.env.QA_STACK_SLOT ?? NaN);
-if (!Number.isInteger(slot) || slot < 1) {
+if (!POOL_CMDS.has(cmd) && (!Number.isInteger(slot) || slot < 1)) {
   die('no slot: set QA_STACK_SLOT or pass --slot <n> (1-based)');
 }
 
@@ -535,6 +589,60 @@ async function cmdDown() {
   console.log(`[slot${slot}] stack down`);
 }
 
+// --- pool / lanes -----------------------------------------------------------
+
+function cmdPool() {
+  const claimed = poolStatus();
+  const used = Object.keys(claimed).length;
+  console.log(`pool: ${used}/${TOTAL_STACKS} stacks claimed, ${TOTAL_STACKS - used} free`);
+  for (let id = 1; id <= TOTAL_STACKS; id++) {
+    console.log(`  stack ${id}: ${claimed[id] ? `claimed by ${claimed[id].slice(0, 8)}` : 'free'}`);
+  }
+}
+
+function cmdRelease() {
+  const owner = flags.owner ?? process.env.QA_RUN_ID;
+  if (!owner) die('usage: qa-stack release --owner <run-id>');
+  const released = poolReleaseOwner(owner);
+  console.log(`released stacks [${released.join(',')}] for owner ${owner.slice(0, 8)}`);
+}
+
+// Claim a free stack and bring the SAME branch up on it — an extra concurrent lane.
+// Prints `LANE <id>` + its browser server name + URLs for the orchestrator to brief a subagent.
+async function cmdAddLane() {
+  const branch = args[0];
+  if (!branch) die('usage: qa-stack add-lane <branch> --owner <run-id> [--whitelabel ...]');
+  const owner = flags.owner ?? process.env.QA_RUN_ID;
+  if (!owner) die('add-lane needs --owner <run-id> (or $QA_RUN_ID)');
+  const whitelabel = flags.whitelabel ?? 'botm';
+
+  const id = poolClaimAny(owner);
+  if (id === undefined) {
+    console.log('POOL_FULL — no free stack; run cases on the lanes you have');
+    return;
+  }
+  console.log(`[lane] claimed stack ${id}; building ${branch} (${whitelabel}) on it...`);
+  const self = fileURLToPath(import.meta.url);
+  const upArgs = [self, 'up', branch, '--slot', String(id), '--whitelabel', whitelabel, '--no-pull'];
+  const code = await new Promise((resolve) => {
+    const child = spawn('node', upArgs, { stdio: 'inherit', env: process.env });
+    child.on('close', resolve);
+  });
+  if (code !== 0) {
+    // release only this stack's claim (leave the run's other lanes intact)
+    fs.rmSync(path.join(POOL_DIR, `claimed-${id}`), { recursive: true, force: true });
+    die(`add-lane: build failed on stack ${id}`);
+  }
+  const lbase = 20000 + (id - 1) * 100;
+  const server = id === 1 ? 'playwright' : `lane${id}`;
+  console.log(`LANE ${id}`);
+  console.log(`  browser server: ${server}  (use mcp__${server}__* tools for this lane)`);
+  console.log(`  storefront: http://localhost:${lbase + 30}`);
+  console.log(`  core API:   http://localhost:${lbase + 82}`);
+  console.log(`  DB:         127.0.0.1:${lbase + 6}  (qa-stack sql ... --slot ${id})`);
+  console.log(`  slot flag:  --slot ${id}  (pass to sql/run-script/logs/reset-db for this lane)`);
+}
+
 // ---------------------------------------------------------------------------
 
 const handlers = {
@@ -546,6 +654,9 @@ const handlers = {
   logs: cmdLogs,
   status: cmdStatus,
   down: cmdDown,
+  pool: cmdPool,
+  release: cmdRelease,
+  'add-lane': cmdAddLane,
 };
 
 const handler = handlers[cmd];
