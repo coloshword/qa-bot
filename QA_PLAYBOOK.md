@@ -367,6 +367,33 @@ Find the script path from the diff/repo (the compiled `build/...` entrypoint the
 source `core/src/scripts/foo.ts` compiles to `build/scripts/foo.js`). It runs against YOUR slot's
 DB/redis with the branch's code. Prove the result by its EFFECT (resulting UI or DB state).
 
+### Exercising a function gated behind a flow (no direct entrypoint)
+
+Some behavior lives in a function that only runs deep inside a flow (e.g. `assignPostShipSurvey`
+fires during the ship flow; eligibility checks run mid-request). You do NOT need to reproduce the
+whole flow — call the function directly with a tiny adhoc script, which is the fastest way to a
+behavioral FAIL:
+
+```bash
+mkdir -p "$QA_XAVIER_CHECKOUT/core/build/scripts/adhoc"
+cat > "$QA_XAVIER_CHECKOUT/core/build/scripts/adhoc/qa_probe.js" << 'EOF'
+const { Core } = require('../../api/Core');           // adjust to the real export path
+(async () => {
+  const core = new Core();                            // wire up as the script entrypoints do
+  const res = await core.someModule.theGatedFunction({ accountId: <arranged>, /* testOverride: true */ });
+  console.log(JSON.stringify(res));                    // prints assigned/eligible/reason — the EFFECT
+  process.exit(0);
+})().catch(e => { console.error(e); process.exit(1); });
+EOF
+node "$QA_STACK_BIN" run-script node build/scripts/adhoc/qa_probe.js 2>&1 | tee "$QA_ARTIFACTS_DIR/probe.txt"
+```
+
+Steps: (1) read the function's signature + how real entrypoints construct `Core` and call it,
+in `$QA_XAVIER_CHECKOUT`; (2) arrange the precondition via SQL (eligibility, an old loyalty row,
+etc.); (3) call the function directly and print its decision/output; (4) that output IS the
+behavioral proof. Use any `testOverride`/dry-run param the function offers to bypass unrelated
+gates. This is how you turn a "can't trigger the real flow" case from BLOCKED into a real FAIL.
+
 ## Ephemeral fallback
 
 Use a real ephemeral instead of the local stack ONLY when the case needs what local can't do:
