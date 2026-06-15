@@ -123,6 +123,11 @@ agent appends new learnings to `$QA_GOTCHAS_FILE` during a run. After each run,
 `src/gotchas-sync.ts` commits **only that file** (pathspec commit) and pushes it, so learnings reach
 the remote and future deployments. Syncs are chained to avoid git-index races between parallel runs.
 
+- `QA_GOTCHAS_UPDATE` (default `true`) gates *writes only* — reads (prompt injection) always happen.
+  When `false`, the worker points `$QA_GOTCHAS_FILE` at a per-run throwaway (`runDir/.gotchas-scratch.md`)
+  and skips the commit+push, freezing `QA_GOTCHAS.md` for reproducible benchmarks. Set off in the
+  current deploy for benchmarking — flip it back on for normal operation.
+
 ## Conventions
 
 - ESM throughout (`"type": "module"`). TS source imports use `.js` extensions (NodeNext). Run via
