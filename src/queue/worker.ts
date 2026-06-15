@@ -2,6 +2,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { randomUUID } from 'node:crypto';
+import { spawn, execFile } from 'node:child_process';
 import type { WebClient } from '@slack/web-api';
 import { config } from '../config.js';
 import { runClaude } from '../claude/runner.js';
@@ -172,6 +173,45 @@ function writeMcpConfig(mcpPath: string, artifactsDir: string): void {
   fs.writeFileSync(mcpPath, JSON.stringify({ mcpServers: servers }, null, 2));
 }
 
+// Pre-warm the primary slot the instant it's claimed: resolve the PR's branch and fire
+// `qa-stack prepare` (checkout + npm install + core tsc — all whitelabel-agnostic) as a
+// detached child, so that heavy work overlaps the agent booting + planning instead of
+// landing serially on the critical path. The agent's own `qa-stack up` reuses it under the
+// per-slot build lock. Entirely best-effort: any failure just means no pre-warm (the agent
+// still builds normally). Fires `onStarted(branch)` once the prepare child is launched.
+function prewarmSlot(
+  prUrl: string,
+  slot: number,
+  env: NodeJS.ProcessEnv,
+  onStarted: (branch: string) => void,
+): void {
+  execFile(
+    'gh',
+    ['pr', 'view', prUrl, '--json', 'headRefName', '-q', '.headRefName'],
+    { timeout: 20_000 },
+    (err, stdout) => {
+      if (err) {
+        console.warn('[worker] prewarm skipped — gh pr view failed:', err.message);
+        return;
+      }
+      const branch = stdout.toString().trim();
+      if (!branch) return;
+      try {
+        const child = spawn('node', [QA_STACK_BIN, 'prepare', branch, '--slot', String(slot)], {
+          env,
+          detached: true,
+          stdio: 'ignore',
+        });
+        child.unref();
+        console.log(`[worker] pre-warming slot ${slot} on ${branch} (qa-stack prepare)`);
+        onStarted(branch);
+      } catch (e) {
+        console.warn('[worker] prewarm spawn failed:', (e as Error).message);
+      }
+    },
+  );
+}
+
 async function executeJob(job: Job, slot: number, runId: string, opts: { resumeSessionId?: string }): Promise<void> {
   const resuming = !!opts.resumeSessionId;
   const session = resuming ? sessionStore.get(job.thread) : undefined;
@@ -179,6 +219,23 @@ async function executeJob(job: Job, slot: number, runId: string, opts: { resumeS
   const runDir = resuming && session?.runDir ? session.runDir : path.join(config.runsDir, jobId);
   const artifactsDir = path.join(runDir, 'artifacts');
   fs.mkdirSync(artifactsDir, { recursive: true });
+
+  // Unified per-run timeline: the worker and qa-stack both append events here
+  // (qa-stack via QA_TIMING_FILE below), so we can reconstruct exactly where the
+  // wall clock went and prove the <20-min target. Best-effort — never throws.
+  const timingFile = path.join(runDir, 'timing.jsonl');
+  const t0 = Date.now();
+  const timing = (event: string, extra: Record<string, unknown> = {}): void => {
+    try {
+      fs.appendFileSync(
+        timingFile,
+        JSON.stringify({ ts: Date.now(), src: 'worker', event, slot, ...extra }) + '\n',
+      );
+    } catch {
+      /* timing is best-effort */
+    }
+  };
+  timing('run_start', { runId, jobId, prUrl: job.prUrl ?? null, resuming });
 
   const mcpConfigPath = path.join(runDir, 'mcp.json');
   writeMcpConfig(mcpConfigPath, artifactsDir);
@@ -233,6 +290,8 @@ async function executeJob(job: Job, slot: number, runId: string, opts: { resumeS
     QA_XAVIER_CHECKOUT: path.join(STACKS_DIR, `slot${slot}`, 'Xavier'),
     QA_INBOX: inboxDir,
     QA_ARTIFACTS_DIR: artifactsDir,
+    QA_TIMING_FILE: timingFile, // qa-stack appends its PHASE events to the same timeline
+
     // Agent reads prior gotchas via the prompt; when updates are off its writes go to a
     // throwaway (and the post-run push is skipped) so the gotchas file stays frozen.
     QA_GOTCHAS_FILE: config.gotchasUpdate ? config.gotchasPath : path.join(runDir, '.gotchas-scratch.md'),
@@ -241,8 +300,20 @@ async function executeJob(job: Job, slot: number, runId: string, opts: { resumeS
     QA_SLACK_REQUESTER: job.requester ?? '',
   };
 
+  // Pre-warm the primary slot while the agent boots (fresh PR jobs only; resumes already
+  // have their stack). Fire-and-forget — the agent's `up` reuses it via the build lock.
+  if (!resuming && job.prUrl && config.prewarm) {
+    prewarmSlot(job.prUrl, slot, jobEnv, (branch) => timing('prewarm_started', { branch }));
+  }
+
   const tag = resuming ? 'resume' : 'run';
   let capturedSessionId: string | undefined;
+  let sawFirstTool = false;
+  let sawFirstBrowser = false;
+  let tFirstBrowser: number | undefined;
+  let finalResult: { text: string; isError: boolean; costUsd?: number; numTurns?: number } | undefined;
+  let maxCostUsd: number | undefined;
+  timing('claude_spawned');
   const handle = runClaude(
     {
       prompt,
@@ -260,33 +331,53 @@ async function executeJob(job: Job, slot: number, runId: string, opts: { resumeS
       onSession: (id) => {
         capturedSessionId = id;
         sessionStore.set(job.thread, id, job.channel, runDir, slot);
+        timing('first_session', { sessionId: id });
         console.log(`[worker] session stored (slot ${slot})`, job.thread, '->', id);
       },
       onText: (t) => console.log(`[agent/${tag}:${slot}]`, t.slice(0, 200)),
-      onToolUse: (name, input) => console.log(`[tool/${tag}:${slot}]`, name, '·', summarizeTool(name, input)),
-      onResult: (r) => {
-        console.log(`[result/${tag}:${slot}]`, r.isError ? 'ERROR' : 'ok', `turns=${r.numTurns ?? '?'}`, `stop=${r.stopReason ?? '?'}`, r.costUsd ?? '');
-        if (r.isError) {
-          void post(
-            job.client,
-            job.channel,
-            job.thread,
-            `:warning: QA run ended with an error.\n${(r.text ?? '').slice(0, 600)}`,
-          );
-        } else {
-          void post(
-            job.client,
-            job.channel,
-            job.thread,
-            `:white_check_mark: run complete — see ya! (${r.numTurns ?? '?'} turns, $${r.costUsd?.toFixed(2) ?? '?'})`,
-          );
+      onToolUse: (name, input) => {
+        if (!sawFirstTool) {
+          sawFirstTool = true;
+          timing('first_tool', { tool: name });
         }
+        if (!sawFirstBrowser && /^mcp__(playwright|lane\d+)__/.test(name)) {
+          sawFirstBrowser = true;
+          tFirstBrowser = Date.now();
+          timing('first_browser_action', { tool: name });
+        }
+        if (name === 'Task') {
+          timing('task_dispatch', {
+            subagent: (input as Record<string, unknown>)?.subagent_type ?? null,
+          });
+        }
+        console.log(`[tool/${tag}:${slot}]`, name, '·', summarizeTool(name, input));
+      },
+      onResult: (r) => {
+        timing('result', { isError: r.isError, numTurns: r.numTurns ?? null, costUsd: r.costUsd ?? null });
+        console.log(`[result/${tag}:${slot}]`, r.isError ? 'ERROR' : 'ok', `turns=${r.numTurns ?? '?'}`, `stop=${r.stopReason ?? '?'}`, r.costUsd ?? '');
+        // Each subagent (Task) AND the orchestrator emit a `type:"result"`; the LAST one is the
+        // orchestrator's top-level result. Capture it (and the cumulative max cost = grand total);
+        // the single user-facing completion message is posted once after the run closes, below —
+        // posting here would fire once per subagent result (the 4× "run complete" bug).
+        finalResult = r;
+        if (typeof r.costUsd === 'number') maxCostUsd = Math.max(maxCostUsd ?? 0, r.costUsd);
       },
     },
   );
   const run = active.get(job.thread);
   if (run) run.kill = handle.kill;
   const { timedOut } = await handle.promise;
+
+  // Derived timeline: spawn→first browser action (the pre-amble we're attacking) and
+  // first browser→done (case execution). Both land in the log and timing.jsonl.
+  const tEnd = Date.now();
+  timing('run_end', { timedOut });
+  const secs = (a: number, b?: number) => (b === undefined ? '?' : ((b - a) / 1000).toFixed(0) + 's');
+  console.log(
+    `[timing/${tag}:${slot}] preamble(spawn→firstBrowser)=${secs(t0, tFirstBrowser)} ` +
+      `exec(firstBrowser→done)=${tFirstBrowser ? secs(tFirstBrowser, tEnd) : '?'} ` +
+      `total=${secs(t0, tEnd)}`,
+  );
 
   if (timedOut) {
     console.error(`[worker/${tag}:${slot}] run timed out — killed after`, config.runTimeoutMs / 60000, 'min');
@@ -296,6 +387,24 @@ async function executeJob(job: Job, slot: number, runId: string, opts: { resumeS
       job.thread,
       `:alarm_clock: QA run timed out after ${config.runTimeoutMs / 60000} min. Session \`${capturedSessionId ?? opts.resumeSessionId ?? jobId}\` is preserved — reply to resume.`,
     );
+  } else if (finalResult) {
+    // Exactly ONE completion message per run (onResult fires per subagent result on parallel runs).
+    if (finalResult.isError) {
+      await post(
+        job.client,
+        job.channel,
+        job.thread,
+        `:warning: QA run ended with an error.\n${(finalResult.text ?? '').slice(0, 600)}`,
+      );
+    } else {
+      const totalCost = maxCostUsd ?? finalResult.costUsd;
+      await post(
+        job.client,
+        job.channel,
+        job.thread,
+        `:white_check_mark: run complete — see ya! (${finalResult.numTurns ?? '?'} turns, $${totalCost?.toFixed(2) ?? '?'})`,
+      );
+    }
   }
 
   // Share what this session learned: commit + push the gotchas file so the next

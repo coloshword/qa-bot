@@ -161,6 +161,29 @@ function writeState(s) {
   fs.writeFileSync(stateFile, JSON.stringify(s, null, 2));
 }
 
+// --- timing instrumentation -------------------------------------------------
+// Emits `PHASE <name> <ms>` to stdout and appends a JSON line to the per-run
+// timing file (QA_TIMING_FILE, set by the worker), so host + stack phases share
+// one timeline. Best-effort — never breaks the stack.
+function emitPhase(name, ms) {
+  console.log(`PHASE ${name} ${ms}ms (slot ${slot})`);
+  const f = process.env.QA_TIMING_FILE;
+  if (!f) return;
+  try {
+    fs.appendFileSync(f, JSON.stringify({ ts: Date.now(), src: 'stack', slot, op: cmd, phase: name, ms }) + '\n');
+  } catch {
+    /* timing is best-effort */
+  }
+}
+async function timed(name, fn) {
+  const t = Date.now();
+  try {
+    return await fn();
+  } finally {
+    emitPhase(name, Date.now() - t);
+  }
+}
+
 function envFileFor(whitelabel) {
   const f = whitelabel === 'allurial' ? '.env.allurial-local.xavier' : '.env.local.xavier';
   const p = path.join(XAVIER_SOURCE, f);
@@ -287,6 +310,51 @@ async function waitHttp(url, { timeoutMs, label, okStatuses = [200] }) {
 // git / npm
 // ---------------------------------------------------------------------------
 
+// Per-slot build lock: serializes checkout/npm/tsc on one slot's tree so the host
+// pre-warm (`qa-stack prepare`) and the agent's `qa-stack up` can't clobber each
+// other (a `git checkout -f` mid-`tsc` would corrupt the build). A waiter blocks
+// until the holder releases; a dead or stale (>30 min) holder is stolen.
+const buildLockFile = path.join(slotDir, 'build.lock');
+async function withBuildLock(label, fn) {
+  fs.mkdirSync(slotDir, { recursive: true });
+  const STALE_MS = 30 * 60_000;
+  for (;;) {
+    try {
+      const fd = fs.openSync(buildLockFile, 'wx'); // atomic create-exclusive
+      fs.writeSync(fd, JSON.stringify({ pid: process.pid, label, startedAt: Date.now() }));
+      fs.closeSync(fd);
+      break;
+    } catch (e) {
+      if (e.code !== 'EEXIST') throw e;
+      let holder = null;
+      try {
+        holder = JSON.parse(fs.readFileSync(buildLockFile, 'utf8'));
+      } catch {}
+      const stale = !holder || !alive(holder.pid) || Date.now() - (holder.startedAt || 0) > STALE_MS;
+      if (stale) {
+        try {
+          fs.rmSync(buildLockFile, { force: true });
+        } catch {}
+        continue;
+      }
+      console.log(`[slot${slot}] waiting for ${holder.label} (pid ${holder.pid}) to finish on this slot...`);
+      await sleep(2000);
+    }
+  }
+  try {
+    return await fn();
+  } finally {
+    try {
+      const holder = JSON.parse(fs.readFileSync(buildLockFile, 'utf8'));
+      if (holder.pid === process.pid) fs.rmSync(buildLockFile, { force: true });
+    } catch {
+      try {
+        fs.rmSync(buildLockFile, { force: true });
+      } catch {}
+    }
+  }
+}
+
 async function ensureClone() {
   if (fs.existsSync(path.join(repoDir, '.git'))) return false;
   console.log(`[slot${slot}] first-time setup: cloning Xavier (local objects, fast)...`);
@@ -396,9 +464,20 @@ async function redisEnsureAndFlush() {
 // service lifecycle
 // ---------------------------------------------------------------------------
 
-async function buildCore() {
+// Skip the clean tsc when the slot already holds a good build of this exact SHA
+// (keyed strictly on headSha + presence of the emitted entrypoint, so it self-
+// invalidates on any code/tsconfig change). Lets `up` reuse a `prepare` build, and
+// makes same-SHA reruns instant. `state.buildHead` is persisted after a clean build.
+async function buildCore(state, headSha) {
+  const entry = path.join(repoDir, 'core', 'build', 'api', 'server.js');
+  if (state.buildHead === headSha && fs.existsSync(entry)) {
+    console.log(`[slot${slot}] core build up-to-date for ${headSha.slice(0, 8)} — skipping tsc`);
+    return;
+  }
   console.log(`[slot${slot}] building core (clean tsc)...`);
   await sh('rm -rf build && npx tsc', { cwd: path.join(repoDir, 'core'), timeoutMs: 600_000 });
+  state.buildHead = headSha;
+  writeState(state);
   console.log(`[slot${slot}] core built`);
 }
 
@@ -466,39 +545,69 @@ async function cmdUp() {
   if (!DB_IMAGES[whitelabel]) die(`whitelabel must be botm or allurial, got: ${whitelabel}`);
   const t0 = Date.now();
 
-  const state = readState();
-  state.whitelabel = whitelabel;
+  // Hold the per-slot lock so a host pre-warm (`prepare`) in flight on this slot finishes
+  // first; we then reuse its checkout/install/build (npm + tsc skip on matching headSha).
+  await withBuildLock('up', async () => {
+    const state = readState();
+    state.whitelabel = whitelabel;
 
-  // stop anything from a previous run on this slot
-  for (const name of Object.keys(state.services ?? {})) await killService(state, name);
+    // stop anything from a previous run on this slot
+    for (const name of Object.keys(state.services ?? {})) await killService(state, name);
 
-  await ensureClone();
-  const headSha = await checkout(branch);
-  state.branch = branch.replace(/^origin\//, '');
-  state.headSha = headSha;
-  writeState(state);
-  slackPing(
-    `:gear: starting QA env — checked out \`${state.branch}\` (${headSha.slice(0, 8)}), building core + snes with a fresh DB (~2–4 min)`,
-  );
-  console.log(`SOURCE READY: ${repoDir} is now on ${state.branch} — full codebase readable while the build continues`);
+    await ensureClone();
+    const headSha = await timed('checkout', () => checkout(branch));
+    state.branch = branch.replace(/^origin\//, '');
+    state.headSha = headSha;
+    writeState(state);
+    slackPing(
+      `:gear: starting QA env — checked out \`${state.branch}\` (${headSha.slice(0, 8)}), building core + snes with a fresh DB (~2–4 min)`,
+    );
+    console.log(`SOURCE READY: ${repoDir} is now on ${state.branch} — full codebase readable while the build continues`);
 
-  await npmInstallIfNeeded(state, headSha);
-  writeState(state);
+    await timed('npmInstall', () => npmInstallIfNeeded(state, headSha));
+    writeState(state);
 
-  // slow parts in parallel: db reset + redis | core clean build
-  await Promise.all([
-    dbReset(whitelabel, !flags.noPull).then(() => redisEnsureAndFlush()),
-    buildCore(),
-  ]);
+    // slow parts in parallel: db reset + redis | core clean build (skipped if prepare built it)
+    await Promise.all([
+      timed('dbReset', () => dbReset(whitelabel, !flags.noPull).then(() => redisEnsureAndFlush())),
+      timed('buildCore', () => buildCore(state, headSha)),
+    ]);
 
-  await migrate(whitelabel);
-  await startService(state, 'core');
-  await startService(state, 'snes');
+    await timed('migrate', () => migrate(whitelabel));
+    await timed('core_ready', () => startService(state, 'core'));
+    await timed('snes_ready', () => startService(state, 'snes'));
 
-  const mins = ((Date.now() - t0) / 60000).toFixed(1);
-  slackPing(`:white_check_mark: stack is up on \`${state.branch}\` (${whitelabel}, ${mins} min) — starting tests`);
-  console.log(`\nREADY (slot ${slot}, branch ${state.branch}, ${whitelabel}, ${mins} min)`);
-  printUrls(state);
+    const mins = ((Date.now() - t0) / 60000).toFixed(1);
+    slackPing(`:white_check_mark: stack is up on \`${state.branch}\` (${whitelabel}, ${mins} min) — starting tests`);
+    console.log(`\nREADY (slot ${slot}, branch ${state.branch}, ${whitelabel}, ${mins} min)`);
+    printUrls(state);
+  });
+  emitPhase('up_total', Date.now() - t0);
+}
+
+// Whitelabel-AGNOSTIC heavy prep: checkout + npm install + core tsc, nothing else.
+// The host fires this the instant a slot is claimed for a fresh PR job, so the slow
+// work overlaps the agent booting + reading the diff + planning. The agent's later
+// `qa-stack up` reuses it under the shared build lock (same headSha → npm + tsc skip),
+// leaving only the whitelabel-specific DB/redis/migrate/service start to do.
+async function cmdPrepare() {
+  const branch = args[0];
+  if (!branch) die('usage: qa-stack prepare <branch>');
+  const t0 = Date.now();
+  await withBuildLock('prepare', async () => {
+    const state = readState();
+    await ensureClone();
+    const headSha = await timed('checkout', () => checkout(branch));
+    state.branch = branch.replace(/^origin\//, '');
+    state.headSha = headSha;
+    writeState(state);
+    console.log(`SOURCE READY: ${repoDir} is now on ${state.branch}`);
+    await timed('npmInstall', () => npmInstallIfNeeded(state, headSha));
+    writeState(state);
+    await timed('buildCore', () => buildCore(state, headSha));
+    console.log(`PREPARED (slot ${slot}, branch ${state.branch}, ${headSha.slice(0, 8)}, ${((Date.now() - t0) / 1000).toFixed(0)}s)`);
+  });
+  emitPhase('prepare_total', Date.now() - t0);
 }
 
 async function cmdResetDb() {
@@ -647,6 +756,7 @@ async function cmdAddLane() {
 
 const handlers = {
   up: cmdUp,
+  prepare: cmdPrepare,
   'reset-db': cmdResetDb,
   sql: cmdSql,
   'run-script': cmdRunScript,

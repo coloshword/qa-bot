@@ -31,6 +31,16 @@ the prompt specifies them explicitly.
    `qa-stack up` pings the thread itself at checkout, on dependency installs, and when the stack
    is READY — do NOT post your own "building" or "stack is up" messages.
 
+   **Pre-warm your lanes in this same first step.** If the change looks like it needs ≥2 cases and
+   `node "$QA_STACK_BIN" pool` shows ≥2 free stacks, fire the extra lane builds NOW, each as its own
+   BACKGROUND Bash call (run_in_background), so they build *while you plan* alongside the primary:
+   ```
+   node "$QA_STACK_BIN" add-lane <branch> --owner "$QA_RUN_ID" --whitelabel <botm|allurial>
+   ```
+   Do NOT wait until execution to add lanes — a lane built mid-run pays a serial build while the
+   primary sits idle. (The host may also have pre-warmed your primary slot; your `up` reuses that
+   work automatically — just run it as usual.)
+
 2. **Build the test plan while the stack builds.**
    - If the prompt gives explicit instructions, those ARE the test cases. Post the list and skip to step 4.
    - Otherwise, read ALL of this before writing a single test case:
@@ -58,18 +68,24 @@ the prompt specifies them explicitly.
    node "$QA_POST_BIN" msg --mention "test plan:\n1. <case>\n2. <case>\n..."
    ```
 
-4. **Run the spec-conformance review while the stack finishes building.** Spawn a
-   `spec-conformance-reviewer` subagent (Task tool) with the PR URL and the FULL ticket/epic
-   text you gathered. It reads clause-by-clause for spec-vs-code divergences — the bug class
-   blind behavioral testing rarely reaches (e.g. spec says "excluded that month", code excludes
-   forever) — and proposes a verification scenario for each suspicion.
+4. **Spawn the spec-conformance review EARLY and let it run concurrently — never block on it.**
+   The reviewer needs no running stack (it reads the diff + the checkout + ticket text), so spawn
+   it as your FIRST `spec-conformance-reviewer` Task (Task tool) the instant the source is readable
+   (SOURCE READY) — before or while you finish planning — passing the PR URL and the FULL
+   ticket/epic text you gathered. It runs in PARALLEL with your planning and the first behavioral
+   cases; do NOT wait for it to return before executing cases. It reads clause-by-clause for
+   spec-vs-code divergences — the bug class blind behavioral testing rarely reaches (e.g. spec says
+   "excluded that month", code excludes forever) — and proposes a verification scenario for each
+   suspicion.
 
    **A finding is a HYPOTHESIS, never a result.** Do NOT post "the code has a bug" from reading
    alone — every finding becomes a TEST CASE and gets proven (or refuted) behaviorally like any
    other case. Concretely:
-   - Append each finding's scenario to the plan as a new case and repost the amended plan with a
-     neutral one-liner: `node "$QA_POST_BIN" msg ":mag: conformance review flagged N spec clauses worth verifying — added as cases X..Y"`
-     HIGH-severity scenarios run first among remaining cases.
+   - Append each finding's scenario to the plan as a new case and dispatch it to the next free lane
+     (HIGH-severity scenarios first), reposting the amended plan with a neutral one-liner:
+     `node "$QA_POST_BIN" msg ":mag: conformance review flagged N spec clauses worth verifying — added as cases X..Y"`.
+     Because the reviewer runs concurrently, fold its cases in as they arrive — never hold the other
+     cases waiting for it to return.
    - When such a case FAILs, THAT's when the code citation earns its place — in the status line:
      `:x: [N/total] FAIL — spec says excluded *that month*; member who became Friend in April never sees survey (cause: missing date bound, file:line)`.
    - If a case proves the suspicion wrong, it's a PASS like any other — the hypothesis dies quietly.
@@ -82,9 +98,11 @@ the prompt specifies them explicitly.
    less). If `up` failed, read its output and `qa-stack logs core`, retry once, then consider the
    ephemeral fallback (see "Ephemeral fallback") before reporting BLOCKED.
 
-6. **Execute each test case in order** — directly for small runs (≤4 cases), via subagents for
-   bigger ones (see "Big runs: delegate cases to subagents"). After EVERY case, check the inbox
-   (see "Mid-run user messages"). For each case:
+6. **Execute the test cases — in parallel across lanes whenever you can.** With ≥2 independent
+   cases AND ≥2 stacks, run them CONCURRENTLY via `qa-case-executor` subagents (one case per lane —
+   see "Run cases in parallel across lanes"); only a single case or a pure-SQL/migration check runs
+   inline. Keep ≤(lane count) cases in flight and dispatch the next the moment a lane frees. Check
+   the inbox (see "Mid-run user messages") between waves. For each case (the subagent does a–d):
    a. Post a one-liner before starting: `node "$QA_POST_BIN" msg "▶ [N/total] <case name>"`
    b. Exercise the real mechanism (see "Operating rules" and "Exercising crons, scripts & state").
    c. Post proof (screenshot, script output, or DB-state table) with a PASS/FAIL caption:
@@ -110,11 +128,18 @@ the prompt specifies them explicitly.
    node "$QA_POST_BIN" msg --mention "results: X/Y passed\n- [1] PASS/FAIL/BLOCKED — <one line>\n- [2] ..."
    ```
 
-## Big runs: delegate cases to subagents
+## Delegate cases to subagents (always for parallel lanes; mandatory above 4 cases)
 
-For plans with **more than 4 cases**, you are the ORCHESTRATOR: you keep the full picture (PR
-understanding, plan, tally, cross-case state) and you do NOT open the browser yourself — browser
-snapshots would flood your context and you must last the whole run.
+Run cases through `qa-case-executor` subagents — you keep the full picture (PR understanding, plan,
+tally, cross-case state) and do NOT open the browser yourself. There are two independent reasons to
+delegate, and either one is enough:
+- **Parallelism (the common one):** each lane needs its own executor, so any time you run cases
+  concurrently you delegate one case per lane (see "Run cases in parallel across lanes").
+- **Context:** above **4 cases** you are STRICTLY the orchestrator even on a single lane — browser
+  snapshots would flood your context and you must last the whole run.
+
+The ONLY case you ever run inline is a single case or a pure-SQL/migration check with no browser
+step on a run where there's no second lane to parallelize onto.
 
 **This is mechanical, not optional. To execute a case you MUST invoke the `Task` tool with
 `subagent_type: "qa-case-executor"`.** Narrating "delegating case N" and then doing the work
@@ -132,9 +157,11 @@ You start with ONE stack (your primary lane: browser server `playwright`, your `
 For a big plan, claim more lanes so cases run concurrently — each lane is a fully isolated stack
 (own DB, redis, core, snes, browser), so cases can't collide even when they mutate state:
 
-1. Check the budget: `node "$QA_STACK_BIN" pool`. For each extra lane you want (up to free count),
-   `node "$QA_STACK_BIN" add-lane <branch> --owner "$QA_RUN_ID" --whitelabel <wl>`. It prints
-   `LANE <id>`, the **browser server** to use (`lane2`, `lane3`, …), and that lane's URLs.
+1. Check the budget: `node "$QA_STACK_BIN" pool`. Claim your lanes as EARLY as possible — ideally
+   in step 1 of the workflow, each `add-lane` as a BACKGROUND Bash call (run_in_background) so the
+   lane builds overlap planning instead of stalling execution. For each extra lane (up to free
+   count): `node "$QA_STACK_BIN" add-lane <branch> --owner "$QA_RUN_ID" --whitelabel <wl>`. It
+   prints `LANE <id>`, the **browser server** to use (`lane2`, `lane3`, …), and that lane's URLs.
    (Returns `POOL_FULL` if none free — just run with the lanes you have.)
 2. Distribute cases across lanes and spawn their subagents **concurrently** — issue multiple
    `Task` calls in ONE message. Each subagent's brief MUST pin it to its lane:
@@ -145,8 +172,9 @@ For a big plan, claim more lanes so cases run concurrently — each lane is a fu
 4. Keep at most (number of lanes) cases running at once. As one returns, send the next case to
    that free lane. Update tally + fold STATE_CHANGED into later briefs as before.
 
-Lanes are released automatically when the run ends. One stack = serial (still fine for small
-plans); don't add lanes for ≤4 cases.
+Lanes are released automatically when the run ends. Add lanes whenever you have ≥2 independent
+cases and ≥2 free stacks — including small plans; the point is to never run cases serially while a
+stack sits idle. Skip lanes only for a single case or a pure-SQL/migration check.
 
 Each subagent knows the QA rules but knows NOTHING about this run — its brief must be
 self-contained:
@@ -164,7 +192,8 @@ update your tally, fold STATE_CHANGED into the next brief, check the inbox, deci
 `reset-db` is needed, then spawn the next. If a subagent returns BLOCKED on something you can
 fix (missing precondition, dead service), fix it and re-run that case once.
 
-Small runs (≤4 cases) skip all this — execute directly as usual.
+Only a single case (or a pure-SQL/migration check) skips all this and runs inline — any plan with
+≥2 cases and a free lane should fan out across lanes as above.
 
 ## Mid-run user messages (inbox)
 

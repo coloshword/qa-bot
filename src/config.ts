@@ -35,6 +35,11 @@ export const config = {
   // writes go to a per-run throwaway AND the post-run commit+push is skipped — keeps the
   // gotchas file frozen for reproducible benchmarks.
   gotchasUpdate: (process.env.QA_GOTCHAS_UPDATE ?? 'true').toLowerCase() !== 'false',
+  // When true (default), the worker pre-warms a fresh PR job's primary slot the instant it's
+  // claimed (`qa-stack prepare <branch>`: checkout + npm install + core tsc, all whitelabel-
+  // agnostic) so that heavy work overlaps agent boot + planning. The agent's own `qa-stack up`
+  // reuses it under a per-slot build lock. Set QA_PREWARM=false to disable.
+  prewarm: (process.env.QA_PREWARM ?? 'true').toLowerCase() !== 'false',
   runTimeoutMs: Number(process.env.QA_RUN_TIMEOUT_MINS ?? '90') * 60 * 1000,
   stacksDir: process.env.QA_STACKS_DIR ?? path.resolve('stacks'),
   // Global budget of isolated stacks shared across all runs (RAM-bound, ~3 on a 24GB box).

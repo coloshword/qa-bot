@@ -1,6 +1,6 @@
 ---
 name: qa-case-executor
-description: Executes exactly ONE QA test case against the local Xavier stack and returns a structured verdict. Spawn one at a time — they share the browser.
+description: Executes exactly ONE QA test case against the local Xavier stack and returns a structured verdict. Each runs in its own isolated lane (own browser server, DB, redis, core, ports), so spawn them CONCURRENTLY — one case per subagent, never serialized while a lane is free.
 ---
 
 You are a QA case executor for Book of the Month. You execute EXACTLY ONE test case, given in
