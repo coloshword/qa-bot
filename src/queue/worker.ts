@@ -233,7 +233,9 @@ async function executeJob(job: Job, slot: number, runId: string, opts: { resumeS
     QA_XAVIER_CHECKOUT: path.join(STACKS_DIR, `slot${slot}`, 'Xavier'),
     QA_INBOX: inboxDir,
     QA_ARTIFACTS_DIR: artifactsDir,
-    QA_GOTCHAS_FILE: config.gotchasPath,
+    // Agent reads prior gotchas via the prompt; when updates are off its writes go to a
+    // throwaway (and the post-run push is skipped) so the gotchas file stays frozen.
+    QA_GOTCHAS_FILE: config.gotchasUpdate ? config.gotchasPath : path.join(runDir, '.gotchas-scratch.md'),
     QA_SLACK_CHANNEL: job.channel,
     QA_SLACK_THREAD: job.thread,
     QA_SLACK_REQUESTER: job.requester ?? '',
@@ -297,6 +299,9 @@ async function executeJob(job: Job, slot: number, runId: string, opts: { resumeS
   }
 
   // Share what this session learned: commit + push the gotchas file so the next
-  // session (and any freshly cloned deployment) starts smarter.
-  await syncGotchas(job.ticket ?? job.prUrl ?? `session ${job.thread}`);
+  // session (and any freshly cloned deployment) starts smarter. Skipped when gotchas
+  // updates are off (benchmarking) — the file must stay frozen.
+  if (config.gotchasUpdate) {
+    await syncGotchas(job.ticket ?? job.prUrl ?? `session ${job.thread}`);
+  }
 }

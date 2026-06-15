@@ -31,6 +31,10 @@ export const config = {
   runsDir,
   playbookPath: process.env.PLAYBOOK_PATH ?? path.resolve('QA_PLAYBOOK.md'),
   gotchasPath: process.env.QA_GOTCHAS_FILE ?? path.resolve('QA_GOTCHAS.md'),
+  // When false, runs still READ prior gotchas (injected into the prompt) but the agent's
+  // writes go to a per-run throwaway AND the post-run commit+push is skipped — keeps the
+  // gotchas file frozen for reproducible benchmarks.
+  gotchasUpdate: (process.env.QA_GOTCHAS_UPDATE ?? 'true').toLowerCase() !== 'false',
   runTimeoutMs: Number(process.env.QA_RUN_TIMEOUT_MINS ?? '90') * 60 * 1000,
   stacksDir: process.env.QA_STACKS_DIR ?? path.resolve('stacks'),
   // Global budget of isolated stacks shared across all runs (RAM-bound, ~3 on a 24GB box).
