@@ -86,3 +86,10 @@ post-ship survey Friend exclusion uses hasMessage() (AccountMessageDb.ts:219-231
 - fastLogin via POST to http://localhost:20082/api/account/fastLogin?action=login returns jwt cookie in Set-Cookie header; must grep with tail -1 to get the non-empty one (first jwt cookie line clears it)
 - box/snes API uses accountSummary.cycleResponseId (maps to account_summary.cycle_response column, not cycle_response_id)
 - SNES login page crashes with "Oops!" when jwt cookie has pol=Rejoin because getAccountRejoinPlan API returns 500; inject fresh Member JWT via Playwright addCookies to bypass
+
+## PR-18835 / EN-14656 Post Ship Survey — 2026-06-14 (run 7 / app+core)
+- post_ship_survey_config needed a test row for cycle 138 (current cycle) before probes; INSERT manually: INSERT INTO post_ship_survey_config (cycle_id, bucket_start, bucket_end, store_id) VALUES (138, 1, 65536, 1)
+- QA_MIGRATE_TOLERANT=1 required for old branch (qa-bot-test-17647) against newer DB snapshot (cycles 143-147 in snapshot, branch only has up to 2026_01_12)
+- qa_post_ship_survey_probe.js pattern works: create PolicyCache + PostShipSurveyCache instances, set on CacheEvent module, then call assignPostShipSurvey — already at build/scripts/adhoc/qa_post_ship_survey_probe.js
+- Friend exclusion bare hasMessage() bug still present in run 7 (PostShipSurveyActions.ts:44-49) — not fixed in this PR
+- SNES logout: must call http://localhost:20082/api/account/logout directly to clear httpOnly session cookie when switching accounts; header logout link is server action
