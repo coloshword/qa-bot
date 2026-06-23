@@ -79,3 +79,13 @@ Direct navigation to /en-US/cancel/monthly-offer?fromPage=saveOffer3MCC works wi
 - EN-16310 migration not auto-run on local stacks: must manually run `ALTER TABLE account_summary ADD COLUMN three_m_commit_offer_status ENUM('Unclaimed', 'Claimed') NOT NULL DEFAULT 'Unclaimed' AFTER wait_and_save_offer_status` before testing; the AccountSummaryDb.update() and .get() queries both reference this column.
 - Browser fetch to core (port 20182) from snes page (port 20130): cookies are NOT sent cross-port without `credentials: 'include'`; use curl with `-H "Cookie: jwt=..."` for reliable API calls.
 - EN-16310: After claiming 3M commit offer, re-visiting /en-US/cancel/monthly-offer?fromPage=saveOffer3MCC shows 'Oops! Looks like something went wrong.' — verified both cancel-flow and updatePlanAndPolicy routes update DB column and emit Klaviyo updateAttribute (success logged in core)
+Cross-origin fetch from snes (port 20130) to core (port 20182) WORKS with credentials:include — @koa/cors reflects origin with credentials:true by default; PUT /api/account/policy-and-renewal-change accepts overridePlans:true to bypass planSet eligibility check.
+httpOnly JWT cookie persists after JS cookie clear — must navigate to /api/account/logout to clear session before login as different account
+- On botm whitelabel, Klaviyo track payload is not logged in core logs (just 'Klaviyo track queued for consumer'); verify 3MCommitClaimed by reading KlaviyoListener.ts + confirming DB state of three_m_commit_offer_status at rejoin time
+
+## EN-16310 — 2026-06-23
+- qa-stack checkout now falls back to local origin/<branch> cache on fetch failure (branch deleted from remote after PR merge) — see bin/qa-stack.mjs checkout()
+- qa-stack migrate now auto-deletes stale migration records whose files are missing from disk (snapshot has newer migrations) — no manual DELETE needed
+- When en-16310 branch was deleted after merge: fetch by SHA works: git fetch origin <SHA>; then update-ref refs/remotes/origin/<branch> <SHA> to make qa-stack up reuse it
+- botm whitelabel does NOT log full Klaviyo payload — only 'Klaviyo track queued for consumer'; verify 3MCommitClaimed by confirming DB threeMCommitOfferStatus at rejoin time
+- PR 18876 local checkout was at 5dbca361 (missing last commit 4ff07537 that adds 3MCommitClaimed to KlaviyoListener enroll event); fix: git fetch origin <SHA> + update-ref + qa-stack up
