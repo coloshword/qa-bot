@@ -50,3 +50,32 @@
 - hasMessage() in AccountMessageDb has no active filter — stale Friend popup rows (active=0) permanently exclude member from survey assignment (bug)
 - Core may restart with wrong whitelabel after slot reuse — check theme before testing, restart core with botm if needed
 - JWT injection (addCookies) is reliable for account switching when /api/logout fails to clear httpOnly cookie
+Allurial box page URL is /box (no locale prefix like /en-US/), while login page is also /login (no locale prefix). The en-US prefix leads to 404 on allurial whitelabel.
+- Allurial logout: Navigate directly to http://localhost:202XX/api/account/logout (GET, returns "OK") — the httpOnly session cookie cannot be cleared via JS document.cookie; this is the only reliable way to logout between test accounts in lane reuse scenarios. Port = 20000 + (slot-1)*100 + 82.
+- Allurial account_summary.policy_id type='Lead' = non-member; type='Member' = active subscriber. Accounts with credits=0 but Lead policy still can't access /box.
+- isFreeBox in BoxWrapperNonBOTM.tsx: `memberBox?.[boxShowing]?.totals?.total === "Free"` — "Free" string match. To test non-free: set account_summary.credits=0 for an account with paid book items in box.
+- Free add-on items (e.g. "Free Enemies to Lovers Hat") count as "Free" in totals even with 0 credits — need actual paid books in box to get non-free total.
+
+- Admin UI (qa-stack start admin) requires ADMIN_HOST env override per slot (e.g. http://localhost:20151 for slot 2); the default seed .env.local.xavier sets ADMIN_HOST=http://localhost:5001 which breaks browser auth. Fix: add ADMIN_HOST to slotEnv() in bin/qa-stack.mjs.
+- Admin webpack may fail with "Cannot find module 'dayjs'" or 'formik' because shared_components/node_modules is not installed. Fix: npm install shared_components dependencies in admin/node_modules (npm install dayjs formik ... --no-save inside Xavier/admin). Do NOT install node_modules inside Xavier/shared_components — it causes webpack to pick up conflicting react-router-dom versions.
+- After modifying shared_components source or adding node_modules, touch a shared_components/src file (e.g. Form.tsx) to force webpack watch rebuild.
+XAVIER_CONFIG must be set to ../config/test.json when running jest in Xavier/core, otherwise config.ts falls back to local.json which doesn't exist in stack slots. Use: XAVIER_CONFIG=../config/test.json npx jest --config jest.json ...
+
+## passive_skips script: must set SLACK_XAVIER_OPS_HOOK when running directly
+When running `build/scripts/mcduck/passive_skips.js` outside of qa-stack (or inside qa-stack run-script which reads the env file), SLACK_XAVIER_OPS_HOOK must be set to a valid URL. If unset, slackMessage() throws "TypeError: Failed to parse URL from undefined" at line 30 before any rows are processed. Use a mock HTTP server: `node -e "require('http').createServer((_,r)=>r.end('ok')).listen(9999)"` and set `SLACK_XAVIER_OPS_HOOK=http://localhost:9999`. When using qa-stack run-script, also set SLACK_XAVIER_OPS_ALERTS_HOOK — both vars are unset in the local .env file.
+Direct navigation to /en-US/cancel/monthly-offer?fromPage=saveOffer3MCC works without needing to go through the cancel flow first. Claimed account (three_m_commit_offer_status='Claimed') gets an 'Oops! Looks like something went wrong.' error page instead of the 3M plan offer — no 'Claim offer and save' button visible. API confirms upgradePlanOptions is [] for Claimed vs 1 plan for Unclaimed.
+
+## 3M commit offer API bypass (EN-16311)
+- `claimMustRenewSaveOfferRoute` (PUT /api/account/claimMustRenewSaveOffer) has NO guard on threeMCommitOfferStatus. A Claimed member can call it directly to re-obtain the 3M commit plan (policy 100→134, plan at $12.99).
+- `updatePlanAndPolicyRoute` (PUT /api/account/policy-and-renewal-change) rejects (401) for Claimed members trying to switch to the 3M plan, but this is due to planSet eligibility (plan not in current policy's planSet), NOT a threeMCommitOfferStatus check.
+- IPlan type uses camelCase: policyId (not policy_id), mustRenewCycles (not must_renew_cycles).
+
+## EN-16310 — 2026-06-23
+- Migration snapshot conflict: DB snapshot has newer migrations not on branch — manually DELETE stale records from db_migrations_tracking before running migrations (stale: 2026_06_05_16_30_00/01, 2026_06_18_09_48_03-06)
+- Docker daemon must be running before qa-stack up — run: open -a Docker && wait for 'Docker ready' before retrying stack bring-up
+- Lane 2 migration fix: docker exec qa-db-slot2 mysql -u xavier_write -pxavier_dev -t xavier (use correct user xavier_write not xavier)
+- After claiming 3M commit offer, re-visiting /en-US/cancel/monthly-offer?fromPage=saveOffer3MCC shows 'Oops! Looks like something went wrong.' error page — offer is not re-shown to Claimed accounts (confirmed case 2).
+- Core API auth: JWT must be sent as `Cookie: jwt=<token>` not `Authorization: Bearer <token>` — mobileAuth middleware tries to look up Bearer tokens in auth_token table (mobile tokens), not as JWTs; cookie path uses jwtVerifier correctly.
+- EN-16310 migration not auto-run on local stacks: must manually run `ALTER TABLE account_summary ADD COLUMN three_m_commit_offer_status ENUM('Unclaimed', 'Claimed') NOT NULL DEFAULT 'Unclaimed' AFTER wait_and_save_offer_status` before testing; the AccountSummaryDb.update() and .get() queries both reference this column.
+- Browser fetch to core (port 20182) from snes page (port 20130): cookies are NOT sent cross-port without `credentials: 'include'`; use curl with `-H "Cookie: jwt=..."` for reliable API calls.
+- EN-16310: After claiming 3M commit offer, re-visiting /en-US/cancel/monthly-offer?fromPage=saveOffer3MCC shows 'Oops! Looks like something went wrong.' — verified both cancel-flow and updatePlanAndPolicy routes update DB column and emit Klaviyo updateAttribute (success logged in core)
