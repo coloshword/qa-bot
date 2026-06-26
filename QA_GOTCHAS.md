@@ -125,3 +125,18 @@ httpOnly JWT cookie persists after JS cookie clear — must navigate to /api/acc
 - isAppVersionDeprecated with any non-numeric placeholder (X.Y.Z, x.z.z, x.x.z) always returns false — all parts parse to NaN via .map(Number), and NaN < NaN / NaN == NaN are both false. Replace placeholder with a real semantic version (e.g. 8.5.0) for the gate to work.
 - SNES getThumbnails uses force-cache — DB min_loyalty_tier changes require SNES restart to reflect.
 - Xavier /api/account/logout URL clears HttpOnly jwt cookie; always navigate there before switching test accounts in browser.
+
+## PR-18924 / EN-16433 — 2026-06-26
+- june-add-ons category (id=308) current children: [2727, 2728, 2749, 2722, 2724, 2725, 2723, 2721, 2726, 2702]
+- Experiment 239 ("Add ons Merchandising: Logged In") exp_key=17593, 100% in variant 1 (bucket 0-65536), active=1
+- Mobile auth for category API: authorization: <token from auth_token table> + x-botm-platform: ios header
+- Platform detected via x-botm-platform header; accountId from mobileAuth middleware via auth_token table
+- ADD_ONS_MERCHANDISING_PDP_ORDER = [2749, 2751, 2728, 2753, 2727, 2750, 2752]; expected reorder of current data: [2749, 2728, 2727, 2722, 2724, 2725, 2723, 2721, 2726, 2702]
+
+## PR #18924 / EN-16433 — 2026-06-26
+- Category children ordering: positions in category_children table are swappable but the old core process (from earlier qa-stack up) may still be serving the port. Use `lsof -i :<port> | grep LISTEN` to find the actual PID serving the port — kill it directly with kill -9 before running `qa-stack start core`.
+- Multiple core processes can accumulate on a Mac (one per qa-stack up or restart). Always check `lsof -i :PORT | grep LISTEN` to confirm which pid is actually serving before testing, especially after DB changes.
+- mobileAuth middleware sets accountId from the `authorization: <token>` header, but only if a valid jwt cookie isn't already set. For most API tests, use cookie-based JWT auth via fastLogin (`POST /api/account/fastLogin` → get jwt HttpOnly cookie → pass as `-b "jwt=..."` in curl).
+- /api/account/login returns 404; use /api/account/fastLogin instead.
+- The v2 single-category route GET /v2/botm/category/:slug returned 404 for june-add-ons in test env (categoryCache.get returning null for that slug in v2 context). This may be a pre-existing env limitation.
+- resortAddOnsMerchandising only implements logged-in experiment (239), not logged-out (240) per EN-16433 ticket spec. The !accountId early-return blocks all logged-out paths.
