@@ -1,3 +1,10 @@
+## PR-18924 / EN-16433 — Add-ons Merchandising — 2026-06-26
+- Cycle 138 (June 2026) is current; cycle 139 (July) exists in DB but not current
+- For cycle 138, curated sort [2749,2751,2728,2753,2727,2750,2752] produces SAME output as original DB order because 2751/2753/2750/2752 are not in cycle 138 — API comparison for june-add-ons is a no-op and cannot distinguish curated from original for this cycle
+- Exp 240 (logged-out) has active=0 by default and ZERO rows in experiment_variant — completely unimplemented in both DB and code
+- CategoryActions.ts resortAddOnsMerchandising: !accountId guard at line 75 returns category unchanged for logged-out users; no loggedOutExpName is ever passed to getLoggedInLoggedOutVariant
+- account 12455 / token 01138a4c6817a7050ee85dfb is a usable test account on slot3
+
 ## General — 2026-06-11
 - Login As Member in admin does NOT work for SNES login — redirect/cookie does not transfer. Instead: go directly to the SNES login page (/login) and log in with email + password. Use the SHA2 password trick to set a known password first if needed.
 
@@ -140,3 +147,18 @@ httpOnly JWT cookie persists after JS cookie clear — must navigate to /api/acc
 - /api/account/login returns 404; use /api/account/fastLogin instead.
 - The v2 single-category route GET /v2/botm/category/:slug returned 404 for june-add-ons in test env (categoryCache.get returning null for that slug in v2 context). This may be a pre-existing env limitation.
 - resortAddOnsMerchandising only implements logged-in experiment (239), not logged-out (240) per EN-16433 ticket spec. The !accountId early-return blocks all logged-out paths.
+Account 75 token (0402d1e9341f5bd92be0d427) has deleted_at=2019-11-22, rejected by checkToken. Use account 12455 token for iOS v1 tests on this PR.
+DB cycle 138 natural order for june-add-ons (category 308) is already [2749,2728,2727,...], matching the curated sort output. Unauthenticated and authenticated android return identical children; differentiation only visible on a cycle whose natural order differs from curated order (e.g. cycle 139 starts [2750,2753,2727,...]).
+Cache reload trick: GET /api/experiment?reload forces experimentCache.reload(storeId) immediately, bypassing the 15min TTL. Useful for testing experiment active/inactive state changes without restarting core.
+
+- GET /api/experiment?reload forces experimentCache.reload() immediately — use for testing experiment active/inactive without restarting core
+- Account 75 token 0402d1e9341f5bd92be0d427 is deleted (deleted_at=2019-11-22); use account 12455 token 01138a4c6817a7050ee85dfb for PR-18924 mobile auth tests
+When x-botm-platform header is sent as duplicate headers (e.g. curl -H 'x-botm-platform: ios' -H 'x-botm-platform: ios'), Koa joins them as 'ios, ios'. CategoryActions.ts checks platform === 'ios' which is false for the joined string, so isApp=false and add-on reordering is skipped. Fix: normalise with Array.isArray(platform) ? platform[0] : platform before the equality check. (EN-16433 / PR-18924)
+- Experiment 239 ('Add ons Merchandising: Logged In') may be inactive in a freshly reset slot 3 DB — must activate and insert 100% variant 1 bucket in experiment_variant before testing; requires core restart to reload ExperimentCache.
+- cycleDelta=1 on june-add-ons exposes cycle 139 data [2750,2753,2727,2728,2749,2751,2752] where natural order clearly differs from curated order [2749,2751,2728,2753,2727,2750,2752]; use this cycle to demonstrate accountId guard empirically.
+
+## PR-18924 / EN-16433 supplemental — 2026-06-26
+- Experiment 240 (Add ons Merchandising: Logged Out) is NOT implemented in this PR — code !accountId guard always returns original order for logged-out users
+- Koa joins duplicate HTTP headers with ", " — platform === "ios" fails for "ios, ios"; fix is Array.isArray check or take first value; pre-existing in BoxRoutes.ts too
+- GET /api/experiment?reload forces experimentCache.reload immediately (bypasses 15-min TTL) — use for testing experiment toggles without core restart
+- For cycle 138, curated-order output [2749,2728,2727,...] coincidentally matches filterFormat sort output — use cycleDelta=1 (cycle 139) to get a visibly different natural vs curated order
