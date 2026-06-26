@@ -89,3 +89,39 @@ httpOnly JWT cookie persists after JS cookie clear — must navigate to /api/acc
 - When en-16310 branch was deleted after merge: fetch by SHA works: git fetch origin <SHA>; then update-ref refs/remotes/origin/<branch> <SHA> to make qa-stack up reuse it
 - botm whitelabel does NOT log full Klaviyo payload — only 'Klaviyo track queued for consumer'; verify 3MCommitClaimed by confirming DB threeMCommitOfferStatus at rejoin time
 - PR 18876 local checkout was at 5dbca361 (missing last commit 4ff07537 that adds 3MCommitClaimed to KlaviyoListener enroll event); fix: git fetch origin <SHA> + update-ref + qa-stack up
+- Account password is stored as SHA2(CONCAT(plaintext_password, password_salt), 224) NOT bcrypt. Use SQL: UPDATE account SET password_hash = SHA2(CONCAT('Test1234!', password_salt), 224) WHERE id=<id>
+- Older swag products (id < 200) may not appear in /en-US/shop even if product_type='swag' and deleted_at IS NULL — use newer product IDs (2355+) that are already displayed in the shop for loyalty tier testing
+# PR-18921 / EN-15091 — swag-shop loyalty tier filtering
+- password_hash in xavier uses SHA2(CONCAT(password, password_salt), 224) — NOT bcrypt. Set both password_salt and password_hash together.
+- swag-shop category cache is pre-built at core startup into tier variants: swag-shop-entry/friend/bff. DB changes to min_loyalty_tier require core restart to take effect.
+- The /loaded endpoint returns HTTP 200 body "OK" when caches ready (not body "loaded"); qa-stack waitHttp checks for HTTP 200 status, not body text.
+- To restart core on slot N: kill -9 -<pid> then cd to slot<N>/Xavier/core and start with env vars from .env.local.xavier + slot overrides.
+- account_summary.id IS the account_id (same field, no account_id column).
+- Only products in the swag-shop category (via category_children) appear in the shop. Product type='swag' alone is not sufficient — the PDP must be linked to the swag-shop category.
+
+# EN-15091 Swap Shop Loyalty Tier Filtering
+- SNES /en-US/shop uses a Redis-backed Next.js cache handler (@neshca/cache-handler). DB changes to min_loyalty_tier require BOTH a core restart AND a Redis FLUSHALL (on slot's near-redis port e.g. 20079) to propagate to the shop grid. Restarting SNES or deleting .next/cache is NOT sufficient.
+- product_pdp_lookup joins product to pdp; min_loyalty_tier lives on the product table, used by PdpDb.getThumbnails() which populates ThumbnailCache on core startup.
+- The Book Person Hat (product_id=pdp_id=2355) is in category 140 (swag-shop); Classic Tote (id=134) is NOT in that category.
+- account_summary.id IS the account_id (no separate account_id column).
+- Password must be set via SHA2(CONCAT('<pw>', password_salt), 224) — bcrypt hashes in test briefs may not be valid.
+
+## PR-18921 — 2026-06-26
+- SNES Next.js uses Redis-backed cache handler (@neshca/cache-handler). DB changes to min_loyalty_tier require core restart AND Redis FLUSHALL to propagate — deleting .next/cache alone is insufficient.
+- Xavier password hash is SHA2(CONCAT(password, password_salt), 224) not bcrypt — set with: UPDATE account SET password_hash = SHA2(CONCAT("Test1234!", password_salt), 224) WHERE id=<id>.
+- swag-shop tier-filtered caches (swag-shop-entry/friend/bff) are built at core startup; DB changes to min_loyalty_tier require core restart to take effect.
+- Product must be in swag-shop category via category_children to appear in /en-US/shop; product_type=swag alone is insufficient. Use product IDs 2355+ (older IDs like 134 are not in category).
+- account_summary.id IS the account_id — no separate account_id column in account_summary.
+
+## PR #18921 — Categories API loyalty tier filter
+- Mobile auth: use `authorization: <token>` header from auth_token table + `x-botm-platform: ios` to bypass recaptcha on /api/account/fastLogin; mobileAuth middleware accepts it directly
+- Categories route: GET /api/category?list=<slug> (not /categories, not /api/categories); registered at /api/category in RoutesNew.ts:74
+- isAppVersionDeprecated with placeholder 'X.Y.Z' → [NaN,NaN,NaN] → all comparisons false → always returns false; this breaks any feature gated on that placeholder
+- SNES thumbnail data is `cache: "force-cache"` (snes/app/serverActions/pdp/server.ts:getThumbnails). Changing product min_loyalty_tier in DB is NOT reflected until SNES is restarted; kill pid from `qa-stack status` and relaunch `.next/standalone/server.js`.
+- Shop page.tsx:50 uses raw category children count (pre-filter) to decide showProducts; MerchShopGrid then filters by loyalty tier. Result: active member with tier < all product minLoyaltyTiers gets default copy + empty grid with no explanation.
+- The jwt cookie is HttpOnly (not visible via document.cookie). To verify which loyaltyTier was issued, check `node "$QA_STACK_BIN" logs core 50 --slot N | grep "JWT newToken"`.
+- When switching between test accounts, always hit `http://localhost:20282/api/account/logout` first before navigating to login — otherwise the old HttpOnly jwt cookie may persist and the login page login button silently keeps the old session.
+- Categories API endpoint is /api/category?list=<slug> (not /api/categories).
+- isAppVersionDeprecated with any non-numeric placeholder (X.Y.Z, x.z.z, x.x.z) always returns false — all parts parse to NaN via .map(Number), and NaN < NaN / NaN == NaN are both false. Replace placeholder with a real semantic version (e.g. 8.5.0) for the gate to work.
+- SNES getThumbnails uses force-cache — DB min_loyalty_tier changes require SNES restart to reflect.
+- Xavier /api/account/logout URL clears HttpOnly jwt cookie; always navigate there before switching test accounts in browser.
